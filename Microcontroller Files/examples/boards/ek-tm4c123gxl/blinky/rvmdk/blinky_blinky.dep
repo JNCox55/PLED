@@ -1,0 +1,6 @@
+Dependencies for Project 'blinky', Target 'blinky': (DO NOT MODIFY !)
+F (.\blinky.c)(0x563D0594)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I..\..\..\.. --c99-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-DTM4C123GH6PM -Drvmdk -DPART_TM4C123GH6PM-o .\rvmdk\blinky.o --omf_browse .\rvmdk\blinky.crf --depend .\rvmdk\blinky.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x541A544A)
+I (..\..\..\..\inc/tm4c123gh6pm.h)(0x560E01EB)
+F (.\startup_rvmdk.S)(0x560DFD89)(--cpu Cortex-M4.fp --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary--pd "TM4C123GH6PM SETA 1"-o .\rvmdk\startup_rvmdk.o --depend .\rvmdk\startup_rvmdk.d)
+F (.\readme.txt)(0x560DFD89)()

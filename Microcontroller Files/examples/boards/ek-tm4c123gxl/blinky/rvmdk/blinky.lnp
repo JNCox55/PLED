@@ -1,0 +1,8 @@
+--cpu Cortex-M4.fp
+".\rvmdk\blinky.o"
+".\rvmdk\startup_rvmdk.o"
+--library_type=microlib --strict --scatter "blinky.sct"
+
+--entry Reset_Handler --summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\rvmdk\blinky.map" -o .\rvmdk\blinky.axf

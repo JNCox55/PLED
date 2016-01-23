@@ -1,0 +1,15 @@
+.\objects\main.o: main.c
+.\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+.\objects\main.o: driverlib\pwm.h
+.\objects\main.o: inc\hw_memmap.h
+.\objects\main.o: driverlib\gpio.h
+.\objects\main.o: driverlib\pin_map.h
+.\objects\main.o: driverlib\sysctl.h
+.\objects\main.o: inc\hw_ints.h
+.\objects\main.o: driverlib\debug.h
+.\objects\main.o: driverlib\fpu.h
+.\objects\main.o: driverlib\interrupt.h
+.\objects\main.o: driverlib\rom.h
+.\objects\main.o: driverlib\uart.h

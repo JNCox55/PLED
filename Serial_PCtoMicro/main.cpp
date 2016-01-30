@@ -36,10 +36,13 @@ int main(){
 	//*************************
 	//	OTHER VARIABLES
 	//*************************
-	short *xC;
-	short *yC;
+	short xC[50] = {0};
+	short yC[50] = {0};
 
-	int arraySizes = 0;
+	int arraySizes[50] = {0};
+	char nextArrayF = 0;
+
+
 
 	//-----------------------------------
 	//
@@ -55,7 +58,7 @@ int main(){
 	//	Send 1st array
 	//-----------------------------------
 	sendArrayData(arraySizes, xC, yC, 0);
-	waitForCommand(&nextArray);
+	waitForCommand(&nextArrayF);
 	
 	/*if(nextArray == 1 && numOfArrays > 1){
 		//-----------------------------------

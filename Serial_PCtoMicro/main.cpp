@@ -31,6 +31,15 @@ int main(){
 	int baudRate = 9600; 
 	int dispType = 0;
 
+	CSerial serial;
+
+	//*************************
+	//	OTHER VARIABLES
+	//*************************
+	short *xC;
+	short *yC;
+
+	int arraySizes = 0;
 
 	//-----------------------------------
 	//
@@ -48,14 +57,14 @@ int main(){
 	sendArrayData(arraySizes, xC, yC, 0);
 	waitForCommand(&nextArray);
 	
-	if(nextArray == 1 && numOfArrays > 1){
+	/*if(nextArray == 1 && numOfArrays > 1){
 		//-----------------------------------
 		//	Send 2nd array
 		//-----------------------------------
 		nextArray = 0;
 		sendArrayData(arraySizes, x2C, y2C,1);
 		waitForCommand(&nextArray);
-	}
+	}*/
 
 
 	//SEND BACK TO ORIGIN
@@ -65,14 +74,11 @@ int main(){
 		printf("Trouble sending All Done Command\n", i);
 	}
 
-	printf("Going back to the origin...taking it's time\n");
-
 	serial.Close();
 
-	if(numOfArrays > 0){
-		free(xC);
-		free(yC);
-	}
+	//-----------------------------------
+	//	Free Dynamic Memory
+	//-----------------------------------
 
 
 	return 0;

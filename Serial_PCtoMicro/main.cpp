@@ -41,6 +41,10 @@ int main(){
 
 	int arraySizes[50] = {0};
 	char nextArrayF = 0;
+	
+	char finished[2] = {'A','D'};
+
+	int nBytesSent = 0;
 
 
 
@@ -74,7 +78,7 @@ int main(){
 	nBytesSent = serial.SendData(finished, 2);
 
 	if(nBytesSent == 0){
-		printf("Trouble sending All Done Command\n", i);
+		printf("Trouble sending All Done Command\n");
 	}
 
 	serial.Close();

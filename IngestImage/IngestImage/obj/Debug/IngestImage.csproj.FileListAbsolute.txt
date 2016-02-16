@@ -1,0 +1,6 @@
+c:\users\casey\documents\visual studio 2015\Projects\IngestImage\IngestImage\bin\Debug\IngestImage.exe.config
+c:\users\casey\documents\visual studio 2015\Projects\IngestImage\IngestImage\bin\Debug\IngestImage.exe
+c:\users\casey\documents\visual studio 2015\Projects\IngestImage\IngestImage\bin\Debug\IngestImage.pdb
+c:\users\casey\documents\visual studio 2015\Projects\IngestImage\IngestImage\obj\Debug\IngestImage.csprojResolveAssemblyReference.cache
+c:\users\casey\documents\visual studio 2015\Projects\IngestImage\IngestImage\obj\Debug\IngestImage.exe
+c:\users\casey\documents\visual studio 2015\Projects\IngestImage\IngestImage\obj\Debug\IngestImage.pdb

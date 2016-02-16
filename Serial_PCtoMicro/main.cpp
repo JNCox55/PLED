@@ -27,8 +27,8 @@ int main(){
 	//*************************
 	//	SERIAL
 	//*************************
-	int port = 1; 
-	int baudRate = 9600; 
+	int port = 3;
+	int baudRate = 9600;
 	int dispType = 0;
 
 	CSerial serial;
@@ -41,7 +41,7 @@ int main(){
 
 	int arraySizes[50] = {0};
 	char nextArrayF = 0;
-	
+
 	char finished[2] = {'A','D'};
 
 	int nBytesSent = 0;
@@ -57,13 +57,26 @@ int main(){
 		printf("Error opening COM port! \n");
 		return 0;
 	}
+	// Setup handshaking
+    //if (!serial.SetupHandshaking(CSerial::EHandshakeHardware))
+    //{
+       // printf("Error configuring handshaking! \n");
+       // return 0;
+    //}
+
+
+	//serial.SendData("go", 2);
+    for (int i=0;i<3333;i++)
+    {
+        serial.SendData("123", 3);
+    }
 
 	//-----------------------------------
 	//	Send 1st array
 	//-----------------------------------
-	sendArrayData(arraySizes, xC, yC, 0);
-	waitForCommand(&nextArrayF);
-	
+	//sendArrayData(arraySizes, xC, yC, 0);
+	//waitForCommand(&nextArrayF);
+
 	/*if(nextArray == 1 && numOfArrays > 1){
 		//-----------------------------------
 		//	Send 2nd array
@@ -75,13 +88,13 @@ int main(){
 
 
 	//SEND BACK TO ORIGIN
-	nBytesSent = serial.SendData(finished, 2);
+	//nBytesSent = serial.SendData(finished, 2);
 
-	if(nBytesSent == 0){
-		printf("Trouble sending All Done Command\n");
-	}
+	//if(nBytesSent == 0){
+	//	printf("Trouble sending All Done Command\n");
+	//}
 
-	serial.Close();
+	//serial.Close();
 
 	//-----------------------------------
 	//	Free Dynamic Memory
@@ -95,8 +108,8 @@ int main(){
 //	Function Definitions
 //------------------------------------------------------------------------------------
 
-void sendArrayData(int arraySizes[], short xC[], short yC[], int index){
-	
+/*void sendArrayData(int arraySizes[], short xC[], short yC[], int index){
+
 	int i = 0;
 	int nBytesSent = 0;
 	//B = 0x42, G = 0x47, R = 0x52
@@ -109,7 +122,7 @@ void sendArrayData(int arraySizes[], short xC[], short yC[], int index){
 	char commandY[2] = {0x59,0x44};
 
 	char halfShort[2] = {0};
-	
+
 	//-----------------------------------
 	//	SEND DATA
 	//-----------------------------------
@@ -146,12 +159,12 @@ void sendArrayData(int arraySizes[], short xC[], short yC[], int index){
 }
 
 
-void waitForCommand(char *nextArray){	
-	
+void waitForCommand(char *nextArray){
+
 	int nBytesRead = 0;
-	int curT = 0; 
+	int curT = 0;
 	int oldT = 0;
-	
+
 	//-----------------------------------
 	//	READ DATA
 	//-----------------------------------
@@ -163,7 +176,7 @@ void waitForCommand(char *nextArray){
 		{
 			char buffer[1];
 			nBytesRead = serial.ReadData(buffer, sizeof(buffer));
-	
+
 			if (nBytesRead > 0)
 			{
 
@@ -184,4 +197,4 @@ void waitForCommand(char *nextArray){
 
 	//printf("I made it out of the while loop! \n");
 
-}
+}*/

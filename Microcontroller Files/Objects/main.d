@@ -12,4 +12,5 @@
 .\objects\main.o: driverlib\fpu.h
 .\objects\main.o: driverlib\interrupt.h
 .\objects\main.o: driverlib\rom.h
+.\objects\main.o: driverlib\qei.h
 .\objects\main.o: driverlib\uart.h

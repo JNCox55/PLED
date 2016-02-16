@@ -433,6 +433,11 @@
               <FileType>1</FileType>
               <FilePath>.\driverlib\gpio.c</FilePath>
             </File>
+            <File>
+              <FileName>qei.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\driverlib\qei.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

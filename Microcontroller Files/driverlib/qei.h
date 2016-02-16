@@ -64,6 +64,7 @@ extern "C"
 #define QEI_CONFIG_CLOCK_DIR    0x00000004  // ChA and ChB are clock and dir
 #define QEI_CONFIG_NO_SWAP      0x00000000  // Do not swap ChA and ChB
 #define QEI_CONFIG_SWAP         0x00000002  // Swap ChA and ChB
+#define QEI_CONFIG_FILTER_EN		0x00002000	// Enable the input filter
 
 //*****************************************************************************
 //

@@ -4,6 +4,7 @@
 ".\objects\sysctl.o"
 ".\objects\uart.o"
 ".\objects\gpio.o"
+".\objects\qei.o"
 "driverlib\rvmdk\driverlib.lib"
 "grlib\rvmdk\grlib.lib"
 ".\objects\startup_tm4c123.o"

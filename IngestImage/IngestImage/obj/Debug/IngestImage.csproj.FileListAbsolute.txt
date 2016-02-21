@@ -4,3 +4,9 @@ c:\users\casey\documents\visual studio 2015\Projects\IngestImage\IngestImage\bin
 c:\users\casey\documents\visual studio 2015\Projects\IngestImage\IngestImage\obj\Debug\IngestImage.csprojResolveAssemblyReference.cache
 c:\users\casey\documents\visual studio 2015\Projects\IngestImage\IngestImage\obj\Debug\IngestImage.exe
 c:\users\casey\documents\visual studio 2015\Projects\IngestImage\IngestImage\obj\Debug\IngestImage.pdb
+C:\Users\Casey\Documents\USU\PLED\PLED\IngestImage\IngestImage\bin\Debug\IngestImage.exe.config
+C:\Users\Casey\Documents\USU\PLED\PLED\IngestImage\IngestImage\obj\Debug\IngestImage.exe
+C:\Users\Casey\Documents\USU\PLED\PLED\IngestImage\IngestImage\obj\Debug\IngestImage.pdb
+C:\Users\Casey\Documents\USU\PLED\PLED\IngestImage\IngestImage\bin\Debug\IngestImage.exe
+C:\Users\Casey\Documents\USU\PLED\PLED\IngestImage\IngestImage\bin\Debug\IngestImage.pdb
+C:\Users\Casey\Documents\USU\PLED\PLED\IngestImage\IngestImage\obj\Debug\IngestImage.csprojResolveAssemblyReference.cache

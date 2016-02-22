@@ -27,6 +27,7 @@ namespace IngestImage
               M04                      Spindle on           (Laser on?)
               M05                      Spindle off          (Laser off?)
               M02                      End of program
+              S--                      Set speed of spindle (Laser intensity?)
 
             */
 
@@ -44,12 +45,22 @@ namespace IngestImage
             int row = 0;
             int column = -1;
 
+            //define g-code filename
+            string gcodeFileName;
+
+            //get c-code filename
+            Console.WriteLine("Please enter G-Code file name:");
+            gcodeFileName = Console.ReadLine();
+
             //define and create file for G codes
-            string path = "C:/Users/Casey/Documents/projectTest/pokemonGCodes.txt";
+            string path = "C:/Users/Casey/Documents/projectTest/" + gcodeFileName + ".gcode";
             if (!File.Exists(path))
             {
                 using (StreamWriter sw = File.CreateText(path))
                 {
+                    //define image size
+                    sw.WriteLine("size " + c.Width + "," + c.Height);
+
                     //write go to starting point of engraving and dwell G-Codes to file
                     sw.WriteLine("G00 X0 Y0");
                     sw.WriteLine("G04 P0.5");
@@ -115,6 +126,9 @@ namespace IngestImage
 
                             //G-Code to move to next pixel
                             sw.WriteLine("G01 X" + column + " Y" + row);
+
+                            //G-Code to set intensity of laser
+                            sw.WriteLine("S" + grayScale / 32);
 
                             //G-Code to turn on laser
                             sw.WriteLine("M04");

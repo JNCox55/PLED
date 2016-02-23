@@ -1,5 +1,5 @@
 Dependencies for Project 'SP', Target 'Target 1': (DO NOT MODIFY !)
-F (.\main.c)(0x56C36479)(-c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork -I "C:\Users\Bre\Documents\PLED\PLED\Microcontroller Files\RTE"-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.0.0\Device\Include\TM4C123-D_RTE_ -DTM4C123GH6PM-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+F (.\main.c)(0x56CB4F8B)(-c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork -I "C:\Users\Bre\Documents\PLED\PLED\Microcontroller Files\RTE"-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.0.0\Device\Include\TM4C123-D_RTE_ -DTM4C123GH6PM-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x541A544C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x541A544A)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x541A544A)
@@ -15,6 +15,8 @@ I (driverlib\interrupt.h)(0x56A3D0CF)
 I (driverlib\rom.h)(0x56A3D0D0)
 I (driverlib\qei.h)(0x56BFDDBE)
 I (driverlib\uart.h)(0x56A3D0D0)
+I (inc\hw_gpio.h)(0x56A3D119)
+I (inc\hw_types.h)(0x56A3D119)
 F (driverlib\pwm.c)(0x56A3D0D0)(-c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork -I "C:\Users\Bre\Documents\PLED\PLED\Microcontroller Files\RTE"-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.0.0\Device\Include\TM4C123-D_RTE_ -DTM4C123GH6PM-o .\objects\pwm.o --omf_browse .\objects\pwm.crf --depend .\objects\pwm.d)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x541A544C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x541A544A)

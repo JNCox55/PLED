@@ -15,15 +15,17 @@
 #include "driverlib\rom.h"
 #include "driverlib\qei.h"
 #include "driverlib\uart.h"
+#include "inc\hw_gpio.h"
+#include "inc\hw_types.h"
 
 volatile unsigned int *UART1=(unsigned int *) 0x4000D000;
-bool shoot;
+#define timeEngrave  67 //This is the denominator for the fraction of a second we are engraving
 
 char end9999;
 char end9998;
 char end9997;
+bool test;
 
-//char gCode[3];
 char command[10];
 int i=0;
 int tail=0;
@@ -36,6 +38,7 @@ char start=0;
 
 int32_t mytest;
 uint32_t positionX;
+uint32_t positionY;
 char drawingBuffer[10000];
 
 //*****************************************************************************
@@ -66,24 +69,30 @@ UART1_Handler(void)
 				//mytest=UARTCharGetNonBlocking(UART1_BASE);
         //UARTCharPutNonBlocking(UART1_BASE,
         //                           mytest);
-			drawingBuffer[head]=(char) UARTCharGetNonBlocking(UART1_BASE);
-			if (head<10000)
-			{
-				head++;
-			}
-			else
-			{
-				head=0;
-			}
-			//SysCtlDelay(SysCtlClockGet() / (10 * 3));
-//			if ((tail-head)==60)
-//			{
-//				for (i=0;i<5;i++)
-//				{
-//					UARTCharPutNonBlocking(UART1_BASE,
-//                                   stop[i]);
-//				}
-//			}
+				drawingBuffer[head]=(char) UARTCharGetNonBlocking(UART1_BASE);
+				//point to the next available spot IF we dont overrun the buffer
+				if (head<9998 && (head+1)!=tail)
+				{
+					head++;
+				}
+				//wrap to the beginning of the buffer IF we dont overrun the buffer
+				else if (!(head==9999 && tail==0))
+				{
+					head=0;
+				}
+				//If we are about to overrun the buffer, tell the PC to stop sending
+				if ((head==9999 && tail==0) || (head+1)==tail)
+				{
+					while (UARTBusy(UART1_BASE) != 0)
+					{
+						//wait
+					}
+					for (i=0;i<3;i++)
+					{
+						UARTCharPutNonBlocking(UART1_BASE,
+																			 go[i]);
+					}
+				}
         //
         // Blink the LED to show a character transfer is occuring.
         //
@@ -157,14 +166,14 @@ void PWM_Setup()
 	// In this case you get: (1 / 250Hz) * 16MHz = 64000 cycles.  Note that
 	// the maximum period you can set is 2^16.
 	//
-  PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, 3813);
+  PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, 480); //3813
 	//
 	// Set PWM0 to a duty cycle of 25%.  You set the duty cycle as a function
 	// of the period.  Since the period was set above, you can use the
 	// PWMGenPeriodGet() function.  For this example the PWM will be high for
 	// 25% of the time or 16000 clock ticks (64000 / 4).
 	//
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1907);
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);  //1907
 	//PWMPulseWidthSet(PWM0_BASE, PWM_OUT_1, (PWMGenPeriodGet(PWM0_BASE, PWM_OUT_1)*3) / 4);
 	//
 	// Enable the PWM0 Bit0 (PB6) and PWM1 Bit0 (PB7) output.
@@ -183,6 +192,8 @@ void UART1_Setup()
 	// Enable the GPIO port that is used for the on-board LED. (and UART1 CTS)
 	//
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
 	//
 	// Enable the GPIO pins for the LED (PF2).
 	//
@@ -191,8 +202,6 @@ void UART1_Setup()
 	// Enable the peripherals for the LED and UART1.
 	//
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
 	//
 	// Enable processor interrupts.
 	//
@@ -223,7 +232,8 @@ void UART1_Setup()
 	//
 	// Configure the UART to use RTS and CTS handshaking.
 	//
-	UART1[0x30]|=0x0000C000;
+	UARTFlowControlSet(UART1_BASE, UART_FLOWCONTROL_RX | UART_FLOWCONTROL_TX);
+	//UART1[0x30]|=0x0000C000;
 	//
 	// Enable the UART interrupt.
 	//
@@ -246,6 +256,12 @@ void QEI_Setup()
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_QEI0);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_QEI1);
 	//
+	// Unlock GPIO D7
+	//
+	HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = GPIO_LOCK_KEY;
+	HWREG(GPIO_PORTD_BASE + GPIO_O_CR) |= 0x80;
+	HWREG(GPIO_PORTD_BASE + GPIO_O_LOCK) = 0;
+	//
 	// Set GPIO PD6 and PD7 as PhA and PhB on QEI0, and
 	// PC5 and PC6 as PhA and PhB for QEI1
 	//
@@ -256,12 +272,34 @@ void QEI_Setup()
 	GPIOPinTypeQEI(GPIO_PORTD_BASE, GPIO_PIN_6 | GPIO_PIN_7);
 	GPIOPinTypeQEI(GPIO_PORTC_BASE, GPIO_PIN_5 | GPIO_PIN_6);
 	//
+	// Disable the encoders before configuration
+	//
+	QEIDisable(QEI0_BASE);
+	QEIDisable(QEI1_BASE);
+	//
 	// Configure the UART for 9600 8-N-1 operation.
 	//
 	QEIConfigure(QEI0_BASE,QEI_CONFIG_CAPTURE_A_B | QEI_CONFIG_NO_RESET | QEI_CONFIG_QUADRATURE | QEI_CONFIG_NO_SWAP,QEIMaxPosition);
 	QEIConfigure(QEI1_BASE,QEI_CONFIG_CAPTURE_A_B | QEI_CONFIG_NO_RESET | QEI_CONFIG_QUADRATURE | QEI_CONFIG_NO_SWAP,QEIMaxPosition);
+	//
+	// Enable the encoders
+	//
 	QEIEnable(QEI0_BASE);
 	QEIEnable(QEI1_BASE);
+}
+
+void GPIO_Setup()
+{
+	//
+	// GPIO PD0:PD1 are used for toggling the forward and reverse step on the stepper motor drivers.
+	// GPIO PD2:PD3 are used for sending the step signal to the stepper motor drivers.
+	// Enable port D so these pins can be used.
+	//
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+	//
+	// Enable the GPIO pins for controlling the stepper motors (PD0:PD3).
+	//
+	GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
 }
 
 void engrave()
@@ -271,9 +309,10 @@ void engrave()
 		end9999=drawingBuffer[9999];
 		end9998=drawingBuffer[9998];
 		end9997=drawingBuffer[9997];
-		if ((head-tail)<500)
+		if ((head>tail && (head-tail)<500) || (head<tail && (tail-head)>8499))
 		{
-			while (UARTBusy(UART1_BASE) == true)
+			//test=UARTBusy(UART1_BASE);
+			while (UARTBusy(UART1_BASE) != 0)
 			{
 				//wait
 			}
@@ -282,7 +321,7 @@ void engrave()
 				UARTCharPutNonBlocking(UART1_BASE,
                                    go[i]);
 			}
-				//SysCtlDelay(SysCtlClockGet() / (7 * 3));
+			//SysCtlDelay(SysCtlClockGet() / (1 * 3));
 		}
 		if(drawingBuffer[tail]=='G' && drawingBuffer[tail+1]=='0' && drawingBuffer[tail+2]=='1')
 		{
@@ -294,13 +333,35 @@ void engrave()
 			PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 5);
 			//SysCtlDelay(SysCtlClockGet() / (167 * 3));
 		}
-		if (tail>9999)
+		//loop back to the start of the buffer
+		if (tail==9996 && head!=9996)
 		{
 			tail=0;
 		}
+		//move to the next instruction
 		else
 		{
 			tail=tail+3;
+		}
+		//we can't set the tail to equal the head+1
+		while (tail==9996 && head==9996)
+		{
+			for (i=0;i<3;i++)
+			{
+				UARTCharPutNonBlocking(UART1_BASE,
+                                   go[i]);
+			}
+			SysCtlDelay(SysCtlClockGet() / (10 * 3));
+		}
+		//If we are out of new pixels to engrave, wait for more.
+		while (tail<head && (tail+3)>head)
+		{
+			for (i=0;i<3;i++)
+			{
+				UARTCharPutNonBlocking(UART1_BASE,
+                                   go[i]);
+			}
+			SysCtlDelay(SysCtlClockGet() / (10 * 3));
 		}
 	}
 }
@@ -309,27 +370,92 @@ void ready()
 {
 	while (start==0)
 	{
-//		while(UARTCharsAvail(UART1_BASE))
-//		{
-//			command[i]=(char) UARTCharGetNonBlocking(UART1_BASE);
-//			i++;
-//		}
+		while(UARTCharsAvail(UART1_BASE))
+		{
+			command[i]=(char) UARTCharGetNonBlocking(UART1_BASE);
+			i++;
+		}
 		if (command[0]=='g' && command[1]=='o')
 		{
 			start=1;
 		}
-		SysCtlDelay(SysCtlClockGet() / (10 * 3));
-		positionX=QEIPositionGet(QEI1_BASE);
-		shoot=QEIErrorGet(QEI1_BASE);
+		//SysCtlDelay(SysCtlClockGet() / (10 * 3));
+		//positionX=QEIPositionGet(QEI0_BASE);
+		//positionY=QEIPositionGet(QEI1_BASE);
 	}
 }
 
-int main(void)
+void testBench()
 {
-	Sys_Clock_Set();
-	//UART1_Setup();
-	//PWM_Setup();
-	QEI_Setup();
+	//THIS CODE RUNS A TEST OF VARYING LASER INTENSITY
+	//delay 2 seconds before first engraving
+	SysCtlDelay((SysCtlClockGet()*2)/3);
+	//start off at the high end
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 479);
+	//engrave for 25 milliseconds
+	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
+	//wait for 1 second while we slide wood over
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
+	SysCtlDelay(SysCtlClockGet()*1 / (3));
+	
+	//engrave at level 7
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 411);
+	//engrave for 25 milliseconds
+	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
+	//wait for 1 second while we slide wood over
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
+	SysCtlDelay(SysCtlClockGet()*1 / (3));
+	
+	//engrave at level 6
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 343);
+	//engrave for 25 milliseconds
+	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
+	//wait for 1 second while we slide wood over
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
+	SysCtlDelay(SysCtlClockGet()*1 / (3));
+	
+	//engrave at level 5
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 274);
+	//engrave for 25 milliseconds
+	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
+	//wait for 1 second while we slide wood over
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
+	SysCtlDelay(SysCtlClockGet()*1 / (3));
+	
+	//engrave at level 4
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 206);
+	//engrave for 25 milliseconds
+	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
+	//wait for 1 second while we slide wood over
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
+	SysCtlDelay(SysCtlClockGet()*1 / (3));
+	
+	//engrave at level 3
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 137);
+	//engrave for 25 milliseconds
+	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
+	//wait for 1 second while we slide wood over
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
+	SysCtlDelay(SysCtlClockGet()*1 / (3));
+	
+	//engrave at level 2
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 69);
+	//engrave for 25 milliseconds
+	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
+	//wait for 1 second while we slide wood over
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
+	SysCtlDelay(SysCtlClockGet()*1 / (3));
+	
+	//engrave at level 1
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
+	//engrave for 25 milliseconds
+	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
+	//wait for 1 second while we slide wood over
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
+	SysCtlDelay(SysCtlClockGet()*1 / (3));
+
+	
+	//THIS CODE ROTATES THE MOTOR ONE FULL REVOLUTION
 //	//
 //	// Enable the GPIO port that is used for the on-board LED. (and UART1 CTS)
 //	//
@@ -349,19 +475,34 @@ int main(void)
 //	//
 //	// Delay for 1 millisecond.  Each SysCtlDelay is about 3 clocks.
 //	//
-//	SysCtlDelay(SysCtlClockGet() / (400 * 3));
+//	SysCtlDelay(SysCtlClockGet() / (100 * 3));
 
 //	//
 //	// Turn off the LED
 //	//
 //	GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_6, 0);
 //	}
+}
 
-	mytest=SysCtlClockGet();
-	ready();
-	engrave();
+int main(void)
+{
+	Sys_Clock_Set();
+	//UART1_Setup();
+	PWM_Setup();
+	//QEI_Setup();
+	//GPIO_Setup();
+
+	//ready();
+	//engrave();
+	testBench();
+	
 	while(1)
 	{
-
+//			for (i=0;i<3;i++)
+//			{
+//				UARTCharPutNonBlocking(UART1_BASE,
+//                                   go[i]);
+//			}
+//			SysCtlDelay(SysCtlClockGet() / (1 * 3));
 	}
 }

@@ -14,3 +14,5 @@
 .\objects\main.o: driverlib\rom.h
 .\objects\main.o: driverlib\qei.h
 .\objects\main.o: driverlib\uart.h
+.\objects\main.o: inc\hw_gpio.h
+.\objects\main.o: inc\hw_types.h

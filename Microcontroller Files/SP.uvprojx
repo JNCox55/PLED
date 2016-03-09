@@ -438,6 +438,11 @@
               <FileType>1</FileType>
               <FilePath>.\driverlib\qei.c</FilePath>
             </File>
+            <File>
+              <FileName>fpu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\driverlib\fpu.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

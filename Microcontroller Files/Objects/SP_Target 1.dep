@@ -1,5 +1,5 @@
 Dependencies for Project 'SP', Target 'Target 1': (DO NOT MODIFY !)
-F (.\main.c)(0x56CB4F8B)(-c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork -I "C:\Users\Bre\Documents\PLED\PLED\Microcontroller Files\RTE"-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.0.0\Device\Include\TM4C123-D_RTE_ -DTM4C123GH6PM-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+F (.\main.c)(0x56D9FC9C)(-c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork -I "C:\Users\Bre\Documents\PLED\PLED\Microcontroller Files\RTE"-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.0.0\Device\Include\TM4C123-D_RTE_ -DTM4C123GH6PM-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x541A544C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x541A544A)
 I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x541A544A)
@@ -73,6 +73,11 @@ I (driverlib\../inc/hw_sysctl.h)(0x56A3D119)
 I (driverlib\../driverlib/debug.h)(0x56A3D0CF)
 I (driverlib\../driverlib/interrupt.h)(0x56A3D0CF)
 I (driverlib\../driverlib/qei.h)(0x56BFDDBE)
+F (.\driverlib\fpu.c)(0x56D476CA)(-c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork -I "C:\Users\Bre\Documents\PLED\PLED\Microcontroller Files\RTE"-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.0.0\Device\Include\TM4C123-D_RTE_ -DTM4C123GH6PM-o .\objects\fpu.o --omf_browse .\objects\fpu.crf --depend .\objects\fpu.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x541A544A)
+I (driverlib\../inc/hw_nvic.h)(0x56A3D119)
+I (driverlib\../inc/hw_types.h)(0x56A3D119)
+I (driverlib\../driverlib/fpu.h)(0x56A3D0CF)
 F (driverlib\rvmdk\driverlib.lib)(0x56A3D0D0)()
 F (grlib\rvmdk\grlib.lib)(0x56A3D119)()
 F (RTE\Device\TM4C123GH6PM\startup_TM4C123.s)(0x56A3D137)(--cpu Cortex-M4.fp --pd "__EVAL SETA 1" -g --apcs=interwork -I "C:\Users\Bre\Documents\PLED\PLED\Microcontroller Files\RTE"-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.0.0\Device\Include\TM4C123--pd "_RTE_ SETA 1" --pd "TM4C123GH6PM SETA 1"--list .\listings\startup_tm4c123.lst --xref -o .\objects\startup_tm4c123.o --depend .\objects\startup_tm4c123.d)

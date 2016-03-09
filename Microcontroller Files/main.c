@@ -17,9 +17,11 @@
 #include "driverlib\uart.h"
 #include "inc\hw_gpio.h"
 #include "inc\hw_types.h"
+#include "driverlib\fpu.h"
 
 volatile unsigned int *UART1=(unsigned int *) 0x4000D000;
-#define timeEngrave  67 //This is the denominator for the fraction of a second we are engraving
+#define timeEngrave 56  //This is the denominator for the fraction of a second we are engraving
+#define timeRest 0.5 //This is the denominator for the fraction of a second we rest between burns
 
 char end9999;
 char end9998;
@@ -28,6 +30,7 @@ bool test;
 
 char command[10];
 int i=0;
+int j=0;
 int tail=0;
 int head=0;
 char stop[5]="stop";
@@ -306,9 +309,9 @@ void engrave()
 {
 	while (done==0)
 	{
-		end9999=drawingBuffer[9999];
-		end9998=drawingBuffer[9998];
-		end9997=drawingBuffer[9997];
+//		end9999=drawingBuffer[9999];
+//		end9998=drawingBuffer[9998];
+//		end9997=drawingBuffer[9997];
 		if ((head>tail && (head-tail)<500) || (head<tail && (tail-head)>8499))
 		{
 			//test=UARTBusy(UART1_BASE);
@@ -323,8 +326,18 @@ void engrave()
 			}
 			//SysCtlDelay(SysCtlClockGet() / (1 * 3));
 		}
+		// Engraving instruction commands
 		if(drawingBuffer[tail]=='G' && drawingBuffer[tail+1]=='0' && drawingBuffer[tail+2]=='1')
 		{
+			//engrave at intensity level 0
+			PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 411);
+			//engrave for x milliseconds
+			SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
+			//turn the laser off
+			//PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
+			//wait before turning the laser back on
+			SysCtlDelay(SysCtlClockGet()*1 / (3));
+			
 			PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1850);
 			//SysCtlDelay(SysCtlClockGet() / (74 * 3));
 		}
@@ -385,108 +398,190 @@ void ready()
 	}
 }
 
-void testBench()
+void testBenchPulse()
+{
+	//This test pulses the laser in succession on a point
+	SysCtlDelay((int) (SysCtlClockGet()*2)/3);
+	for (j=7;j>0;j--)
+	{
+		for (i=0;i<j;i++)
+		{
+			//Turn the laser on at full power
+			PWMPulseWidthSet(PWM0_BASE,PWM_OUT_0,479);
+			//delay for x milliseconds
+			//SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave)/3));
+			//turn the laser off to rest
+			PWMPulseWidthSet(PWM0_BASE,PWM_OUT_0,1);
+			//wait while we rest
+			SysCtlDelay((int) (SysCtlClockGet()/timeRest)/3);
+		}
+		//wait 1 second while we move the wood sample to a new spot
+		SysCtlDelay((int) (SysCtlClockGet())/3);
+	}
+}
+
+void testBenchDuration()
+{
+	//THIS TEST VARIES THE DURATION OF EQUAL INTENTSITY PULSES
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+	GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE, GPIO_PIN_6);
+	SysCtlDelay((int) (SysCtlClockGet()*2)/3);
+	for (i=3;i<10;i++)
+	{
+		//Turn the laser on at full power
+		//PWMPulseWidthSet(PWM0_BASE,PWM_OUT_0,799);
+		GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_6, GPIO_PIN_6);
+		//delay for j*x milliseconds
+		//for (j=0;j<=i;j++)
+		{
+		SysCtlDelay((int) (i*(SysCtlClockGet()/timeEngrave)/3.0));
+		}
+		//turn the laser off to rest
+		//PWMPulseWidthSet(PWM0_BASE,PWM_OUT_0,1);
+		GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_6, 0);
+		//wait while we rest
+		SysCtlDelay((int) (SysCtlClockGet()/timeRest)/3);
+	}
+}
+
+void testBenchIntensity()
 {
 	//THIS CODE RUNS A TEST OF VARYING LASER INTENSITY
 	//delay 2 seconds before first engraving
 	SysCtlDelay((SysCtlClockGet()*2)/3);
-	//start off at the high end
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 479);
-	//engrave for 25 milliseconds
-	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
-	//wait for 1 second while we slide wood over
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
-	SysCtlDelay(SysCtlClockGet()*1 / (3));
-	
-	//engrave at level 7
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 411);
-	//engrave for 25 milliseconds
-	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
-	//wait for 1 second while we slide wood over
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
-	SysCtlDelay(SysCtlClockGet()*1 / (3));
-	
-	//engrave at level 6
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 343);
-	//engrave for 25 milliseconds
-	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
-	//wait for 1 second while we slide wood over
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
-	SysCtlDelay(SysCtlClockGet()*1 / (3));
-	
-	//engrave at level 5
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 274);
-	//engrave for 25 milliseconds
-	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
-	//wait for 1 second while we slide wood over
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
-	SysCtlDelay(SysCtlClockGet()*1 / (3));
-	
-	//engrave at level 4
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 206);
-	//engrave for 25 milliseconds
-	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
-	//wait for 1 second while we slide wood over
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
-	SysCtlDelay(SysCtlClockGet()*1 / (3));
-	
-	//engrave at level 3
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 137);
-	//engrave for 25 milliseconds
-	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
-	//wait for 1 second while we slide wood over
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
-	SysCtlDelay(SysCtlClockGet()*1 / (3));
-	
-	//engrave at level 2
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 69);
-	//engrave for 25 milliseconds
-	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
-	//wait for 1 second while we slide wood over
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
-	SysCtlDelay(SysCtlClockGet()*1 / (3));
-	
-	//engrave at level 1
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
-	//engrave for 25 milliseconds
-	SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
-	//wait for 1 second while we slide wood over
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
-	SysCtlDelay(SysCtlClockGet()*1 / (3));
+	for (i=7;i>0;i--)
+	{
+		//start off at the high end and engrave in decreasing fractions of denominator 7 out of 100% power
+		j= (int) (479.0*i/7.0);
+		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,j);
+		//engrave for 1/timeEngrave seconds
+		SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave) / 3));
+		// turn the laser off
+		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
+		// wait for 2 seconds while we slide wood over
+		SysCtlDelay(SysCtlClockGet()*2 / (3));
+	}
+}
 
-	
-	//THIS CODE ROTATES THE MOTOR ONE FULL REVOLUTION
-//	//
-//	// Enable the GPIO port that is used for the on-board LED. (and UART1 CTS)
-//	//
-//	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
-//	//
-//	// Enable the GPIO pins for the LED (PF2).
-//	//
-//	GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE, GPIO_PIN_6);
-//	//
-//	// Blink the LED to show a character transfer is occuring.
-//	//
-//	for (i=0;i<400;i++)
+void testBenchMotor()
+{
+	//THIS CODE ROTATES THE MOTOR ONE FULL REVOLUTION ONE DIRECTION THE SWITCHES
+	//
+	// Enable the GPIO port that is used to send the clock signal to the motors and direction
+	// PD0:PD1 are forward or reverse and PD2:PD3 are single step
+	//
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+	//
+	// Enable the GPIO pins
+	//
+	GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
+	//
+	// Start a loop to rotate the motor both directions one full revolution
+	//
+//	for (j=0;j<2;j++)
 //	{
-//	SysCtlDelay(SysCtlClockGet() / (400 * 3));
-//	GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_6, GPIO_PIN_6);
-
-//	//
-//	// Delay for 1 millisecond.  Each SysCtlDelay is about 3 clocks.
-//	//
-//	SysCtlDelay(SysCtlClockGet() / (100 * 3));
-
-//	//
-//	// Turn off the LED
-//	//
-//	GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_6, 0);
+//		positionX=QEIPositionGet(QEI0_BASE);
+//		positionY=QEIPositionGet(QEI1_BASE);
+//		if (j%2==0)
+//		{
+//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
+//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
+//		}
+//		else
+//		{
+//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_PIN_0);
+//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
+//		}
+//		for (i=0;i<1600;i++)
+//		{
+//		//
+//		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
+//		//
+//		SysCtlDelay(SysCtlClockGet() / (400 * 3));
+//		//
+//		// Bring the clocks high.
+//		//
+//			positionX=QEIPositionGet(QEI0_BASE);
+//			positionY=QEIPositionGet(QEI1_BASE);
+//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+//		//
+//		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
+//		//
+//		SysCtlDelay(SysCtlClockGet() / (400 * 3));
+//		//
+//		// Bring the clocks low.
+//		//
+//			positionX=QEIPositionGet(QEI0_BASE);
+//			positionY=QEIPositionGet(QEI1_BASE);
+//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+//		}
 //	}
+
+while (1)
+{
+		positionX=QEIPositionGet(QEI0_BASE);
+		positionY=QEIPositionGet(QEI1_BASE);
+		if (positionY<0x88888888 && positionY>0x10)
+		{
+			//set the direction
+			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_PIN_0);
+			//set the clock output high
+			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+			//wait 25 milliseconds
+			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
+			//Set the clock output low
+			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+			//wait 25 milliseconds
+			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
+		}
+		else if (positionY>0x88888888 && positionY<0xFFFFFFEF)
+		{
+			//set the direction
+			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
+			//set the clock output high
+			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+			//wait 25 milliseconds
+			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
+			//Set the clock output low
+			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+			//wait 25 milliseconds
+			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
+		}
+			if (positionX<0x88888888 && positionX>0x10)
+		{
+			//set the direction
+			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
+			//set the clock output high
+			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+			//wait 25 milliseconds
+			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
+			//Set the clock output low
+			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+			//wait 25 milliseconds
+			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
+		}
+		else if (positionX>0x88888888 && positionX<0xFFFFFFEF)
+		{
+			//set the direction
+			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
+			//set the clock output high
+			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+			//wait 25 milliseconds
+			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
+			//Set the clock output low
+			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+			//wait 25 milliseconds
+			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
+		}
+}
 }
 
 int main(void)
 {
 	Sys_Clock_Set();
+	FPUEnable();
 	//UART1_Setup();
 	PWM_Setup();
 	//QEI_Setup();
@@ -494,10 +589,15 @@ int main(void)
 
 	//ready();
 	//engrave();
-	testBench();
+	testBenchIntensity();
+	//testBenchMotor();
+	//testBenchPulse();
+	//testBenchDuration(); //dont use with PWM_Setup()!!!
 	
 	while(1)
 	{
+		positionX=QEIPositionGet(QEI0_BASE);
+		positionY=QEIPositionGet(QEI1_BASE);
 //			for (i=0;i<3;i++)
 //			{
 //				UARTCharPutNonBlocking(UART1_BASE,

@@ -5,6 +5,7 @@
 ".\objects\uart.o"
 ".\objects\gpio.o"
 ".\objects\qei.o"
+".\objects\fpu.o"
 "driverlib\rvmdk\driverlib.lib"
 "grlib\rvmdk\grlib.lib"
 ".\objects\startup_tm4c123.o"

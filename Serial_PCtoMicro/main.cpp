@@ -2,199 +2,258 @@
 //
 //	Code: PC to uController Serial (main.cpp)
 //	Authors: Zachary Garrard, Justin Cox
-//	Date: 1/30/2016
+//	Date: 3/10/2016
 //
 //------------------------------------------------------------------------------------
 
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <Windows.h>
 #include "Serial.h"
 
-//------------------------------------------------------------------------------------
-//	Function Prototypes
-//------------------------------------------------------------------------------------
+#define G0 0x4730
+#define G1 0x4731
+#define G4 0x4734
+#define M2 0x4D32
+#define M4 0x4D34
+#define M5 0x4D35
+#define S0 0x5330
+#define S1 0x5331
+#define S2 0x5332
+#define S3 0x5333
+#define S4 0x5334
+#define S5 0x5335
+#define S6 0x5336
+#define S7 0x5337
 
-void sendArrayData(int arraySizes[], short xC[], short yC[], int index);
-void waitForCommand(char *nextArray);
+void readUart(void);
+
+bool getRowData(FILE *inFile, uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t pauseP[], uint16_t size);
 
 //------------------------------------------------------------------------------------
 //	FUNCTION MAIN
 //------------------------------------------------------------------------------------
 
+CSerial serial;
+
+
 int main(){
 
 	//*************************
-	//	SERIAL
+	//	Serial Vars
 	//*************************
-	int port = 3;
-	int baudRate = 9600;
+	int port = 3; 
+	int baudRate = 9600; 
 	int dispType = 0;
-
-	CSerial serial;
-
-	//*************************
-	//	OTHER VARIABLES
-	//*************************
-	short xC[50] = {0};
-	short yC[50] = {0};
-
-	int arraySizes[50] = {0};
-	char nextArrayF = 0;
-
-	char finished[2] = {'A','D'};
-
 	int nBytesSent = 0;
+	const int SIZE = 1600;
+	uint8_t buffer[SIZE];
+	//*************************
+	//	File IO Vars
+	//*************************
+	FILE *fp;
+	
+	uint16_t xInit = 0;
+	uint16_t yInit = 0;
+	uint16_t pInit = 0;
+	uint16_t g00 = G0;
+	uint16_t g4 = G4;
+	
+	uint8_t garbage[100] = {0};
+	uint8_t chG;
 
+	uint16_t *xCoors;
+	uint16_t *yCoors;
+	uint16_t *gCodes;
+	uint16_t *pauseP;
 
+	uint16_t sizeCol = 0;
+	uint16_t sizeRow = 0;
 
 	//-----------------------------------
-	//
+	//		PARSER CODE
+	//-----------------------------------
+	fp = fopen("fox.gcode", "r");
+
+	if(!fp){
+		printf("Error opening file! \n");
+		return 0;
+	}
+
+	//Get Size of image for arrays
+	fscanf(fp, "size %hd,%hd", &sizeCol, &sizeRow);
+	chG = fgetc(fp);
+	//printf("SizeX is: %hd and SizeY is: %hd \n", sizeX, sizeY);
+
+	//Dynamically set size of arrays
+	xCoors = new uint16_t [(sizeCol * 5)];
+	yCoors = new uint16_t [(sizeCol * 5)];
+	pauseP = new uint16_t [(sizeCol * 5)];
+	gCodes = new uint16_t [(sizeCol * 5)];
+
+	//Get initial position
+	fscanf(fp, "G00 X%hd Y%hd", &xInit, &yInit);
+	chG = fgetc(fp);
+	
+	fscanf(fp, "G04 P0.%hd", &pInit);
+	chG = fgetc(fp);
+
+	//Get Data from First Row
+	if(getRowData(fp, xCoors, yCoors, gCodes, pauseP, sizeCol)){
+		for(int i = 0; i < 100; i = i + 5){
+			printf("X:%hd Y:%hd \n", xCoors[i], yCoors[i]);
+		}
+	}
+	else{
+		//TODO: END PROGRAM
+	}
+
+	//printf("PInit: %hd \n",pInit);
+	//printf("xInit is: %hd and yInit is: %hd \n", xInit, yInit);
+
+	//-----------------------------------
 	//		SERIAL CODE
-	//
 	//-----------------------------------
 	if (!serial.Open(port, baudRate)){
 		printf("Error opening COM port! \n");
 		return 0;
 	}
-	// Setup handshaking
-    //if (!serial.SetupHandshaking(CSerial::EHandshakeHardware))
-    //{
-       // printf("Error configuring handshaking! \n");
-       // return 0;
-    //}
-
-
-	//serial.SendData("go", 2);
-    for (int i=0;i<3333;i++)
-    {
-        serial.SendData("123", 3);
-    }
 
 	//-----------------------------------
-	//	Send 1st array
+	//	WRITE DATA
 	//-----------------------------------
-	//sendArrayData(arraySizes, xC, yC, 0);
-	//waitForCommand(&nextArrayF);
+	
+	nBytesSent = serial.SendData(buffer, SIZE);
 
-	/*if(nextArray == 1 && numOfArrays > 1){
-		//-----------------------------------
-		//	Send 2nd array
-		//-----------------------------------
-		nextArray = 0;
-		sendArrayData(arraySizes, x2C, y2C,1);
-		waitForCommand(&nextArray);
-	}*/
+	serial.Close();
 
-
-	//SEND BACK TO ORIGIN
-	//nBytesSent = serial.SendData(finished, 2);
-
-	//if(nBytesSent == 0){
-	//	printf("Trouble sending All Done Command\n");
-	//}
-
-	//serial.Close();
-
-	//-----------------------------------
-	//	Free Dynamic Memory
-	//-----------------------------------
-
+	delete xCoors;
+	delete yCoors;
+	delete gCodes;
+	delete pauseP;
 
 	return 0;
 }
 
-//------------------------------------------------------------------------------------
-//	Function Definitions
-//------------------------------------------------------------------------------------
+bool getRowData(FILE *inFile, uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t pauseP[], uint16_t size){
+	uint8_t firstChar;
+	uint8_t secondChar;
+	uint8_t thirdChar;
 
-/*void sendArrayData(int arraySizes[], short xC[], short yC[], int index){
+	uint8_t chG;
 
-	int i = 0;
-	int nBytesSent = 0;
-	//B = 0x42, G = 0x47, R = 0x52
-	//M = 0x4D
-	//X = 0x58, D = 0x44
-	char commandB[2] = {0x4D,0x42};
-	char commandG[2] = {0x4D,0x47};
-	char commandR[2] = {0x4D,0x52};
-	char commandX[2] = {0x58,0x44};
-	char commandY[2] = {0x59,0x44};
+	for(int i = 0; i < (size * 5); i++){
+		
+		firstChar = fgetc(inFile);
+		printf("Character in question: %c \n",firstChar);
 
-	char halfShort[2] = {0};
+		switch(firstChar){
+			case 'G':
+				secondChar = fgetc(inFile);
+				thirdChar = fgetc(inFile);
+				if(thirdChar == '1'){
+					fscanf(inFile, " X%hd Y%hd", &xCoor[i], &yCoor[i]);
+					printf("X and Y: %hd %hd \n",xCoor[i], yCoor[i]);
+					chG = fgetc(inFile);
+					gCode[i] = G1;
+				}
+				else if(thirdChar == '4'){
+					fscanf(inFile, " P0.00%hd", &pauseP[i]);
+					chG = fgetc(inFile);
+					gCode[i] = G4;
+				}
+				else{
+					printf("Unkown Gcode with 'G' \n");
+				}
+				break;
+			case 'S':
+				secondChar = fgetc(inFile);
+				switch(secondChar){
+					case '0':
+						gCode[i] = S0;
+						break;
+					case '1':
+						gCode[i] = S1;
+						break;
+					case '2':
+						gCode[i] = S2;
+						break;
+					case '3':
+						gCode[i] = S3;
+						break;
+					case '4':
+						gCode[i] = S4;
+						break;
+					case '5':
+						gCode[i] = S5;
+						break;
+					case '6':
+						gCode[i] = S6;
+						break;
+					case '7':
+						gCode[i] = S7;
+						break;
+					default:
+						printf("Unkown S code \n");
+						break;
+				} //end of switch
+				chG = fgetc(inFile);
+				break;
+			case 'M':
+				secondChar = fgetc(inFile);
+				thirdChar = fgetc(inFile);
 
-	//-----------------------------------
-	//	SEND DATA
-	//-----------------------------------
-	//Send X's
-	for(i = 0; i <arraySizes[index] ; i++){
-		halfShort[0] = (xC[i]>>8) & 0xFF;
-		halfShort[1] = (xC[i]) & 0xFF;
-		nBytesSent = serial.SendData(halfShort, 2);
+				if(thirdChar == '4'){
+					gCode[i] = M4;
+				}
+				else if(thirdChar == '5'){
+					gCode[i] = M5;
+				}
+				else if(thirdChar == '2'){
+					return false;
+				}
+				else {
+					printf("Unknown M code \n");
+				}
+				chG = fgetc(inFile);
+				break;
+			default:
+				printf("Unknown line from file \n");
+				break;
+		} //end of switch
+	}// end of for
 
-		if(nBytesSent == 0){
-			printf("Trouble sending X's on i: &d \n", i);
-		}
-	}
-
-	//Tell uController that we are done with X's
-	nBytesSent = serial.SendData(commandX, 2);
-	printf("Done sending X's\n");
-
-	//Send Y's
-	for(i = 0; i <arraySizes[index] ; i++){
-		halfShort[0] = (yC[i]>>8) & 0xFF;
-		halfShort[1] = (yC[i]) & 0xFF;
-		nBytesSent = serial.SendData(halfShort, 2);
-
-		if(nBytesSent == 0){
-			printf("Trouble sending Y's on i: &d \n", i);
-		}
-	}
-
-	//Tell uController that we are done with Y's
-	nBytesSent = serial.SendData(commandY, 2);
-	printf("Done sending Y's\n");
-
+	return true;
 }
 
-
-void waitForCommand(char *nextArray){
+void readUart(void){
 
 	int nBytesRead = 0;
-	int curT = 0;
+	int curT = 0; 
 	int oldT = 0;
-
-	//-----------------------------------
-	//	READ DATA
-	//-----------------------------------
-	while (*nextArray == 0)
+	char readBuffer[1];
+	
+	while(readBuffer[0] != '\n')
 	{
 		curT = GetTickCount();
 
-		if (curT - oldT > 10)
+		if (curT - oldT > 5)
 		{
-			char buffer[1];
-			nBytesRead = serial.ReadData(buffer, sizeof(buffer));
-
+			nBytesRead = serial.ReadData(readBuffer, sizeof(readBuffer));
+	
 			if (nBytesRead > 0)
 			{
 
-				for(int i = 0; i<1; i++){
-					printf("%c", buffer[i]);
+				for(int i = 0; i < nBytesRead; i++){
+					printf("%c", readBuffer[i]);
 				}
-				printf("\n");
 
-			}
-
-			if(buffer[0] == 'N'){
-				*nextArray = 1;
 			}
 
 			oldT = curT;
 		}
+
 	}
 
-	//printf("I made it out of the while loop! \n");
-
-}*/
+}

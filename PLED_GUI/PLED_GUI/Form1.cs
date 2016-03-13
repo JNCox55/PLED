@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using IngestImage;
+using System.IO;
 
 namespace PLED_GUI
 {
@@ -18,7 +20,7 @@ namespace PLED_GUI
         public string ReturnValue2 { get; set; }
 
         //defines strings to be used
-        string xDimension, yDimension, imgPathString;
+        string xDimension, yDimension, imgPathString, filePath, outFilePath;
         int xDimPix, yDimPix, xLocPix, yLocPix, xImgSize, yImgSize;
         double xyratio, xywoodratio, xdoubletmp, ydoubletmp, tmpwoodsize;
 
@@ -28,10 +30,16 @@ namespace PLED_GUI
             InitializeComponent();
             //initializes file dialog settings
             openFileDialog1.Title = "Load PLED Image";
-            openFileDialog1.InitialDirectory = @"C:\Users\Casey\Documents\projectTest";
+            openFileDialog1.InitialDirectory = @"C:";
             openFileDialog1.Filter = "Image Files (*.jpg, *.jpeg, *.png, *.gif, *.bmp)|*.jpg; *.jpeg; *.png; *.gif; *.bmp";
             openFileDialog1.FilterIndex = 1;
             openFileDialog1.RestoreDirectory = true;
+
+            saveFileDialog1.Title = "Select output File";
+            saveFileDialog1.InitialDirectory = filePath;
+            saveFileDialog1.Filter = "Output Filename (no extension)|";
+            saveFileDialog1.FilterIndex = 1;
+            saveFileDialog1.RestoreDirectory = true;
         }
 
         //handler for clicking on SelectWoodDimensions button
@@ -170,6 +178,7 @@ namespace PLED_GUI
             {
                 //obtains file path
                 imgPathString = openFileDialog1.FileName;
+                filePath = Path.GetDirectoryName(imgPathString);
                 imgPath.Text = imgPathString;
                 //loads image
                 Image inputImage = Image.FromFile(imgPathString);
@@ -293,6 +302,7 @@ namespace PLED_GUI
             yLocPix = 0;
             xLocBox.Text = "0";
             yLocBox.Text = "0";
+            imgBox.Location = new Point(440, 13);
 
             //set image size
             xdoubletmp = (xImgSize * PlaqueSize.Width) / xDimPix;
@@ -326,6 +336,7 @@ namespace PLED_GUI
             yLocPix = 0;
             xLocBox.Text = "0";
             yLocBox.Text = "0";
+            imgBox.Location = new Point(440, 13);
 
             //set image size
             xdoubletmp = (xImgSize * PlaqueSize.Width) / xDimPix;
@@ -336,7 +347,14 @@ namespace PLED_GUI
 
         private void submitPLED_Click(object sender, EventArgs e)
         {
-
+            DialogResult result = saveFileDialog1.ShowDialog();
+            if(result == DialogResult.OK)
+            {
+                outFilePath = saveFileDialog1.FileName;
+                IngestImage.Program imageIngest = new IngestImage.Program();
+                imageIngest.Ingest(xImgSize, yImgSize, xLocPix, yLocPix, imgPathString, outFilePath);
+                Application.Exit();
+            }
         }
 
         //handler for endPLED button

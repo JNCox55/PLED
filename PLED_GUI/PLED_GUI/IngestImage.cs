@@ -10,15 +10,14 @@ namespace IngestImage
 {
     class Program
     {
-        static void Main()
+        public void Ingest(int xImageDim, int yImageDim, int xLocation, int yLocation, String inPath, String outPath)
         {
             //define image and file input
-            Image inputImage = Image.FromFile("C:/Users/Casey/Documents/projectTest/pokemon.jpg");
+            Image inputImage = Image.FromFile(inPath);
             //c is original image in bitmap
             Bitmap c = new Bitmap(inputImage);
             //d is new, modified image in bitmap
-            //Bitmap d = new Bitmap(c.Width, c.Height);
-            Bitmap d = new Bitmap(inputImage, new Size(900, 506));
+            Bitmap d = new Bitmap(inputImage, new Size(xImageDim, yImageDim));
 
             /*G-Code interpretations:
 
@@ -32,29 +31,12 @@ namespace IngestImage
 
             */
 
-            //unit testing numbers
-            int zero = 0;
-            int one = 0;
-            int two = 0;
-            int three = 0;
-            int four = 0;
-            int five = 0;
-            int six = 0;
-            int seven = 0;
-
             //define which x and y pixel we are at
             int row = 0;
             int column = -1;
 
-            //define g-code filename
-            string gcodeFileName;
-
-            //get c-code filename
-            Console.WriteLine("Please enter G-Code file name:");
-            gcodeFileName = Console.ReadLine();
-
             //define and create file for G codes
-            string path = "C:/Users/Casey/Documents/projectTest/" + gcodeFileName + ".gcode";
+            string path = outPath + ".gcode";
             if (!File.Exists(path))
             {
                 using (StreamWriter sw = File.CreateText(path))
@@ -63,7 +45,7 @@ namespace IngestImage
                     sw.WriteLine("size " + d.Width + "," + d.Height);
 
                     //write go to starting point of engraving and dwell G-Codes to file
-                    sw.WriteLine("G00 X0 Y0");
+                    sw.WriteLine("G00 X" + xLocation + " Y" + yLocation);
                     sw.WriteLine("G04 P0.5");
 
                     //loop pulls in pixels, converts to grayscale.  i = image width (rows), x = image height (columns)
@@ -105,16 +87,6 @@ namespace IngestImage
                     
                             //truncate to 8 shades
                             grayScale = grayScale / 32;
-
-                            //find number of pixels of each shade
-                            if (grayScale == 0) {zero++;}
-                            if (grayScale == 1) {one++;}
-                            if (grayScale == 2) {two++;}
-                            if (grayScale == 3) {three++;}
-                            if (grayScale == 4) {four++;}
-                            if (grayScale == 5) {five++;}
-                            if (grayScale == 6) {six++;}
-                            if (grayScale == 7) {seven++;}
                     
                             //move back to being in increments of 32 - creates better variance in shades
                             grayScale = grayScale * 32;
@@ -126,7 +98,7 @@ namespace IngestImage
                             d.SetPixel(x, i, nc);
 
                             //G-Code to move to next pixel
-                            sw.WriteLine("G01 X" + column + " Y" + row);
+                            sw.WriteLine("G01 X" + (column + xLocation) + " Y" + (row + yLocation));
 
                             //G-Code to set intensity of laser
                             sw.WriteLine("S" + grayScale / 32);
@@ -135,7 +107,7 @@ namespace IngestImage
                             sw.WriteLine("M04");
 
                             //G-Code for dwell
-                            sw.WriteLine("G04 P0.0015");
+                            sw.WriteLine("G04 P0.015");
 
                             //G-Code to turn off laser
                             sw.WriteLine("M05");
@@ -148,18 +120,7 @@ namespace IngestImage
                 }
             }
             //save new image
-            d.Save("C:/Users/Casey/Documents/projectTest/TestSuckas.jpg");
-            
-            //tell how many pixels of each shade
-            Console.Write("Zeroes: "); Console.Write(zero); Console.WriteLine();
-            Console.Write("Ones: "); Console.Write(one); Console.WriteLine();
-            Console.Write("Twos: "); Console.Write(two); Console.WriteLine();
-            Console.Write("Threes: "); Console.Write(three); Console.WriteLine();
-            Console.Write("Fours: "); Console.Write(four); Console.WriteLine();
-            Console.Write("Fives: "); Console.Write(five); Console.WriteLine();
-            Console.Write("Sixes: "); Console.Write(six); Console.WriteLine();
-            Console.Write("Sevens: "); Console.Write(seven); Console.WriteLine();
-            Console.ReadLine();
+            d.Save(outPath + ".jpg");
 
             //dispose of bitmap variables
             c.Dispose();

@@ -117,4 +117,30 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAAAAAAAEAIAC2BAAAFgAAAIlQTkcNChoKAAAADUlIRFIAAAEAAAABAAgEAAAA9ntg7QAABH1J
+        REFUeNrt3b9r3HUcx/FXehm0Q0McAjZxCVns3MVZESRDt5YW/wvp1FGciv+FKHXr4CCkIHTwL6guNYNJ
+        FLJoJ0FMvg6V/CJg8u3le5/vvR+PTOlwvX5ez1x7d1+uCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AFdoYcq3N8lKJie+P8h+Dhxzu+e3OOXbW8nTrObwv++uZS938rtd2z2/aQcwyWpunvmVPpZzmFcjHnIp
+        6XX/p3V+MwsgR/We993FbORuNvNXHuf7UY6/kI/zWRazlW/zcgbnN1Nr2Ul34msna5cc/1Fe5DBdumxl
+        aZQBLOd5unQ5zIs8ysag5zfqAE6O36XLr1kdZQAnz+CyEQwewGLasJF7eZD3Tz0rWZj6c5ThLeRWPs+D
+        fJ0nPf46GEALAZw3/jxpOoJZBzDv4zcfwSwDqDJ+0xHMKoBq4zcbwSwCqDp+kxEMHUD18ZuLYMgAjN9g
+        BEMFYPxGIxgigPXc7zn+6F4J73WvjyP4Jn/PWwDX8zAf5lavn/xJVpNcG938qz3ewXsdwf08y/Vh7+60
+        H5LX8uOpV6+7N/gdxnoxydmLOi7n9Int5oPsjvkR4E0Cm+TdEc7f2o/k/xjbAywCQAAIAAEwBVf9LMDT
+        wCFPrMEA/shXvV8I2s+d7I3yhaCnvZ7Advkpz/Jp3hlh9EfOu6hx/czFnhf92jlzhfxY3DxzBhf5en3x
+        6Pp8XhS6nS/ypNebQeP8F8pl73WXn4/eDBr8IvCh3g182TuC+XZy/JkY8noAETQ2/tABiKCx8WcRgAga
+        Gn9WAVSOoKnxZxlAxQiaG3/WAVSKoMnxWwigQgTNjt9KAPMWQZduHONfhWl+QMTzLI/yDJayNZ4PiGjl
+        EeD0I8HdfJR/8mX+HGUAr/I4ydv5rtdHxBR/BDj+KRrnx8Mc3/9+j17lHwGOf4rGbTT33xVBxQlAAAgA
+        ASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAA
+        AkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAA
+        BIAAEAACQAAIAAEgAASAAASAABAAAkAACAABIAAEgAAQAAJAAAgAAfS4RYE1fn6LU769g+wlOTy6+3s5
+        sGnL57cw5dubZCWTU3+gfQk4P6AJt3PDIdS1mR/ynmOo6pNs57esOYiq8/+SLjsCqDy/AIrPL4Di8wug
+        +PwCKD6/AIrPL4Di8wug+PwCKD6/AIrPL4Di8wug+PwCKD6/AIrPL4Di8wug+PwCKD6/AIrPL4Di8wug
+        +PwCKD6/AIrPL4Di8wug+PwCKD6/AIrPL4Di8wug+PwCKD6/AIrPL4Di8wug+PwCKD6/AIrPL4Di8wug
+        +PwCKD6/AIrPL4Di8wug+PwCGI3NbF/B/F32zgawWPN8G3c7D/NWdqd+u+f8/wMLIzmSWm5kKd2V3LL/
+        fwAAAKC2fwHrXVeoBfbFqgAAAABJRU5ErkJggg==
+</value>
+  </data>
 </root>

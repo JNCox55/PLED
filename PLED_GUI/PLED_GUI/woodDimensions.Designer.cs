@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(woodDimensions));
             this.x_woodDimension = new System.Windows.Forms.TextBox();
             this.y_woodDimension = new System.Windows.Forms.TextBox();
             this.setDimension = new System.Windows.Forms.Button();
@@ -95,6 +96,7 @@
             this.Controls.Add(this.setDimension);
             this.Controls.Add(this.y_woodDimension);
             this.Controls.Add(this.x_woodDimension);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "woodDimensions";
             this.Text = "Wood Dimensions";
             this.ResumeLayout(false);

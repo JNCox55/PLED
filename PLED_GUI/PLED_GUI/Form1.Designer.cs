@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.SelectWoodDimensions = new System.Windows.Forms.Button();
             this.y_woodDimension = new System.Windows.Forms.TextBox();
             this.x_woodDimension = new System.Windows.Forms.TextBox();
@@ -54,6 +55,7 @@
             this.yimgslider = new System.Windows.Forms.TrackBar();
             this.PlaqueSize = new System.Windows.Forms.TextBox();
             this.imgBox = new System.Windows.Forms.TextBox();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.xSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ySlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ximgslider)).BeginInit();
@@ -141,7 +143,7 @@
             this.endPLED.Location = new System.Drawing.Point(734, 350);
             this.endPLED.Name = "endPLED";
             this.endPLED.Size = new System.Drawing.Size(60, 20);
-            this.endPLED.TabIndex = 2;
+            this.endPLED.TabIndex = 3;
             this.endPLED.Text = "Close";
             this.endPLED.UseVisualStyleBackColor = true;
             this.endPLED.Click += new System.EventHandler(this.endPLED_Click_1);
@@ -151,7 +153,7 @@
             this.submitPLED.Location = new System.Drawing.Point(668, 350);
             this.submitPLED.Name = "submitPLED";
             this.submitPLED.Size = new System.Drawing.Size(60, 20);
-            this.submitPLED.TabIndex = 1;
+            this.submitPLED.TabIndex = 2;
             this.submitPLED.Text = "Submit";
             this.submitPLED.UseVisualStyleBackColor = true;
             this.submitPLED.Click += new System.EventHandler(this.submitPLED_Click);
@@ -228,7 +230,7 @@
             this.imgLoad.Location = new System.Drawing.Point(13, 76);
             this.imgLoad.Name = "imgLoad";
             this.imgLoad.Size = new System.Drawing.Size(75, 23);
-            this.imgLoad.TabIndex = 4;
+            this.imgLoad.TabIndex = 1;
             this.imgLoad.Text = "Load Image";
             this.imgLoad.UseVisualStyleBackColor = true;
             this.imgLoad.Click += new System.EventHandler(this.imgLoad_Click);
@@ -359,6 +361,7 @@
             this.Controls.Add(this.xWoodDimPixels);
             this.Controls.Add(this.x_woodDimension);
             this.Controls.Add(this.SelectWoodDimensions);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "PLED";
             ((System.ComponentModel.ISupportInitialize)(this.xSlider)).EndInit();
@@ -398,6 +401,7 @@
         private System.Windows.Forms.TrackBar yimgslider;
         private System.Windows.Forms.TextBox PlaqueSize;
         private System.Windows.Forms.TextBox imgBox;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }
 

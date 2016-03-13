@@ -1,0 +1,11 @@
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\bin\Debug\PLED_GUI.exe.config
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\bin\Debug\PLED_GUI.exe
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\bin\Debug\PLED_GUI.pdb
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.csprojResolveAssemblyReference.cache
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.Form1.resources
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.Properties.Resources.resources
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.csproj.GenerateResource.Cache
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.exe
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.pdb
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.woodDimensions.resources
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.complete.resources

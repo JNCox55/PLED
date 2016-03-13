@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="complete.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="complete.Designer.cs">
+      <DependentUpon>complete.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -61,6 +67,9 @@
     <Compile Include="woodDimensions.Designer.cs">
       <DependentUpon>woodDimensions.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="complete.resx">
+      <DependentUpon>complete.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

@@ -353,6 +353,8 @@ namespace PLED_GUI
                 outFilePath = saveFileDialog1.FileName;
                 IngestImage.Program imageIngest = new IngestImage.Program();
                 imageIngest.Ingest(xImgSize, yImgSize, xLocPix, yLocPix, imgPathString, outFilePath);
+                var jobComplete = new complete();
+                jobComplete.ShowDialog();
                 Application.Exit();
             }
         }

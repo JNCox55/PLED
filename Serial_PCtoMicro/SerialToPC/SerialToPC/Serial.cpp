@@ -54,10 +54,19 @@ BOOL CSerial::Open( int nPort, int nBaud )
 	GetCommState( m_hIDComDev, &dcb );
 	dcb.BaudRate = nBaud;
 	dcb.ByteSize = 8;
-	unsigned char ucSet;
-	ucSet = (unsigned char) ( ( FC_RTSCTS & FC_DTRDSR ) != 0 );
-	ucSet = (unsigned char) ( ( FC_RTSCTS & FC_RTSCTS ) != 0 );
-	ucSet = (unsigned char) ( ( FC_RTSCTS & FC_XONXOFF ) != 0 );
+	//###########################################
+	dcb.fOutxCtsFlow = true;					// Enable CTS monitoring
+	//dcb.fOutxDsrFlow = true;					// Enable DSR monitoring
+	dcb.fDtrControl = DTR_CONTROL_HANDSHAKE;	// Enable DTR handshaking
+	dcb.fOutX = false;							// Disable XON/XOFF for transmission
+	dcb.fInX = false;							// Disable XON/XOFF for receiving
+	dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;	// Enable RTS handshaking
+
+	//unsigned char ucSet;
+	//ucSet = (unsigned char) ( ( FC_RTSCTS & FC_DTRDSR ) != 0 );
+	//ucSet = (unsigned char) ( ( FC_RTSCTS & FC_RTSCTS ) != 0 );
+	//ucSet = (unsigned char) ( ( FC_RTSCTS & FC_XONXOFF ) != 0 );
+	//###########################################
 	if( !SetCommState( m_hIDComDev, &dcb ) ||
 		!SetupComm( m_hIDComDev, 10000, 10000 ) ||
 		m_OverlappedRead.hEvent == NULL ||

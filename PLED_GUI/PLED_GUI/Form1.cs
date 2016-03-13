@@ -247,7 +247,7 @@ namespace PLED_GUI
                 imgBox.Width = Convert.ToUInt16(xdoubletmp);
                 imgBox.Height = Convert.ToUInt16(ydoubletmp);
             }
-
+            imgBox.ImageLocation = imgPathString;
             imgLoad.Enabled = false;
         }
 
@@ -276,7 +276,58 @@ namespace PLED_GUI
             ydoubletmp = ((Convert.ToDouble(yLocPix) * (PlaqueSize.Height - Convert.ToDouble(imgBox.Height))) / Convert.ToDouble(ySlider.Maximum));
             imgBox.Location = new Point(imgBox.Location.X, (13 + Convert.ToUInt16(ydoubletmp)));
         }
-        
+
+        //centers image
+        private void cent_Click(object sender, EventArgs e)
+        {
+            xLocPix = (xDimPix - xImgSize) / 2;
+            yLocPix = (yDimPix - yImgSize) / 2;
+            xSlider.Value = xLocPix;
+            ySlider.Value = yLocPix;
+            xLocBox.Text = Convert.ToString(xLocPix);
+            yLocBox.Text = Convert.ToString(yLocPix);
+
+            if(xDimPix != xImgSize)
+            {
+                xdoubletmp = ((Convert.ToDouble(xLocPix) * (PlaqueSize.Width - Convert.ToDouble(imgBox.Width))) / Convert.ToDouble(xSlider.Maximum));
+                imgBox.Location = new Point((440 + Convert.ToUInt16(xdoubletmp)), imgBox.Location.Y);
+            }
+            
+            if(yDimPix != yImgSize)
+            {
+                ydoubletmp = ((Convert.ToDouble(yLocPix) * (PlaqueSize.Height - Convert.ToDouble(imgBox.Height))) / Convert.ToDouble(ySlider.Maximum));
+                imgBox.Location = new Point(imgBox.Location.X, (13 + Convert.ToUInt16(ydoubletmp)));
+            }
+        }
+
+        //vertically centers image
+        private void vertCent_Click(object sender, EventArgs e)
+        {
+            yLocPix = (yDimPix - yImgSize) / 2;
+            ySlider.Value = yLocPix;
+            yLocBox.Text = Convert.ToString(yLocPix);
+
+            if (yDimPix != yImgSize)
+            {
+                ydoubletmp = ((Convert.ToDouble(yLocPix) * (PlaqueSize.Height - Convert.ToDouble(imgBox.Height))) / Convert.ToDouble(ySlider.Maximum));
+                imgBox.Location = new Point(imgBox.Location.X, (13 + Convert.ToUInt16(ydoubletmp)));
+            }
+        }
+
+        //horizontally centers image
+        private void horzCent_Click(object sender, EventArgs e)
+        {
+            xLocPix = (xDimPix - xImgSize) / 2;
+            xSlider.Value = xLocPix;
+            xLocBox.Text = Convert.ToString(xLocPix);
+
+            if(xDimPix != xImgSize)
+            {
+                xdoubletmp = ((Convert.ToDouble(xLocPix) * (PlaqueSize.Width - Convert.ToDouble(imgBox.Width))) / Convert.ToDouble(xSlider.Maximum));
+                imgBox.Location = new Point((440 + Convert.ToUInt16(xdoubletmp)), imgBox.Location.Y);
+            }
+        }
+
         //handler for ximgslider slider
         private void ximgslider_Scroll(object sender, EventArgs e)
         {

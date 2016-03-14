@@ -274,6 +274,12 @@ UART1_Handler(void)
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
 			gCodeEnd=gCodeEnd+2;		//move the index of the gCode buffer to point to one past the last entry
 		}
+		if (identifier[0]=='R' && identifier[1]=='D')		//If we recieve the command that the picture is complete...
+		{
+			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
+			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
+			gCodeEnd=gCodeEnd+2;		//move the index of the gCode buffer to point to one past the last entry
+		}
 
 				
 			    /*while(UARTCharsAvail(UART1_BASE))
@@ -848,13 +854,8 @@ int main(void)
 	
 	while(1)
 	{
+		i=0;
 		//positionX=QEIPositionGet(QEI0_BASE);
 		//positionY=QEIPositionGet(QEI1_BASE);
-//			for (i=0;i<3;i++)
-//			{
-//				UARTCharPutNonBlocking(UART1_BASE,
-//                                   go[i]);
-//			}
-//			SysCtlDelay(SysCtlClockGet() / (1 * 3));
 	}
 }

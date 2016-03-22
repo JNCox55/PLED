@@ -19,7 +19,7 @@ namespace PLED_GUI
         public string ReturnValue1 { get; set; }
         public string ReturnValue2 { get; set; }
 
-        //defines strings to be used
+        //defines strings, ints, and doubles to be used
         string xDimension, yDimension, imgPathString, filePath, outFilePath;
         int xDimPix, yDimPix, xLocPix, yLocPix, xImgSize, yImgSize;
         double xyratio, xywoodratio, xdoubletmp, ydoubletmp, tmpwoodsize;
@@ -28,6 +28,7 @@ namespace PLED_GUI
         {
             //Initializes application
             InitializeComponent();
+
             //initializes file dialog settings
             openFileDialog1.Title = "Load PLED Image";
             openFileDialog1.InitialDirectory = @"C:";
@@ -35,6 +36,7 @@ namespace PLED_GUI
             openFileDialog1.FilterIndex = 1;
             openFileDialog1.RestoreDirectory = true;
 
+            //initialize save dialog settings
             saveFileDialog1.Title = "Select output File";
             saveFileDialog1.InitialDirectory = filePath;
             saveFileDialog1.Filter = "Output Filename (no extension)|";
@@ -157,7 +159,7 @@ namespace PLED_GUI
                         imgBox.Width = Convert.ToUInt16(xdoubletmp);
                         imgBox.Height = Convert.ToUInt16(ydoubletmp);
                     }
-
+                    //disable button
                     SelectWoodDimensions.Enabled = false;
                 }
             }
@@ -247,7 +249,7 @@ namespace PLED_GUI
                 imgBox.Width = Convert.ToUInt16(xdoubletmp);
                 imgBox.Height = Convert.ToUInt16(ydoubletmp);
             }
-
+            imgBox.ImageLocation = imgPathString;
             imgLoad.Enabled = false;
         }
 
@@ -276,7 +278,64 @@ namespace PLED_GUI
             ydoubletmp = ((Convert.ToDouble(yLocPix) * (PlaqueSize.Height - Convert.ToDouble(imgBox.Height))) / Convert.ToDouble(ySlider.Maximum));
             imgBox.Location = new Point(imgBox.Location.X, (13 + Convert.ToUInt16(ydoubletmp)));
         }
-        
+
+        //centers image
+        private void cent_Click(object sender, EventArgs e)
+        {
+            //centers on actual image
+            xLocPix = (xDimPix - xImgSize) / 2;
+            yLocPix = (yDimPix - yImgSize) / 2;
+            xSlider.Value = xLocPix;
+            ySlider.Value = yLocPix;
+            xLocBox.Text = Convert.ToString(xLocPix);
+            yLocBox.Text = Convert.ToString(yLocPix);
+
+            //centers on diagram
+            if(xDimPix != xImgSize)
+            {
+                xdoubletmp = ((Convert.ToDouble(xLocPix) * (PlaqueSize.Width - Convert.ToDouble(imgBox.Width))) / Convert.ToDouble(xSlider.Maximum));
+                imgBox.Location = new Point((440 + Convert.ToUInt16(xdoubletmp)), imgBox.Location.Y);
+            }
+            
+            if(yDimPix != yImgSize)
+            {
+                ydoubletmp = ((Convert.ToDouble(yLocPix) * (PlaqueSize.Height - Convert.ToDouble(imgBox.Height))) / Convert.ToDouble(ySlider.Maximum));
+                imgBox.Location = new Point(imgBox.Location.X, (13 + Convert.ToUInt16(ydoubletmp)));
+            }
+        }
+
+        //vertically centers image
+        private void vertCent_Click(object sender, EventArgs e)
+        {
+            //vertically centers actual image
+            yLocPix = (yDimPix - yImgSize) / 2;
+            ySlider.Value = yLocPix;
+            yLocBox.Text = Convert.ToString(yLocPix);
+
+            //vertically centers diagram
+            if (yDimPix != yImgSize)
+            {
+                ydoubletmp = ((Convert.ToDouble(yLocPix) * (PlaqueSize.Height - Convert.ToDouble(imgBox.Height))) / Convert.ToDouble(ySlider.Maximum));
+                imgBox.Location = new Point(imgBox.Location.X, (13 + Convert.ToUInt16(ydoubletmp)));
+            }
+        }
+
+        //horizontally centers image
+        private void horzCent_Click(object sender, EventArgs e)
+        {
+            //horizontally centers actual image
+            xLocPix = (xDimPix - xImgSize) / 2;
+            xSlider.Value = xLocPix;
+            xLocBox.Text = Convert.ToString(xLocPix);
+
+            //horizontally centers diagram
+            if(xDimPix != xImgSize)
+            {
+                xdoubletmp = ((Convert.ToDouble(xLocPix) * (PlaqueSize.Width - Convert.ToDouble(imgBox.Width))) / Convert.ToDouble(xSlider.Maximum));
+                imgBox.Location = new Point((440 + Convert.ToUInt16(xdoubletmp)), imgBox.Location.Y);
+            }
+        }
+
         //handler for ximgslider slider
         private void ximgslider_Scroll(object sender, EventArgs e)
         {

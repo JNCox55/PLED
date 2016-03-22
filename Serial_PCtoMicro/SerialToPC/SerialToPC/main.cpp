@@ -44,8 +44,8 @@ int main(){
 	//*************************
 	//	Serial Vars
 	//*************************
-	int port = 3; 
-	int baudRate = 9600; 
+	int port = 4;//3; 
+	int baudRate = 115200;//9600; 
 	int dispType = 0;
 	int nBytesSent = 0;
 	
@@ -111,9 +111,10 @@ int main(){
 
 	//Get Data from First Row
 	if(getRowData(fp, xCoors, yCoors, gCodes, pauseP, sizeCol)){
-		//for(int i = 0; i < sizeCol; i++){
-		//	printf("X:%hd Y:%hd \n", xCoors[i], yCoors[i]);
-		//}
+		for(int i = 0; i < sizeCol; i++){
+			//printf("X:%hd Y:%hd \n", xCoors[i], yCoors[i]);
+			//printf("P value: %hd \n", pauseP[i]);
+		}
 
 		//----------------------------
 		//Send inital values
@@ -156,10 +157,10 @@ int main(){
 
 	serial.Close();
 
-	delete xCoors;
-	delete yCoors;
-	delete gCodes;
-	delete pauseP;
+	delete [] xCoors;
+	delete [] yCoors;
+	delete [] gCodes;
+	delete [] pauseP;
 
 	return 0;
 }
@@ -171,12 +172,13 @@ bool getRowData(FILE *inFile, uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode
 
 	uint8_t chG;
 	uint32_t iPix = 0;
+	uint32_t counter = 1;
 
 	for(int i = 0; i < (size * 5); i++){
 		
 		firstChar = fgetc(inFile);
-		printf("Character in question: %c \n",firstChar);
-
+		//printf("Character in question: %c \n",firstChar);
+		
 		switch(firstChar){
 			case 'G':
 				secondChar = fgetc(inFile);
@@ -252,10 +254,12 @@ bool getRowData(FILE *inFile, uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode
 				break;
 		} //end of switch
 
-		if((i%5) == 0){
+		if(counter == 5){
 			iPix++;
+			counter = 0;
 		}
 
+		counter++;
 	}// end of for
 
 	return true;
@@ -299,7 +303,7 @@ void sendRowData(uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t 
 	
 	//	RD when row has been sent
 	buffer[0] = 'R';
-	buffer[1] = '\r';
+	buffer[1] = 'D';
 	serial.SendData(buffer, 2);
 
 	//nBytesSent = serial.SendData(buffer, SIZE);

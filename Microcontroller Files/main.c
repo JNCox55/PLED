@@ -570,7 +570,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)
 		positiveXPulsesSent++;
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
 	}
-	while (((signed int) (positiveXPulsesSent*6-encoderPositionX))<14)		//if we are more than 2 pixels right of where we need to be, fix it before moving on
+	while (((signed int) (encoderPositionX-positiveXPulsesSent*6))>14)		//if we are more than 2 pixels right of where we need to be, fix it before moving on
 	{
 		//set the stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
@@ -935,7 +935,7 @@ void testBenchMotor()
 //		}
 //	}
 
-while (1)
+/*while (1)
 {
 		positionX=QEIPositionGet(QEI0_BASE);
 		positionY=QEIPositionGet(QEI1_BASE);
@@ -991,7 +991,7 @@ while (1)
 			//wait 25 milliseconds
 			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
 		}
-}
+}*/
 }
 
 int main(void)
@@ -999,9 +999,27 @@ int main(void)
 	Sys_Clock_Set();
 	FPUEnable();
 	UART1_Setup();
-	//PWM_Setup();
-	//QEI_Setup();
-	//GPIO_Setup();
+	PWM_Setup();
+	QEI_Setup();
+	GPIO_Setup();
+	
+	positiveYPulsesSent=3;
+	encoderPositionY=2;
+	if (((signed int) (positiveYPulsesSent*6-encoderPositionY))>14)
+	{
+		i=0;
+	}
+	encoderPositionY=38;
+	if (((signed int) (positiveYPulsesSent*6-encoderPositionY))>14)
+	{
+		i=0;
+	}
+	
+	encoderPositionY=38;
+	if (((signed int) (encoderPositionY-positiveYPulsesSent*6))>14)
+	{
+		i=0;
+	}
 
 	//ready();
 	//engrave();

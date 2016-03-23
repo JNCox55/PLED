@@ -44,8 +44,8 @@ int main(){
 	//*************************
 	//	Serial Vars
 	//*************************
-	int port = 4;//3; 
-	int baudRate = 115200;//9600; 
+	int port = 3;//3; 
+	int baudRate = 9600;//9600; 
 	int dispType = 0;
 	int nBytesSent = 0;
 	

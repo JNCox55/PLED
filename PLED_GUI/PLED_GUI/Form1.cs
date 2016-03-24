@@ -154,7 +154,7 @@ namespace PLED_GUI
                         ximgsizebox.Text = Convert.ToString(xImgSize);
                         yimgsizebox.Text = Convert.ToString(yImgSize);
                         xLocBox.Text = "0";
-                        EngTime.Text = "0";
+                        yLocBox.Text = "0";
 
                         //set image size
                         xdoubletmp = (xImgSize * PlaqueSize.Width) / xDimPix;
@@ -245,7 +245,7 @@ namespace PLED_GUI
                 ximgsizebox.Text = Convert.ToString(xImgSize);
                 yimgsizebox.Text = Convert.ToString(yImgSize);
                 xLocBox.Text = "0";
-                EngTime.Text = "0";
+                yLocBox.Text = "0";
 
                 //set image size
                 xdoubletmp = (xImgSize * PlaqueSize.Width) / xDimPix;
@@ -284,7 +284,7 @@ namespace PLED_GUI
             //allows user to adjust location to place image on y axis
             yLocPix = ySlider.Value;
             //displays pixel location
-            EngTime.Text = Convert.ToString(yLocPix);
+            yLocBox.Text = Convert.ToString(yLocPix);
 
             //moves image block representation on y axis
             ydoubletmp = ((Convert.ToDouble(yLocPix) * (PlaqueSize.Height - Convert.ToDouble(imgBox.Height))) / Convert.ToDouble(ySlider.Maximum));
@@ -304,7 +304,7 @@ namespace PLED_GUI
             xSlider.Value = xLocPix;
             ySlider.Value = yLocPix;
             xLocBox.Text = Convert.ToString(xLocPix);
-            EngTime.Text = Convert.ToString(yLocPix);
+            yLocBox.Text = Convert.ToString(yLocPix);
 
             //centers on diagram
             if(xDimPix != xImgSize)
@@ -330,7 +330,7 @@ namespace PLED_GUI
             //vertically centers actual image
             yLocPix = (yDimPix - yImgSize) / 2;
             ySlider.Value = yLocPix;
-            EngTime.Text = Convert.ToString(yLocPix);
+            yLocBox.Text = Convert.ToString(yLocPix);
 
             //vertically centers diagram
             if (yDimPix != yImgSize)
@@ -388,7 +388,7 @@ namespace PLED_GUI
             xLocPix = 0;
             yLocPix = 0;
             xLocBox.Text = "0";
-            EngTime.Text = "0";
+            yLocBox.Text = "0";
             imgBox.Location = new Point(440, 13);
 
             //set image size
@@ -426,7 +426,7 @@ namespace PLED_GUI
             xLocPix = 0;
             yLocPix = 0;
             xLocBox.Text = "0";
-            EngTime.Text = "0";
+            yLocBox.Text = "0";
             imgBox.Location = new Point(440, 13);
 
             //set image size
@@ -445,9 +445,19 @@ namespace PLED_GUI
             DialogResult result = saveFileDialog1.ShowDialog();
             if(result == DialogResult.OK)
             {
+                //select save path
                 outFilePath = saveFileDialog1.FileName;
+
+                //pass everything to image ingestion backend
                 IngestImage.Program imageIngest = new IngestImage.Program();
                 imageIngest.Ingest(xImgSize, yImgSize, xLocPix, yLocPix, imgPathString, outFilePath);
+
+                //create outpath file
+                StreamWriter sw = File.CreateText(@"C:\PLED\PLEDpath.txt");
+                sw.Write(outFilePath + ".gcode");
+                sw.Close();
+                               
+                //tell user job is done 
                 var jobComplete = new complete();
                 jobComplete.ShowDialog();
                 Application.Exit();

@@ -60,6 +60,8 @@
             this.vertCent = new System.Windows.Forms.Button();
             this.imgBox = new System.Windows.Forms.PictureBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.yLocBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.xSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ySlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ximgslider)).BeginInit();
@@ -376,6 +378,28 @@
             this.textBox1.TabIndex = 1;
             this.textBox1.Text = "  hours";
             // 
+            // textBox2
+            // 
+            this.textBox2.BackColor = System.Drawing.SystemColors.Control;
+            this.textBox2.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox2.Enabled = false;
+            this.textBox2.Location = new System.Drawing.Point(13, 295);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(380, 13);
+            this.textBox2.TabIndex = 1;
+            this.textBox2.Text = "Adjust y location in pixels";
+            // 
+            // yLocBox
+            // 
+            this.yLocBox.BackColor = System.Drawing.SystemColors.Info;
+            this.yLocBox.Enabled = false;
+            this.yLocBox.Location = new System.Drawing.Point(323, 314);
+            this.yLocBox.Name = "yLocBox";
+            this.yLocBox.Size = new System.Drawing.Size(70, 20);
+            this.yLocBox.TabIndex = 2;
+            this.yLocBox.Text = "y location";
+            this.yLocBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -399,6 +423,7 @@
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.yLocText);
             this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.xLocText);
             this.Controls.Add(this.woodDimensionUnits);
             this.Controls.Add(this.yWoodDimPixels);
@@ -406,6 +431,7 @@
             this.Controls.Add(this.y_woodDimension);
             this.Controls.Add(this.ximgsizebox);
             this.Controls.Add(this.EngTime);
+            this.Controls.Add(this.yLocBox);
             this.Controls.Add(this.xLocBox);
             this.Controls.Add(this.xWoodDimPixels);
             this.Controls.Add(this.x_woodDimension);
@@ -456,6 +482,8 @@
         private System.Windows.Forms.Button vertCent;
         private System.Windows.Forms.PictureBox imgBox;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox yLocBox;
     }
 }
 

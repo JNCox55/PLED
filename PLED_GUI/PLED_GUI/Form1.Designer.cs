@@ -43,7 +43,7 @@
             this.yLocText = new System.Windows.Forms.TextBox();
             this.ySlider = new System.Windows.Forms.TrackBar();
             this.xLocBox = new System.Windows.Forms.TextBox();
-            this.yLocBox = new System.Windows.Forms.TextBox();
+            this.EngTime = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.imgLoad = new System.Windows.Forms.Button();
             this.imgPath = new System.Windows.Forms.TextBox();
@@ -59,6 +59,7 @@
             this.horzCent = new System.Windows.Forms.Button();
             this.vertCent = new System.Windows.Forms.Button();
             this.imgBox = new System.Windows.Forms.PictureBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.xSlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ySlider)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ximgslider)).BeginInit();
@@ -187,11 +188,11 @@
             this.yLocText.BackColor = System.Drawing.SystemColors.Control;
             this.yLocText.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.yLocText.Enabled = false;
-            this.yLocText.Location = new System.Drawing.Point(13, 295);
+            this.yLocText.Location = new System.Drawing.Point(440, 354);
             this.yLocText.Name = "yLocText";
-            this.yLocText.Size = new System.Drawing.Size(380, 13);
+            this.yLocText.Size = new System.Drawing.Size(120, 13);
             this.yLocText.TabIndex = 1;
-            this.yLocText.Text = "Adjust y location in pixels";
+            this.yLocText.Text = "Estimated engrave time:";
             // 
             // ySlider
             // 
@@ -213,16 +214,16 @@
             this.xLocBox.Text = "x location";
             this.xLocBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // yLocBox
+            // EngTime
             // 
-            this.yLocBox.BackColor = System.Drawing.SystemColors.Info;
-            this.yLocBox.Enabled = false;
-            this.yLocBox.Location = new System.Drawing.Point(323, 314);
-            this.yLocBox.Name = "yLocBox";
-            this.yLocBox.Size = new System.Drawing.Size(70, 20);
-            this.yLocBox.TabIndex = 2;
-            this.yLocBox.Text = "y location";
-            this.yLocBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.EngTime.BackColor = System.Drawing.SystemColors.Info;
+            this.EngTime.Enabled = false;
+            this.EngTime.Location = new System.Drawing.Point(561, 351);
+            this.EngTime.MaxLength = 4;
+            this.EngTime.Name = "EngTime";
+            this.EngTime.Size = new System.Drawing.Size(81, 20);
+            this.EngTime.TabIndex = 2;
+            this.EngTime.Text = "time";
             // 
             // openFileDialog1
             // 
@@ -364,6 +365,17 @@
             this.imgBox.TabIndex = 12;
             this.imgBox.TabStop = false;
             // 
+            // textBox1
+            // 
+            this.textBox1.BackColor = System.Drawing.SystemColors.Info;
+            this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox1.Enabled = false;
+            this.textBox1.Location = new System.Drawing.Point(597, 354);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(43, 13);
+            this.textBox1.TabIndex = 1;
+            this.textBox1.Text = "  hours";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -384,6 +396,7 @@
             this.Controls.Add(this.imgPath);
             this.Controls.Add(this.woodDimPixUnit);
             this.Controls.Add(this.textBox4);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.yLocText);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.xLocText);
@@ -392,7 +405,7 @@
             this.Controls.Add(this.yimgsizebox);
             this.Controls.Add(this.y_woodDimension);
             this.Controls.Add(this.ximgsizebox);
-            this.Controls.Add(this.yLocBox);
+            this.Controls.Add(this.EngTime);
             this.Controls.Add(this.xLocBox);
             this.Controls.Add(this.xWoodDimPixels);
             this.Controls.Add(this.x_woodDimension);
@@ -426,7 +439,7 @@
         private System.Windows.Forms.TextBox yLocText;
         private System.Windows.Forms.TrackBar ySlider;
         private System.Windows.Forms.TextBox xLocBox;
-        private System.Windows.Forms.TextBox yLocBox;
+        private System.Windows.Forms.TextBox EngTime;
         private System.Windows.Forms.Button imgLoad;
         private System.Windows.Forms.TextBox imgPath;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
@@ -442,6 +455,7 @@
         private System.Windows.Forms.Button horzCent;
         private System.Windows.Forms.Button vertCent;
         private System.Windows.Forms.PictureBox imgBox;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

@@ -22,7 +22,7 @@ namespace PLED_GUI
         //defines strings, ints, and doubles to be used
         string xDimension, yDimension, imgPathString, filePath, outFilePath;
         int xDimPix, yDimPix, xLocPix, yLocPix, xImgSize, yImgSize;
-        double xyratio, xywoodratio, xdoubletmp, ydoubletmp, tmpwoodsize;
+        double xyratio, xywoodratio, xdoubletmp, ydoubletmp, tmpwoodsize, time;
 
         public Form1()
         {
@@ -42,6 +42,9 @@ namespace PLED_GUI
             saveFileDialog1.Filter = "Output Filename (no extension)|";
             saveFileDialog1.FilterIndex = 1;
             saveFileDialog1.RestoreDirectory = true;
+
+            //start image load button disabled
+            imgLoad.Enabled = false;
         }
 
         //handler for clicking on SelectWoodDimensions button
@@ -151,7 +154,7 @@ namespace PLED_GUI
                         ximgsizebox.Text = Convert.ToString(xImgSize);
                         yimgsizebox.Text = Convert.ToString(yImgSize);
                         xLocBox.Text = "0";
-                        yLocBox.Text = "0";
+                        EngTime.Text = "0";
 
                         //set image size
                         xdoubletmp = (xImgSize * PlaqueSize.Width) / xDimPix;
@@ -161,6 +164,7 @@ namespace PLED_GUI
                     }
                     //disable button
                     SelectWoodDimensions.Enabled = false;
+                    imgLoad.Enabled = true;
                 }
             }
         }
@@ -241,7 +245,7 @@ namespace PLED_GUI
                 ximgsizebox.Text = Convert.ToString(xImgSize);
                 yimgsizebox.Text = Convert.ToString(yImgSize);
                 xLocBox.Text = "0";
-                yLocBox.Text = "0";
+                EngTime.Text = "0";
 
                 //set image size
                 xdoubletmp = (xImgSize * PlaqueSize.Width) / xDimPix;
@@ -251,6 +255,10 @@ namespace PLED_GUI
             }
             imgBox.ImageLocation = imgPathString;
             imgLoad.Enabled = false;
+
+            //Estimates engrave time for image
+            time = (((Convert.ToDouble(xImgSize) * Convert.ToDouble(yImgSize) * (0.0155)) + (0.0005 * (Convert.ToDouble(xLocPix) + Convert.ToDouble(yLocPix)))) / 3600);
+            EngTime.Text = Convert.ToString(time);
         }
 
         //x slider handler
@@ -264,6 +272,10 @@ namespace PLED_GUI
             //moves image block representation on x axis
             xdoubletmp = ((Convert.ToDouble(xLocPix) * (PlaqueSize.Width - Convert.ToDouble(imgBox.Width))) / Convert.ToDouble(xSlider.Maximum));
             imgBox.Location = new Point((440 + Convert.ToUInt16(xdoubletmp)), imgBox.Location.Y);
+
+            //Estimates engrave time for image
+            time = (((Convert.ToDouble(xImgSize) * Convert.ToDouble(yImgSize) * (0.0155)) + (0.0005 * (Convert.ToDouble(xLocPix) + Convert.ToDouble(yLocPix)))) / 3600);
+            EngTime.Text = Convert.ToString(time);
         }
 
         //y slider handler
@@ -272,11 +284,15 @@ namespace PLED_GUI
             //allows user to adjust location to place image on y axis
             yLocPix = ySlider.Value;
             //displays pixel location
-            yLocBox.Text = Convert.ToString(yLocPix);
+            EngTime.Text = Convert.ToString(yLocPix);
 
             //moves image block representation on y axis
             ydoubletmp = ((Convert.ToDouble(yLocPix) * (PlaqueSize.Height - Convert.ToDouble(imgBox.Height))) / Convert.ToDouble(ySlider.Maximum));
             imgBox.Location = new Point(imgBox.Location.X, (13 + Convert.ToUInt16(ydoubletmp)));
+
+            //Estimates engrave time for image
+            time = (((Convert.ToDouble(xImgSize) * Convert.ToDouble(yImgSize) * (0.0155)) + (0.0005 * (Convert.ToDouble(xLocPix) + Convert.ToDouble(yLocPix)))) / 3600);
+            EngTime.Text = Convert.ToString(time);
         }
 
         //centers image
@@ -288,7 +304,7 @@ namespace PLED_GUI
             xSlider.Value = xLocPix;
             ySlider.Value = yLocPix;
             xLocBox.Text = Convert.ToString(xLocPix);
-            yLocBox.Text = Convert.ToString(yLocPix);
+            EngTime.Text = Convert.ToString(yLocPix);
 
             //centers on diagram
             if(xDimPix != xImgSize)
@@ -302,6 +318,10 @@ namespace PLED_GUI
                 ydoubletmp = ((Convert.ToDouble(yLocPix) * (PlaqueSize.Height - Convert.ToDouble(imgBox.Height))) / Convert.ToDouble(ySlider.Maximum));
                 imgBox.Location = new Point(imgBox.Location.X, (13 + Convert.ToUInt16(ydoubletmp)));
             }
+
+            //Estimates engrave time for image
+            time = (((Convert.ToDouble(xImgSize) * Convert.ToDouble(yImgSize) * (0.0155)) + (0.0005 * (Convert.ToDouble(xLocPix) + Convert.ToDouble(yLocPix)))) / 3600);
+            EngTime.Text = Convert.ToString(time);
         }
 
         //vertically centers image
@@ -310,7 +330,7 @@ namespace PLED_GUI
             //vertically centers actual image
             yLocPix = (yDimPix - yImgSize) / 2;
             ySlider.Value = yLocPix;
-            yLocBox.Text = Convert.ToString(yLocPix);
+            EngTime.Text = Convert.ToString(yLocPix);
 
             //vertically centers diagram
             if (yDimPix != yImgSize)
@@ -318,6 +338,10 @@ namespace PLED_GUI
                 ydoubletmp = ((Convert.ToDouble(yLocPix) * (PlaqueSize.Height - Convert.ToDouble(imgBox.Height))) / Convert.ToDouble(ySlider.Maximum));
                 imgBox.Location = new Point(imgBox.Location.X, (13 + Convert.ToUInt16(ydoubletmp)));
             }
+
+            //Estimates engrave time for image
+            time = (((Convert.ToDouble(xImgSize) * Convert.ToDouble(yImgSize) * (0.0155)) + (0.0005 * (Convert.ToDouble(xLocPix) + Convert.ToDouble(yLocPix)))) / 3600);
+            EngTime.Text = Convert.ToString(time);
         }
 
         //horizontally centers image
@@ -334,6 +358,10 @@ namespace PLED_GUI
                 xdoubletmp = ((Convert.ToDouble(xLocPix) * (PlaqueSize.Width - Convert.ToDouble(imgBox.Width))) / Convert.ToDouble(xSlider.Maximum));
                 imgBox.Location = new Point((440 + Convert.ToUInt16(xdoubletmp)), imgBox.Location.Y);
             }
+
+            //Estimates engrave time for image
+            time = (((Convert.ToDouble(xImgSize) * Convert.ToDouble(yImgSize) * (0.0155)) + (0.0005 * (Convert.ToDouble(xLocPix) + Convert.ToDouble(yLocPix)))) / 3600);
+            EngTime.Text = Convert.ToString(time);
         }
 
         //handler for ximgslider slider
@@ -360,7 +388,7 @@ namespace PLED_GUI
             xLocPix = 0;
             yLocPix = 0;
             xLocBox.Text = "0";
-            yLocBox.Text = "0";
+            EngTime.Text = "0";
             imgBox.Location = new Point(440, 13);
 
             //set image size
@@ -368,6 +396,10 @@ namespace PLED_GUI
             ydoubletmp = xdoubletmp * (1 / xyratio);
             imgBox.Width = Convert.ToUInt16(xdoubletmp);
             imgBox.Height = Convert.ToUInt16(ydoubletmp);
+
+            //Estimates engrave time for image
+            time = (((Convert.ToDouble(xImgSize) * Convert.ToDouble(yImgSize) * (0.0155)) + (0.0005 * (Convert.ToDouble(xLocPix) + Convert.ToDouble(yLocPix)))) / 3600);
+            EngTime.Text = Convert.ToString(time);
         }
 
         //handler for yimgslider slider
@@ -394,7 +426,7 @@ namespace PLED_GUI
             xLocPix = 0;
             yLocPix = 0;
             xLocBox.Text = "0";
-            yLocBox.Text = "0";
+            EngTime.Text = "0";
             imgBox.Location = new Point(440, 13);
 
             //set image size
@@ -402,6 +434,10 @@ namespace PLED_GUI
             ydoubletmp = xdoubletmp * (1 / xyratio);
             imgBox.Width = Convert.ToUInt16(xdoubletmp);
             imgBox.Height = Convert.ToUInt16(ydoubletmp);
+
+            //Estimates engrave time for image
+            time = (((Convert.ToDouble(xImgSize) * Convert.ToDouble(yImgSize) * (0.0155)) + (0.0005 * (Convert.ToDouble(xLocPix) + Convert.ToDouble(yLocPix)))) / 3600);
+            EngTime.Text = Convert.ToString(time);
         }
 
         private void submitPLED_Click(object sender, EventArgs e)

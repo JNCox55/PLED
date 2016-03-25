@@ -1,0 +1,31 @@
+Dependencies for Project 'uart_echo', Target 'uart_echo': (DO NOT MODIFY !)
+F (..\drivers\cfal96x64x16.c)(0x560DFD79)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I.. -I..\..\..\.. --c99-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-DTM4C123GH6PGE -Drvmdk -DPART_TM4C123GH6PGE -DTARGET_IS_TM4C123_RB1-o .\rvmdk\cfal96x64x16.o --omf_browse .\rvmdk\cfal96x64x16.crf --depend .\rvmdk\cfal96x64x16.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x541A544C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x541A544A)
+I (..\..\..\..\inc/hw_memmap.h)(0x560E01EA)
+I (..\..\..\..\driverlib/gpio.h)(0x560E01EA)
+I (..\..\..\..\driverlib/ssi.h)(0x560E01EA)
+I (..\..\..\..\driverlib/sysctl.h)(0x560E01EA)
+I (..\..\..\..\driverlib/rom.h)(0x560E01EA)
+I (..\..\..\..\driverlib/pin_map.h)(0x560E01EA)
+I (..\..\..\..\grlib/grlib.h)(0x560DFD92)
+I (..\drivers/cfal96x64x16.h)(0x560DFD79)
+F (.\startup_rvmdk.S)(0x560DFD7A)(--cpu Cortex-M4.fp --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary--pd "TM4C123GH6PGE SETA 1"-o .\rvmdk\startup_rvmdk.o --depend .\rvmdk\startup_rvmdk.d)
+F (.\uart_echo.c)(0x569C14C9)(-c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O2 --apcs=interwork --split_sections -I.. -I..\..\..\.. --c99-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\Inc\Luminary-DTM4C123GH6PGE -Drvmdk -DPART_TM4C123GH6PGE -DTARGET_IS_TM4C123_RB1-o .\rvmdk\uart_echo.o --omf_browse .\rvmdk\uart_echo.crf --depend .\rvmdk\uart_echo.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x541A544A)
+I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x541A544C)
+I (..\..\..\..\inc/hw_ints.h)(0x560E01EA)
+I (..\..\..\..\inc/hw_memmap.h)(0x560E01EA)
+I (..\..\..\..\driverlib/debug.h)(0x560E01EA)
+I (..\..\..\..\driverlib/fpu.h)(0x560E01EA)
+I (..\..\..\..\driverlib/gpio.h)(0x560E01EA)
+I (..\..\..\..\driverlib/interrupt.h)(0x560E01EA)
+I (..\..\..\..\driverlib/sysctl.h)(0x560E01EA)
+I (..\..\..\..\driverlib/uart.h)(0x560E01EA)
+I (..\..\..\..\driverlib/pwm.h)(0x560E01EA)
+I (..\..\..\..\driverlib/rom.h)(0x560E01EA)
+I (..\..\..\..\grlib/grlib.h)(0x560DFD92)
+I (..\drivers/cfal96x64x16.h)(0x560DFD79)
+F (..\..\..\..\driverlib\rvmdk\driverlib.lib)(0x560E01EA)()
+F (..\..\..\..\grlib\rvmdk\grlib.lib)(0x560DFD94)()
+F (.\readme.txt)(0x560DFD7A)()

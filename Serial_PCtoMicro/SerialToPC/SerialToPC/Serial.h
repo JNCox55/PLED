@@ -19,6 +19,7 @@ class CSerial
 public:
 	CSerial();
 	~CSerial();
+	HANDLE m_hIDComDev;
 
 	BOOL Open( int nPort = 2, int nBaud = 9600 );
 	BOOL Close( void );
@@ -32,7 +33,7 @@ public:
 protected:
 	BOOL WriteCommByte( unsigned char );
 
-	HANDLE m_hIDComDev;
+	
 	OVERLAPPED m_OverlappedRead, m_OverlappedWrite;
 	BOOL m_bOpened;
 

@@ -1,0 +1,11 @@
+--cpu Cortex-M4.fp
+".\rvmdk\cfal96x64x16.o"
+".\rvmdk\startup_rvmdk.o"
+".\rvmdk\uart_echo.o"
+"..\..\..\..\driverlib\rvmdk\driverlib.lib"
+"..\..\..\..\grlib\rvmdk\grlib.lib"
+--library_type=microlib --strict --scatter "uart_echo.sct"
+
+--entry Reset_Handler --summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\rvmdk\uart_echo.map" -o .\rvmdk\uart_echo.axf

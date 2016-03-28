@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\..\..\..\driverlib\driverlib.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\..\..\..\usblib\usblib.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\cc3000_basic_wifi_application\cc3000_basic_wifi_application.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\cc3000_patch_programmer\cc3000_patch_programmer.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\cc3000_ssid_scan\cc3000_ssid_scan.ewp</path>
+  </project>
+  <batchBuild>
+    <batchDefinition>
+      <name>All Examples</name>
+      <member>
+        <project>driverlib</project>
+        <configuration>Debug</configuration>
+      </member>
+      <member>
+        <project>usblib</project>
+        <configuration>Debug</configuration>
+      </member>
+      <member>
+        <project>cc3000_basic_wifi_application</project>
+        <configuration>Debug</configuration>
+      </member>
+      <member>
+        <project>cc3000_patch_programmer</project>
+        <configuration>Debug</configuration>
+      </member>
+      <member>
+        <project>cc3000_ssid_scan</project>
+        <configuration>Debug</configuration>
+      </member>
+    </batchDefinition>
+  </batchBuild>
+</workspace>

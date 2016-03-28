@@ -109,51 +109,58 @@ int main(){
 		return 0;
 	}
 
-	//Get Data from First Row
-	if(getRowData(fp, xCoors, yCoors, gCodes, pauseP, sizeCol)){
-		for(int i = 0; i < sizeCol; i++){
-			//printf("X:%hd Y:%hd \n", xCoors[i], yCoors[i]);
-			//printf("P value: %hd \n", pauseP[i]);
+	
+	for(int j = 0; j < sizeRow + 1; j++)
+	{
+		if(getRowData(fp, xCoors, yCoors, gCodes, pauseP, sizeCol)){
+			//for(int i = 0; i < sizeCol; i++){
+				//printf("X:%hd Y:%hd \n", xCoors[i], yCoors[i]);
+				//printf("P value: %hd \n", pauseP[i]);
+			//}
+
+			//----------------------------
+			//Send inital values
+			//----------------------------
+
+			//	ZZ sizeCol, sizeRow
+			buffer[0] = 'Z';
+			buffer[1] = 'Z';
+			serial.SendData(buffer, 2);
+
+			if(j == 0)
+			{	
+				splitShort(sizeCol, shortMSB, shortLSB, buffer);
+				serial.SendData(buffer, 2);
+				splitShort(sizeRow, shortMSB, shortLSB, buffer);
+				serial.SendData(buffer, 2);
+				//	G0, Xinit, Yinit
+				splitShort(g00, shortMSB, shortLSB, buffer);
+				serial.SendData(buffer, 2);
+				splitShort(xInit, shortMSB, shortLSB, buffer);
+				serial.SendData(buffer, 2);
+				splitShort(yInit, shortMSB, shortLSB, buffer);
+				serial.SendData(buffer, 2);
+				//	G4, Pinit
+				splitShort(g4, shortMSB, shortLSB, buffer);
+				serial.SendData(buffer, 2);
+				splitShort(pInit, shortMSB, shortLSB, buffer);
+				serial.SendData(buffer, 2);
+			}
+
+			//----------------------------
+			//Send row 
+			//----------------------------
+			sendRowData(xCoors, yCoors, gCodes, pauseP, sizeCol);
+
+			//Read GO to send next row
+			readUart();
+
+		}
+		else{
+			//TODO: END PROGRAM
 		}
 
-		//----------------------------
-		//Send inital values
-		//----------------------------
-		//	ZZ sizeCol, sizeRow
-		buffer[0] = 'Z';
-		buffer[1] = 'Z';
-		serial.SendData(buffer, 2);
-
-		splitShort(sizeCol, shortMSB, shortLSB, buffer);
-		serial.SendData(buffer, 2);
-		splitShort(sizeRow, shortMSB, shortLSB, buffer);
-		serial.SendData(buffer, 2);
-		//	G0, Xinit, Yinit
-		splitShort(g00, shortMSB, shortLSB, buffer);
-		serial.SendData(buffer, 2);
-		splitShort(xInit, shortMSB, shortLSB, buffer);
-		serial.SendData(buffer, 2);
-		splitShort(yInit, shortMSB, shortLSB, buffer);
-		serial.SendData(buffer, 2);
-		//	G4, Pinit
-		splitShort(g4, shortMSB, shortLSB, buffer);
-		serial.SendData(buffer, 2);
-		splitShort(pInit, shortMSB, shortLSB, buffer);
-		serial.SendData(buffer, 2);
-
-		//----------------------------
-		//Send row 
-		//----------------------------
-		sendRowData(xCoors, yCoors, gCodes, pauseP, sizeCol);
-
-
-		//	Read GO to send next row
-		//readUart();
-
-	}
-	else{
-		//TODO: END PROGRAM
-	}
+	}//End of for()
 
 	serial.Close();
 
@@ -323,9 +330,12 @@ void readUart(void){
 	int nBytesRead = 0;
 	int curT = 0; 
 	int oldT = 0;
+	uint8_t Gflag = 0;
+	uint8_t Oflag = 0;
+
 	char readBuffer[1];
 	
-	while(readBuffer[0] != '\n')
+	while(Gflag == 0 && Oflag == 0)
 	{
 		curT = GetTickCount();
 
@@ -337,6 +347,12 @@ void readUart(void){
 			{
 
 				for(int i = 0; i < nBytesRead; i++){
+					if(readBuffer[i] == 'G'){
+						Gflag = 1;
+					}
+					else if(readBuffer[i] == 'O'){
+						Oflag = 1;
+					}
 					printf("%c", readBuffer[i]);
 				}
 

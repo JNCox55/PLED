@@ -46,7 +46,7 @@ namespace IngestImage
 
                     //write go to starting point of engraving and dwell G-Codes to file
                     sw.WriteLine("G00 X" + xLocation + " Y" + yLocation);
-                    sw.WriteLine("G04 P0.5");
+                    sw.WriteLine("G04 P0.500");
 
                     //loop pulls in pixels, converts to grayscale.  i = image width (rows), x = image height (columns)
                     for (int i = 0; i < d.Height; i++)

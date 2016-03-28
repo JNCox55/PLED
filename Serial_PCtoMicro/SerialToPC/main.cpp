@@ -44,8 +44,8 @@ int main(){
 	//*************************
 	//	Serial Vars
 	//*************************
-	int port = 4;//3; 
-	int baudRate = 115200;//9600; 
+	int port = 3;//3; 
+	int baudRate = 9600;//9600; 
 	int dispType = 0;
 	int nBytesSent = 0;
 	
@@ -122,13 +122,13 @@ int main(){
 			//Send inital values
 			//----------------------------
 
-			//	ZZ sizeCol, sizeRow
-			buffer[0] = 'Z';
-			buffer[1] = 'Z';
-			serial.SendData(buffer, 2);
 
 			if(j == 0)
 			{	
+				//	ZZ sizeCol, sizeRow
+				buffer[0] = 'Z';
+				buffer[1] = 'Z';
+				serial.SendData(buffer, 2);
 				splitShort(sizeCol, shortMSB, shortLSB, buffer);
 				serial.SendData(buffer, 2);
 				splitShort(sizeRow, shortMSB, shortLSB, buffer);

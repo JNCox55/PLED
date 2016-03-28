@@ -36,6 +36,8 @@ uint32_t tempPosition;
 short moveX;
 short moveY;
 short dwellTime;
+char numberOfRows=0;
+char firstRun=1;
 
 char command[10];
 int commandIndex=0;
@@ -93,15 +95,16 @@ UART1_Handler(void)
     //
     UARTIntClear(UART1_BASE, ui32Status);
 		// Grab the first byte of the identifier that tells us what type of G Code instruction we are getting	
-		temp=UARTCharGetNonBlocking(UART1_BASE);
-		if (temp!='\0')		//Remove potential null terminating characters
-			identifier[0]=temp;
-		else
-			identifier[0]=UARTCharGetNonBlocking(UART1_BASE);
-		//	Grab the second part of the identifier
-		temp=UARTCharGetNonBlocking(UART1_BASE);
-		//if (temp!='\0')		//Remove potential null terminating characters
-			identifier[1]=temp;
+			temp=UARTCharGetNonBlocking(UART1_BASE);
+			if (temp!='\0')		//Remove potential null terminating characters
+				identifier[0]=temp;
+			else
+				identifier[0]=UARTCharGetNonBlocking(UART1_BASE);
+			//	Grab the second part of the identifier
+			temp=UARTCharGetNonBlocking(UART1_BASE);
+			//if (temp!='\0')		//Remove potential null terminating characters
+				identifier[1]=temp;
+			//firstRun=0;
 		//else
 		//	identifier[1]=UARTCharGetNonBlocking(UART1_BASE);
 		//Put data in the appropriate arrays
@@ -614,7 +617,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)
 		curPosX++;
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
 	}
-	if (((signed short) (curPosX-desPosX))>0)	//if we got the command to move in the -X direction...
+	while (((signed short) (curPosX-desPosX))>0)	//if we got the command to move in the -X direction...
 	{
 		//set the stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
@@ -630,7 +633,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)
 		curPosX--;
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
 	}
-	if (((signed short) (desPosY-curPosY))>0)	//if we got the command to move in the +Y direction...
+	while (((signed short) (desPosY-curPosY))>0)	//if we got the command to move in the +Y direction...
 	{
 		//set the stepper motor direction to forward
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
@@ -646,7 +649,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)
 		curPosY++;
 		encoderPositionY=QEIPositionGet(QEI1_BASE);
 	}
-	if (((signed short) (curPosY-desPosY))>0)	//if we got the command to move in the -Y direction...
+	while (((signed short) (curPosY-desPosY))>0)	//if we got the command to move in the -Y direction...
 	{
 		//set the stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
@@ -668,14 +671,25 @@ void engrave()
 {
 	while(1)
 	{
-		if (gCode[1004]=='R' && gCode[1005]=='D')
+		for (j=990;j<1050;j++)
 		{
-			for (i=0;i<3;i++)
-				{
-					UARTCharPutNonBlocking(UART1_BASE,
-																		 go[i]);
-				}
-				SysCtlDelay(SysCtlClockGet() / (1 * 3));
+			if (gCode[j]=='R' && gCode[j+1]=='D')
+			{
+				for (i=0;i<3;i++)
+					{
+						UARTCharPutNonBlocking(UART1_BASE,
+																			 go[i]);
+					}
+					xCommandsEnd=0;
+					yCommandsEnd=0;
+					gCodeEnd=0;
+					pauseValuesEnd=0;
+					gCode[j]='\0';
+					gCode[j+1]='\0';
+					SysCtlDelay(SysCtlClockGet() / (1 * 3));
+					numberOfRows++;
+					break;
+			}
 		}
 	}
 	/*while (done==0)

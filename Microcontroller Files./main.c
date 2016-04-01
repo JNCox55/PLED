@@ -52,12 +52,13 @@ char done=0;
 char start=0;
 char readyToGo=0;
 char temp;		//used to filter out the null terminating character '\0' in UART communication
+char wellShit=0;
 uint32_t ui32Status;
+
 
 int32_t mytest;
 uint32_t positionX;
 uint32_t positionY;
-//char drawingBuffer[10000];
 short xCommands[1612];		//holds the desired x coordinates for an entire row
 int xCommandsEnd;		//points to the end of the xCommand data
 int xCommandsIndex;		//points to the current x command to be moved to
@@ -78,6 +79,13 @@ void dwell(short dwellDuration)
 	return;
 }
 
+
+
+void checkErrs()
+{
+	
+}
+
 //*****************************************************************************
 //
 // The UART interrupt handler.
@@ -94,28 +102,33 @@ UART1_Handler(void)
     // Clear the asserted interrupts.
     //
     UARTIntClear(UART1_BASE, ui32Status);
+		UARTRxErrorClear(UART1_BASE);
 		// Grab the first byte of the identifier that tells us what type of G Code instruction we are getting	
-			temp=UARTCharGetNonBlocking(UART1_BASE);
-			if (temp!='\0')		//Remove potential null terminating characters
+	firstIdentifier:
+			temp=UARTCharGet(UART1_BASE);
+			if ((0xFF-temp)!=0)		//Remove potential null terminating characters
 				identifier[0]=temp;
 			else
-				identifier[0]=UARTCharGetNonBlocking(UART1_BASE);
+				goto firstIdentifier;
+				//identifier[0]=UARTCharGetNonBlocking(UART1_BASE);
 			//	Grab the second part of the identifier
-			temp=UARTCharGetNonBlocking(UART1_BASE);
-			//if (temp!='\0')		//Remove potential null terminating characters
+	secondIdentifier:
+			temp=UARTCharGet(UART1_BASE);
+			if ((0xFF-temp)!=0)		//Remove potential null terminating characters
 				identifier[1]=temp;
-			//firstRun=0;
-		//else
-		//	identifier[1]=UARTCharGetNonBlocking(UART1_BASE);
+			else
+				goto secondIdentifier;
+				//identifier[1]=UARTCharGetNonBlocking(UART1_BASE);
 		//Put data in the appropriate arrays
 		if (identifier[0]=='Z' && identifier[1]=='Z')	//If we recieve the command to collect the size of the image...
 		{
 			size=0x00000000;
 			sizeRows=0x0000;
 			sizeColumns=0x0000;
-			while(UARTCharsAvail(UART1_BASE) && i<4) //check to see if we have filled up our size integer with 4 bytes, i keeps count
+			i=0;
+			while(i<4) //check to see if we have filled up our size integer with 4 bytes, i keeps count
 			{
-				size|=UARTCharGetNonBlocking(UART1_BASE);	//Grab a byte from the fifo buffer
+				size|=UARTCharGet(UART1_BASE);	//Grab a byte from the fifo buffer
 				if (i==3)	//When we know all the parts of the sizing dimension information...
 				{
 					sizeRows=size&~0xFFFF0000;	//grab the size of the rows
@@ -133,9 +146,10 @@ UART1_Handler(void)
 			tempPosition=0x00000000;
 			moveY=0x0000;
 			moveX=0x0000;
-			while(UARTCharsAvail(UART1_BASE) && i<4) //check to see if we have filled up our size integer with 4 bytes, i keeps count
+			i=0;
+			while(i<4) //check to see if we have filled up our size integer with 4 bytes, i keeps count
 			{
-				tempPosition|=UARTCharGetNonBlocking(UART1_BASE);	//Grab a byte from the fifo buffer
+				tempPosition|=UARTCharGet(UART1_BASE);	//Grab a byte from the fifo buffer
 				if (i==3)	//When we know all the parts of the sizing dimension information...
 				{
 					moveY=tempPosition&~0xFFFF0000;	//grab the size of the rows
@@ -160,9 +174,10 @@ UART1_Handler(void)
 			tempPosition=0x00000000;
 			moveX=0x0000;
 			moveY=0x0000;
-			while(UARTCharsAvail(UART1_BASE) && i<4) //check to see if we have filled up our size integer with 4 bytes, i keeps count
+			i=0;
+			while(i<4) //check to see if we have filled up our size integer with 4 bytes, i keeps count
 			{
-				tempPosition|=UARTCharGetNonBlocking(UART1_BASE);	//Grab a byte from the fifo buffer
+				tempPosition|=UARTCharGet(UART1_BASE);	//Grab a byte from the fifo buffer
 				if (i==3)	//When we know all the parts of the sizing dimension information...
 				{
 					moveY=tempPosition&~0xFFFF0000;	//grab the size of the rows
@@ -185,24 +200,16 @@ UART1_Handler(void)
 		if (identifier[0]=='G' && identifier[1]=='4')	//If we recieve the command to dwell at the current position...
 		{
 			dwellTime=0x0000;
-			if(UARTCharsAvail(UART1_BASE)) //check to see if we have filled up our size integer with 4 bytes, i keeps count
-			{
-				dwellTime|=UARTCharGetNonBlocking(UART1_BASE);	//Grab a byte from the fifo buffer
-				dwellTime=dwellTime<<8;	//make room for the next byte
-				temp=UARTCharGetNonBlocking(UART1_BASE);	//Grab the next byte from the fifo buffer
-				if (temp!='\0')		//Remove potential null terminating characters
-					dwellTime|=temp;	
-				else
-					dwellTime|=UARTCharGetNonBlocking(UART1_BASE);		//If there was a terminating character read the next byte
-				pauseValues[pauseValuesEnd]=dwellTime;
-				pauseValuesEnd++;
-				gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
-				gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
-				gCodeEnd=gCodeEnd+2;		//move the index of the gCode buffer to point to one past the last entry
-			}
+			dwellTime|=UARTCharGet(UART1_BASE);	//Grab a byte from the fifo buffer
+			dwellTime=dwellTime<<8;	//make room for the next byte
+			dwellTime|=UARTCharGet(UART1_BASE);	//Grab the next byte from the fifo buffer
+			pauseValues[pauseValuesEnd]=dwellTime;
+			pauseValuesEnd++;
+			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
+			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
+			gCodeEnd=gCodeEnd+2;		//move the index of the gCode buffer to point to one past the last entry
 			return;
-		}	
-		
+		}		
 		if (identifier[0]=='M' && identifier[1]=='4')	//If we recieve the command to turn the laser on...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
@@ -288,14 +295,17 @@ UART1_Handler(void)
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
 			gCodeEnd=gCodeEnd+2;		//move the index of the gCode buffer to point to one past the last entry
+			return;
 		}
 		if (identifier[0]=='R' && identifier[1]=='D')		//If we recieve the command that the picture is complete...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
+			numberOfRows++;
 			gCodeEnd=gCodeEnd+2;		//move the index of the gCode buffer to point to one past the last entry
+			return;
 		}
-
+		wellShit=1;
 				
 			    /*while(UARTCharsAvail(UART1_BASE))
     {
@@ -352,7 +362,7 @@ void Sys_Clock_Set()
 	//
 	// Set the clocking to run directly from the external crystal/oscillator.
 	//
-	SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+	SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_INT | SYSCTL_XTAL_16MHZ);
 	for (i=0;i<2000;i++)
 		{
 			//Wait while the clock frequency change settles
@@ -456,14 +466,15 @@ void UART1_Setup()
 	//
 	// Configure the UART for 9600 8-N-1 operation.
 	//
-	UARTClockSourceSet(UART1_BASE, UART_CLOCK_SYSTEM);
+	UARTClockSourceSet(UART1_BASE, UART_CLOCK_PIOSC);
 	
-	UARTConfigSetExpClk(UART1_BASE, SysCtlClockGet(), 9600,
+	UARTConfigSetExpClk(UART1_BASE, SysCtlClockGet(), 115200,
 													(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
 													 UART_CONFIG_PAR_NONE));
 	//
 	// Configure the UART for interrupts on < 7/8 of the TX buffer empty and > 1/2 RX full.
 	//
+	UARTFIFOEnable(UART1_BASE);
 	UARTFIFOLevelSet(UART1_BASE,UART_FIFO_TX7_8,UART_FIFO_RX4_8);
 	//
 	// Configure the UART to use RTS and CTS handshaking.
@@ -476,7 +487,7 @@ void UART1_Setup()
 	UARTFIFOEnable(UART1_BASE);
 	IntEnable(INT_UART1);
 	UARTIntEnable(UART1_BASE, UART_INT_RX | UART_INT_RT);
-	//UARTEnable(UART1_BASE);
+	UARTEnable(UART1_BASE);
 }
 
 void QEI_Setup()
@@ -669,42 +680,40 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)
 
 void engrave()
 {
-	while(1)
+	//while(1)
 	{
-		for (j=990;j<1050;j++)
+		for (j=0;j<16012;j++)
 		{
 			if (gCode[j]=='R' && gCode[j+1]=='D')
 			{
-				for (i=0;i<3;i++)
+					for (i=0;i<1612;i++)
 					{
-						UARTCharPutNonBlocking(UART1_BASE,
-																			 go[i]);
+						xCommands[i]='\0';
+						yCommands[i]='\0';
+						pauseValues[i]='\0';
 					}
+					for (i=0;i<16012;i++)
+					{
+						gCode[i]='\0';
+					}
+					for (i=0;i<16;i++)
+					{
+						command[0]=UARTCharGetNonBlocking(UART1_BASE);
+					}
+					UARTRxErrorClear(UART1_BASE);
 					xCommandsEnd=0;
 					yCommandsEnd=0;
 					gCodeEnd=0;
 					pauseValuesEnd=0;
-					gCode[j]='\0';
-					gCode[j+1]='\0';
-					SysCtlDelay(SysCtlClockGet() / (1 * 3));
-					numberOfRows++;
-					break;
+					for (i=0;i<2;i++)
+					{
+						UARTCharPut(UART1_BASE,go[i]);
+					}
+					return;
 			}
 		}
 	}
-	/*while (done==0)
-
-		//If we are out of new pixels to engrave, wait for more.
-		while (tail<head && (tail+3)>head)
-		{
-			for (i=0;i<3;i++)
-			{
-				UARTCharPutNonBlocking(UART1_BASE,
-                                   go[i]);
-			}
-			SysCtlDelay(SysCtlClockGet() / (10 * 3));
-		}
-	}*/
+	//return;
 }
 
 /*void ready()
@@ -957,7 +966,7 @@ int main(void)
 	
 
 	//ready();
-	engrave();
+	
 	//testBenchIntensity();
 	//testBenchMotor();
 	//testBenchPulse();
@@ -965,7 +974,7 @@ int main(void)
 	
 	while(1)
 	{
-		i=0;
+		engrave();
 		//positionX=QEIPositionGet(QEI0_BASE);
 		//positionY=QEIPositionGet(QEI1_BASE);
 	}

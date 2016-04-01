@@ -15,13 +15,14 @@
 
 class CSerial
 {
-
+	
 public:
 	CSerial();
 	~CSerial();
 
 	BOOL Open( int nPort = 2, int nBaud = 9600 );
 	BOOL Close( void );
+	HANDLE m_hIDComDev;
 
 	int ReadData( void *, int );
 	int SendData( const unsigned char *, int );
@@ -32,7 +33,6 @@ public:
 protected:
 	BOOL WriteCommByte( unsigned char );
 
-	HANDLE m_hIDComDev;
 	OVERLAPPED m_OverlappedRead, m_OverlappedWrite;
 	BOOL m_bOpened;
 

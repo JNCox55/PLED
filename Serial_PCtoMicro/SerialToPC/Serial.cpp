@@ -61,6 +61,7 @@ BOOL CSerial::Open( int nPort, int nBaud )
 	dcb.fOutX = false;							// Disable XON/XOFF for transmission
 	dcb.fInX = false;							// Disable XON/XOFF for receiving
 	dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;	// Enable RTS handshaking
+	//dcb.Parity = EVENPARITY;
 
 	//unsigned char ucSet;
 	//ucSet = (unsigned char) ( ( FC_RTSCTS & FC_DTRDSR ) != 0 );

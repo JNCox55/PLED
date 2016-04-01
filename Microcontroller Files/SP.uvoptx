@@ -147,7 +147,7 @@
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>sizeRows</ItemText>
+          <ItemText>pauseValues</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
@@ -157,7 +157,7 @@
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>tempsie</ItemText>
+          <ItemText>identifier</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>

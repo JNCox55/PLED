@@ -27,6 +27,9 @@
 #define S6 0x5336
 #define S7 0x5337
 
+COMSTAT comStat;
+DWORD   dwErrors;
+
 void readUart(void);
 void splitShort(uint16_t short2Split, uint8_t &msb, uint8_t &lsb, uint8_t buffer[]);
 bool getRowData(FILE *inFile, uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t pauseP[], uint16_t size);
@@ -45,7 +48,7 @@ int main(){
 	//	Serial Vars
 	//*************************
 	int port = 3;//3; 
-	int baudRate = 9600;//9600; 
+	int baudRate = 115200;//9600; //115200
 	int dispType = 0;
 	int nBytesSent = 0;
 	
@@ -78,7 +81,7 @@ int main(){
 	//-----------------------------------
 	//		PARSER CODE
 	//-----------------------------------
-	fp = fopen("fox.gcode", "r");
+	fp = fopen("BigPic.gcode", "r");
 
 	if(!fp){
 		printf("Error opening file! \n");
@@ -153,7 +156,15 @@ int main(){
 			sendRowData(xCoors, yCoors, gCodes, pauseP, sizeCol);
 
 			//Read GO to send next row
+			/*for (int j = 0; j < 240000000; j++)
+			{
+				int m = 0;
+			}*/
 			readUart();
+			for (int j = 0; j < 240000000; j++)
+			{
+				int m = 0;
+			}
 
 		}
 		else{
@@ -197,7 +208,7 @@ bool getRowData(FILE *inFile, uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode
 					gCode[i] = G1;
 				}
 				else if(thirdChar == '4'){
-					fscanf(inFile, " P0.00%hd", &pauseP[iPix]);
+					fscanf(inFile, " P0.0%hd", &pauseP[iPix]);
 					chG = fgetc(inFile);
 					gCode[i] = G4;
 				}
@@ -272,6 +283,17 @@ bool getRowData(FILE *inFile, uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode
 	return true;
 }
 
+void clearErrs()
+{
+	ClearCommError(serial.m_hIDComDev, &dwErrors, &comStat);
+	while ((comStat.fCtsHold))
+	{
+		//wait until the CTS line says we can send
+		ClearCommError(serial.m_hIDComDev, &dwErrors, &comStat);
+	}
+	return;
+}
+
 void sendRowData(uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t pauseP[], uint16_t size){
 	uint8_t shortMSB;
 	uint8_t shortLSB;
@@ -283,25 +305,37 @@ void sendRowData(uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t 
 
 	for(int i = 0; i < (size * 5); i = i + 5){
 		//Order to send
+		/*for (int j = 0; j < 12000000; j++)
+		{
+			int m = 0;
+		}*/
 		//	Gcode[i], X[iPix], Y[iPix]  <--- G00 X#,Y#
+		clearErrs();
 		splitShort(gCode[i], shortMSB, shortLSB, buffer);
 		serial.SendData(buffer, 2);
+		clearErrs();
 		splitShort(xCoor[iPix], shortMSB, shortLSB, buffer);
 		serial.SendData(buffer, 2);
+		clearErrs();
 		splitShort(yCoor[iPix], shortMSB, shortLSB, buffer);
 		serial.SendData(buffer, 2);
 		//  Gcode[i+1]	<--- S#
+		clearErrs();
 		splitShort(gCode[i+1], shortMSB, shortLSB, buffer);
 		serial.SendData(buffer, 2);
 		//  Gcode[i+2]	<--- M04
+		clearErrs();
 		splitShort(gCode[i+2], shortMSB, shortLSB, buffer);
 		serial.SendData(buffer, 2);
 		//	Gcode[i+3], P[iPix]	<--- G04 P#
+		clearErrs();
 		splitShort(gCode[i+3], shortMSB, shortLSB, buffer);
 		serial.SendData(buffer, 2);
+		clearErrs();
 		splitShort(pauseP[iPix], shortMSB, shortLSB, buffer);
 		serial.SendData(buffer, 2);
 		//	Gcode[i+4]	<--- M05
+		clearErrs();
 		splitShort(gCode[i+4], shortMSB, shortLSB, buffer);
 		serial.SendData(buffer, 2);
 
@@ -309,6 +343,7 @@ void sendRowData(uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t 
 	}
 	
 	//	RD when row has been sent
+	clearErrs();
 	buffer[0] = 'R';
 	buffer[1] = 'D';
 	serial.SendData(buffer, 2);
@@ -362,5 +397,10 @@ void readUart(void){
 		}
 
 	}
+	for (int j = 0; j < 50; j++)
+	{
+		serial.ReadData(readBuffer, sizeof(readBuffer));
+	}
+	readBuffer[0] = '\0';
 
 }

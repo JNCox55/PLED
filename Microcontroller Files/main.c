@@ -290,7 +290,6 @@ UART1_Handler(void)
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
 			numberOfRows++;
 			gCodeEnd=gCodeEnd+2;		//move the index of the gCode buffer to point to one past the last entry
-			readyToGo = 1;
 			return;
 		}
 		wellShit=1;
@@ -718,84 +717,42 @@ void laserKeyToggle(char fourOrFive)	//USED WITH M04 and M05
 	}
 }
 void engrave()
-{   char g0[3] = "G0";
-		char g1[3] = "G1";
-		char g4[3] = "G4";
-		char m4[3] = "M4";
-		char m5[3] = "M5";
-
-	
-		for (j=0; j < gCodeEnd; j += 2)
+{
+	//while(1)
+	{
+		for (j=0;j<16012;j++)
 		{
-				if (gCode[j]=='G' && gCode[j+1]=='0')
-				{
-						for (i=0;i<2;i++)
-						{
-							UARTCharPut(UART1_BASE,g0[i]);
-						}
-				}
-				else if (gCode[j]=='G' && gCode[j+1]=='1')
-				{
-						for (i=0;i<2;i++)
-						{
-							UARTCharPut(UART1_BASE,g1[i]);
-						}
-				}
-				else if (gCode[j]=='G' && gCode[j+1]=='4')
-				{
-						for (i=0;i<2;i++)
-						{
-							UARTCharPut(UART1_BASE,g4[i]);
-						}
-				}
-				else if (gCode[j]=='M' && gCode[j+1]=='4')
-				{
-						for (i=0;i<2;i++)
-						{
-							UARTCharPut(UART1_BASE,m4[i]);
-						}
-				}
-				else if (gCode[j]=='M' && gCode[j+1]=='5')
-				{
-						for (i=0;i<2;i++)
-						{
-							UARTCharPut(UART1_BASE,m5[i]);
-						}
-				}
-				
-		} //end of for
-		
-		for (i=0;i<1612;i++)
-		{
-			xCommands[i]='\0';
-			yCommands[i]='\0';
-			pauseValues[i]='\0';
+			if (gCode[j]=='R' && gCode[j+1]=='D')
+			{
+					for (i=0;i<1612;i++)
+					{
+						xCommands[i]='\0';
+						yCommands[i]='\0';
+						pauseValues[i]='\0';
+					}
+					for (i=0;i<16012;i++)
+					{
+						gCode[i]='\0';
+					}
+					for (i=0;i<16;i++)
+					{
+						command[0]=UARTCharGetNonBlocking(UART1_BASE);
+					}
+					UARTRxErrorClear(UART1_BASE);
+					xCommandsEnd=0;
+					yCommandsEnd=0;
+					gCodeEnd=0;
+					pauseValuesEnd=0;
+					for (i=0;i<2;i++)
+					{
+						UARTCharPut(UART1_BASE,go[i]);
+					}
+					return;
+			}
 		}
-		for (i=0;i<16012;i++)
-		{
-			gCode[i]='\0';
-		}
-		for (i=0;i<16;i++)
-		{
-			command[0]=UARTCharGetNonBlocking(UART1_BASE);
-		}
-		UARTRxErrorClear(UART1_BASE);
-		xCommandsEnd=0;
-		yCommandsEnd=0;
-		gCodeEnd=0;
-		pauseValuesEnd=0;
-		for (i=0;i<2;i++)
-		{
-			UARTCharPut(UART1_BASE,go[i]);
-		}
-		
-		readyToGo = 0;
-		
-		return;
-		
-}//end of engrave()
-	
-
+	}
+	//return;
+}
 
 /*void ready()
 {
@@ -1055,9 +1012,7 @@ int main(void)
 	
 	while(1)
 	{
-		if(readyToGo){
-			engrave();
-		}
+		engrave();
 		//positionX=QEIPositionGet(QEI0_BASE);
 		//positionY=QEIPositionGet(QEI1_BASE);
 	}

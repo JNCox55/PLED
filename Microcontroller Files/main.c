@@ -290,6 +290,7 @@ UART1_Handler(void)
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
 			numberOfRows++;
 			gCodeEnd=gCodeEnd+2;		//move the index of the gCode buffer to point to one past the last entry
+			readyToGo = 1;
 			return;
 		}
 		wellShit=1;
@@ -1125,8 +1126,12 @@ int main(void)
 	
 	while(1)
 	{
-		//engrave();
-		positionX=QEIPositionGet(QEI0_BASE);
-		positionY=QEIPositionGet(QEI1_BASE);
-	}
+ 		engrave();
+ 		if(readyToGo)
+		{
+ 		engrave();		
+		}
+  		//positionX=QEIPositionGet(QEI0_BASE);
+  		//positionY=QEIPositionGet(QEI1_BASE);
+  }
 }

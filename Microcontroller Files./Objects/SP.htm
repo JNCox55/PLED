@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\SP.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\SP.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050041: Last Updated: Fri Apr 08 23:50:09 2016
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050041: Last Updated: Sat Apr 09 10:04:17 2016
 <BR><P>
 <H3>Maximum Stack Usage =         40 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -429,7 +429,7 @@ Global Symbols
 
 <P><STRONG><a name="[12a]"></a>CPUbasepriGet</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, cpu.o(.emb_text), UNUSED)
 
-<P><STRONG><a name="[12]"></a>UART1_Handler</STRONG> (Thumb, 1510 bytes, Stack size 8 bytes, main.o(.text))
+<P><STRONG><a name="[12]"></a>UART1_Handler</STRONG> (Thumb, 1516 bytes, Stack size 8 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = UART1_Handler
 </UL>
 <BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTRxErrorClear
@@ -516,14 +516,14 @@ Global Symbols
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
 </UL>
 
-<P><STRONG><a name="[b7]"></a>step</STRONG> (Thumb, 1156 bytes, Stack size 24 bytes, main.o(.text), UNUSED)
+<P><STRONG><a name="[b7]"></a>step</STRONG> (Thumb, 1160 bytes, Stack size 24 bytes, main.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
 <LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
 <LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIPositionGet
 <LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinWrite
 </UL>
 
-<P><STRONG><a name="[ba]"></a>burn</STRONG> (Thumb, 172 bytes, Stack size 40 bytes, main.o(.text), UNUSED)
+<P><STRONG><a name="[ba]"></a>burn</STRONG> (Thumb, 170 bytes, Stack size 40 bytes, main.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
 <LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
@@ -535,10 +535,14 @@ Global Symbols
 
 <P><STRONG><a name="[12b]"></a>laserKeyToggle</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, main.o(.text), UNUSED)
 
-<P><STRONG><a name="[bd]"></a>engrave</STRONG> (Thumb, 614 bytes, Stack size 24 bytes, main.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTRxErrorClear
+<P><STRONG><a name="[bd]"></a>engrave</STRONG> (Thumb, 614 bytes, Stack size 24 bytes, main.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = engrave
+</UL>
+<BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTRxErrorClear
 <LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTCharPut
 <LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTCharGetNonBlocking
+</UL>
+<BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[bf]"></a>testBenchPulse</STRONG> (Thumb, 170 bytes, Stack size 32 bytes, main.o(.text), UNUSED)
@@ -550,7 +554,7 @@ Global Symbols
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
 </UL>
 
-<P><STRONG><a name="[c0]"></a>testBenchDuration</STRONG> (Thumb, 300 bytes, Stack size 32 bytes, main.o(.text), UNUSED)
+<P><STRONG><a name="[c0]"></a>testBenchDuration</STRONG> (Thumb, 302 bytes, Stack size 32 bytes, main.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
 <LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
@@ -585,12 +589,12 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[88]"></a>main</STRONG> (Thumb, 52 bytes, Stack size 0 bytes, main.o(.text))
+<P><STRONG><a name="[88]"></a>main</STRONG> (Thumb, 46 bytes, Stack size 0 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = main &rArr; testBenchMotor &rArr; GPIOPinTypeGPIOOutput &rArr; GPIOPadConfigSet
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIPositionGet
-<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FPUEnable
+<BR>[Calls]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FPUEnable
 <LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchMotor
+<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
 <LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Setup
 <LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
@@ -932,7 +936,7 @@ Global Symbols
 
 <P><STRONG><a name="[186]"></a>UARTCharPutNonBlocking</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, uart.o(.text), UNUSED)
 
-<P><STRONG><a name="[be]"></a>UARTCharPut</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, uart.o(.text), UNUSED)
+<P><STRONG><a name="[be]"></a>UARTCharPut</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, uart.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
 </UL>
 
@@ -1288,8 +1292,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[b9]"></a>QEIPositionGet</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, qei.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchMotor
+<BR><BR>[Called By]<UL><LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchMotor
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
 </UL>
 

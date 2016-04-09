@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------------
 //
 //	Code: PC to uController Serial (main.cpp)
-//	Authors: Zachary Garrard, Justin Cox
+//	Authors: Zachary Garrard, Justin Cox, Casey Wood
 //	Date: 3/10/2016
 //
 //------------------------------------------------------------------------------------
@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <Windows.h>
 #include "Serial.h"
+#include <iostream>
+#include <fstream>
 
 #define G0 0x4730
 #define G1 0x4731
@@ -78,10 +80,27 @@ int main(){
 	uint16_t sizeCol = 0;
 	uint16_t sizeRow = 0;
 
+	
+	//-----------------------------------
+	//		GET GCODE LOCATION
+	//-----------------------------------
+	
+	//define G-Code location path string and file stream
+	string gcodeloc;
+	std::ifstream gcloc("C:\PLED\PLEDpath.txt");
+	
+	//get G-Code Location
+	std::getline(gcloc, gcodeloc);
+	
+	//close file stream
+	gcloc.close();	
+	
 	//-----------------------------------
 	//		PARSER CODE
 	//-----------------------------------
-	fp = fopen("BigPic.gcode", "r");
+		
+	
+	fp = fopen(gcodeloc, "r");
 
 	if(!fp){
 		printf("Error opening file! \n");

@@ -1,7 +1,7 @@
 Welcome to PLED
 
 By default, if you double click "install.bat" the PLED software will be
-downloaded to C:\PLED.  It will create a desktop shortcut as well.  
+installed to C:\PLED.  It will create a desktop shortcut as well.  
 
 Do Not Create Desktop Shortcut
 To forgo creation of the desktop shortcut, type "REM" in front of 

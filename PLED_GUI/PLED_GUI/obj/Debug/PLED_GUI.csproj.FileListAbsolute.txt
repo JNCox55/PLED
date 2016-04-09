@@ -9,3 +9,5 @@ C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.exe
 C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.pdb
 C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.woodDimensions.resources
 C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.complete.resources
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.engraving.resources
+C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.jobDone.resources

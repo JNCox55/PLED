@@ -457,9 +457,12 @@ namespace PLED_GUI
                 sw.Write(outFilePath + ".gcode");
                 sw.Close();
                                
-                //tell user job is done 
+                //tell user job ready to begin begins the engraving process
                 var jobComplete = new complete();
                 jobComplete.ShowDialog();
+
+                var eng = new engraving();
+
                 Application.Exit();
             }
         }

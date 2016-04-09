@@ -73,7 +73,7 @@
             this.woodDimensionDialog.Name = "woodDimensionDialog";
             this.woodDimensionDialog.Size = new System.Drawing.Size(360, 13);
             this.woodDimensionDialog.TabIndex = 2;
-            this.woodDimensionDialog.Text = "Please set the size of your plaque in inches:";
+            this.woodDimensionDialog.Text = "Please set the size of your plaque in inches (14.4 Max):";
             this.woodDimensionDialog.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // closeDim

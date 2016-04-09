@@ -23,11 +23,13 @@ volatile unsigned int *UART1=(unsigned int *) 0x4000D000; //This points to the b
 int timeEngrave=67;  //This is the denominator for the fraction of a second we are engraving during testing
 #define timeRest 0.5 //This is the denominator for the fraction of a second we rest between burns
 #define QEIMaxPosition 0xFFFFFFFF //This is the maximum count for the encoder(s) to accumulate pulses to.
-#define motorStepDuration 8400	//This is the denominator for the fraction of a second we wait between sending stepper motor pulses
+#define motorStepDuration 2100	//This is the denominator for the fraction of a second we wait between sending stepper motor pulses
+#define pulsesPerStep 5
+#define stepsPerPixel 1
 
 char laserKey=0;	//This flag gets flipped on each M4 or M5 G-Code instruction
-signed short positiveXPulsesSent=0;	//This keeps track of where we think we are in the +X direction
-signed short positiveYPulsesSent=0;	//This keeps track of where we think we are in the +Y direction
+signed short positiveXPixels=0;	//This keeps track of where we think we are in the +X direction
+signed short positiveYPixels=0;	//This keeps track of where we think we are in the +Y direction
 signed int encoderPositionX=0;		//EACH MOTOR STEP IS ABOUT 6 ENCODER PULSES - this is feedback of absolute +X direction position
 signed int encoderPositionY=0;		//EACH MOTOR STEP IS ABOUT 6 ENCODER PULSES - this is feedback of absolute +Y direction position
 char engraveReady=0;		//This flag lets us know when we have a full row's worth of data to engrave
@@ -72,6 +74,8 @@ int gCodeIndex=0;		//points to the current gCode to be excecuted
 short pauseValues[1612];	//holds the pause durations for the G04 Commands
 int pauseValuesEnd=0;	//points to the end of the pauseValues data
 int pauseValuesIndex=0; //points to the current pause time duration to dwell
+
+short burnDurVal = 0;
 
 //*****************************************************************************
 //
@@ -474,12 +478,12 @@ void UART1_Setup()
 	//
 	UARTFIFOEnable(UART1_BASE);
 	IntEnable(INT_UART1);
-	UARTIntEnable(UART1_BASE, UART_INT_RX);
+	UARTIntEnable(UART1_BASE, UART_INT_RX | UART_INT_RT);
 	UARTEnable(UART1_BASE);
-	for (i=0;i<16;i++)
+	/*for (i=0;i<16;i++)
 		{
 			command[0]=UARTCharGetNonBlocking(UART1_BASE);
-		}
+		}*/
 }
 
 void QEI_Setup()
@@ -536,10 +540,17 @@ void GPIO_Setup()
 	// Enable port D so these pins can be used.
 	//
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
 	//
 	// Enable the GPIO pins for controlling the stepper motors (PD0:PD3).
 	//
-	GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
+	GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE,GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
+	GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE,GPIO_PIN_1);
+	//
+	// Set the pins as open drain
+	//
+	GPIOPadConfigSet(GPIO_PORTD_BASE,GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3,GPIO_STRENGTH_8MA,GPIO_PIN_TYPE_OD);
+	GPIOPadConfigSet(GPIO_PORTE_BASE,GPIO_PIN_1,GPIO_STRENGTH_8MA,GPIO_PIN_TYPE_OD);
 }
 
 void dwell(short dwellDuration) //USED WITH the initial G04
@@ -550,149 +561,198 @@ void dwell(short dwellDuration) //USED WITH the initial G04
 }
 void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G00 and G01
 {
+		int i = 0;
+	
 	//CurPosX is where we THINK we are, based on the number of positive pulses sent out
 	//Assign positiveXPulsesSent to curPosX when calling step()
 	//positiveXPulsesSent is also where we THOUGHT we were, but gets updated to match where we REALLY are in this function
 	//encoderPositionX is where we REALLY are
-	while (((signed int) (curPosX*6-encoderPositionX))>14)		//if we are more than 2 pixels left of where we need to be, fix it before moving on
+/*	while (((signed int) (curPosX*6-encoderPositionX))>14)		//if we are more than 2 pixels left of where we need to be, fix it before moving on
 	{
 		//set the X axis stepper motor direction to forward
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_PIN_0);
-		//set the clock output high - the motor steps on rising clock edges
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		//Set the clock output low
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
+		
+		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		}
+		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionX=QEIPositionGet(QEI0_BASE);	//
+		
 		if (encoderPositionX%6<3)
-			positiveXPulsesSent=encoderPositionX/6;
+			positiveXPixels=encoderPositionX/6;
 		else
-			positiveXPulsesSent=encoderPositionX/6+1;
+			positiveXPixels=encoderPositionX/6+1;
 	}
 	while (((signed int) (encoderPositionX-curPosX*6))>14)		//if we are more than 2 pixels right of where we need to be, fix it before moving on
 	{
 		//set the X axis stepper motor direction to reverse
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
-		//set the clock output high - the motor steps on rising clock edges
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		//Set the clock output low
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
+		
+		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		}
+		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionX=QEIPositionGet(QEI0_BASE);	//
+		
 		if (encoderPositionX%6<3)
-			positiveXPulsesSent=encoderPositionX/6;
+			positiveXPixels=encoderPositionX/6;
 		else
-			positiveXPulsesSent=encoderPositionX/6+1;
+			positiveXPixels=encoderPositionX/6+1;
 	}
 	while (((signed int) (curPosY*6-encoderPositionY))>14)		//if we are more than 2 pixels above where we need to be, fix it before moving on
 	{
 		//set the Y axis stepper motor direction to forward
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
-		//set the clock output high - the motor steps on rising clock edges
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		//Set the clock output low
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
+		
+		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		}
+		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//
+		
 		if (encoderPositionY%6<3)
-			positiveYPulsesSent=encoderPositionY/6;
+			positiveYPixels=encoderPositionY/6;
 		else
-			positiveYPulsesSent=encoderPositionY/6+1;
+			positiveYPixels=encoderPositionY/6+1;
 	}
 	while (((signed int) (encoderPositionY-curPosY*6))>14)		//if we are more than 2 pixels below where we need to be, fix it before moving on
 	{
 		//set the Y axis stepper motor direction to reverse
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
-		//set the clock output high - the motor steps on rising clock edges
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		//Set the clock output low
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
+		
+		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		}
+		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//
+		
 		if (encoderPositionY%6<3)
-			positiveYPulsesSent=encoderPositionY/6;
+			positiveYPixels=encoderPositionY/6;
 		else
-			positiveYPulsesSent=encoderPositionY/6+1;
+			positiveYPixels=encoderPositionY/6+1;
 	}
-	curPosX=positiveXPulsesSent;
-	curPosY=positiveYPulsesSent;
+	
+	curPosX=positiveXPixels;
+	curPosY=positiveYPixels;
+	
+	*/	
 	while (((signed short) (desPosX-curPosX))>0)	//if we need to move in the +X direction...
 	{
 		//set the stepper motor direction to forward
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_PIN_0);
-		//set the clock output high - the motor steps on rising clock edges
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		//Set the clock output low
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		positiveXPulsesSent++;
+		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
+		
+		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		}
+		
+		positiveXPixels++;
 		curPosX++;
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
 	}
 	while (((signed short) (curPosX-desPosX))>0)	//if we got the command to move in the -X direction...
 	{
 		//set the stepper motor direction to reverse
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
-		//set the clock output high - the motor steps on rising clock edges
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		//Set the clock output low
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		positiveXPulsesSent--;
+		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
+		
+		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		}
+		
+		positiveXPixels--;
 		curPosX--;
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
 	}
 	while (((signed short) (desPosY-curPosY))>0)	//if we got the command to move in the +Y direction...
 	{
 		//set the stepper motor direction to forward
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
-		//set the clock output high - the motor steps on rising clock edges
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		//Set the clock output low
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		positiveYPulsesSent++;
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
+		
+		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		}
+		
+		positiveYPixels++;
 		curPosY++;
 		encoderPositionY=QEIPositionGet(QEI1_BASE);
 	}
 	while (((signed short) (curPosY-desPosY))>0)	//if we got the command to move in the -Y direction...
 	{
 		//set the stepper motor direction to reverse
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
-		//set the clock output high - the motor steps on rising clock edges
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		//Set the clock output low
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-		//wait 120 microseconds
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		positiveYPulsesSent--;
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
+		
+		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		}
+		
+		positiveYPixels--;
 		curPosY--;
 		encoderPositionY=QEIPositionGet(QEI1_BASE);
 	}
@@ -703,7 +763,7 @@ void burn(char burnIntensity, short burnDuration)	//USED WITH the X from SX and 
 	if (laserKey==1)	//if we have the go-ahead from an M04 command to turn on the laser
 	{
 		//s=((int) (479.0*i/7.0));	
-		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,((int) (479.0*i/7.0)));	//calculate the pwm duty cycle from burnIntensity and set the laser intensity
+		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,((int) ((479.0*burnIntensity)/7.0)));	//calculate the pwm duty cycle from burnIntensity and set the laser intensity
 		//engrave for the number of milliseconds indicated by G04
 		SysCtlDelay((int) ((SysCtlClockGet()/burnDuration) / 3));
 		// turn the laser off
@@ -722,50 +782,82 @@ void laserKeyToggle(char fourOrFive)	//USED WITH M04 and M05
 	}
 }
 void engrave()
-{   char g0[3] = "G0";
-		char g1[3] = "G1";
-		char g4[3] = "G4";
-		char m4[3] = "M4";
-		char m5[3] = "M5";
+{   //char g0[3] = "G0";
+		//char g1[3] = "G1";
+		//char g4[3] = "G4";
+		//char m4[3] = "M4";
+		//char m5[3] = "M5";
 
-	
 		for (j=0; j < gCodeEnd; j += 2)
 		{
 				if (gCode[j]=='G' && gCode[j+1]=='0')
 				{
-						for (i=0;i<2;i++)
+					/*	for (i=0;i<2;i++)
 						{
 							UARTCharPut(UART1_BASE,g0[i]);
-						}
+						} */
+					
+						step(0, 0, xCommands[xCommandsIndex], yCommands[yCommandsIndex]);
+						xCommandsIndex++;
+						yCommandsIndex++;
 				}
 				else if (gCode[j]=='G' && gCode[j+1]=='1')
 				{
-						for (i=0;i<2;i++)
+					/*	for (i=0;i<2;i++)
 						{
 							UARTCharPut(UART1_BASE,g1[i]);
-						}
+						} */
+						
+						step(xCommands[yCommandsIndex-1], yCommands[yCommandsIndex-1], xCommands[xCommandsIndex], yCommands[yCommandsIndex]);
 				}
 				else if (gCode[j]=='G' && gCode[j+1]=='4')
 				{
-						for (i=0;i<2;i++)
+					/*	for (i=0;i<2;i++)
 						{
 							UARTCharPut(UART1_BASE,g4[i]);
-						}
-				}
-				else if (gCode[j]=='M' && gCode[j+1]=='4')
-				{
-						for (i=0;i<2;i++)
+						} */
+					if(pauseValuesIndex == 0){
+							dwell(pauseValues[pauseValuesIndex]);
+					}
+					else {
+						burnDurVal = pauseValues[pauseValuesIndex];
+						
+						switch(gCode[j-3])
 						{
-							UARTCharPut(UART1_BASE,m4[i]);
-						}
+							case '0':
+								burn(0,burnDurVal);
+								break;
+							case '1':
+								burn(1,burnDurVal);
+								break;
+							case '2':
+								burn(2,burnDurVal);
+								break;
+							case '3':
+								burn(3,burnDurVal);
+								break;
+							case '4':
+								burn(4,burnDurVal);
+								break;
+							case '5':
+								burn(5,burnDurVal);
+								break;
+							case '6':
+								burn(6,burnDurVal);
+								break;
+							case '7':
+								burn(7,burnDurVal);
+								break;
+							default:
+								//DO NOTHING
+								break;
+						}//end of switch
+					}
+					pauseValuesIndex++;
+										
 				}
-				else if (gCode[j]=='M' && gCode[j+1]=='5')
-				{
-						for (i=0;i<2;i++)
-						{
-							UARTCharPut(UART1_BASE,m5[i]);
-						}
-				}
+				
+				gCodeIndex++;
 				
 		} //end of for
 		
@@ -931,14 +1023,17 @@ void testBenchMotor()
 	// PD0:PD1 are forward or reverse and PD2:PD3 are single step
 	//
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
 	//
 	// Enable the GPIO pins
 	//
-	GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
+	GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
+	GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_1);
 	//
 	// Set the pins as open drain
 	//
-	//GPIOPadConfigSet(GPIO_PORTD_BASE,GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3,GPIO_STRENGTH_8MA_SC,GPIO_PIN_TYPE_OD);
+	GPIOPadConfigSet(GPIO_PORTD_BASE,GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3,GPIO_STRENGTH_8MA,GPIO_PIN_TYPE_OD);
+	GPIOPadConfigSet(GPIO_PORTE_BASE,GPIO_PIN_1,GPIO_STRENGTH_8MA,GPIO_PIN_TYPE_OD);
 	//
 	// Start a loop to rotate the motor both directions one full revolution
 	//
@@ -948,15 +1043,15 @@ void testBenchMotor()
 		positionY=QEIPositionGet(QEI1_BASE);
 		if (j%2==0)
 		{
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_PIN_0);
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
+		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
 		}
 		else
 		{
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
+		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
 		}
-		for (i=0;i<1600;i++)
+		for (i=0;i<800;i++)
 		{
 		//
 		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
@@ -967,7 +1062,7 @@ void testBenchMotor()
 		//
 		positionX=QEIPositionGet(QEI0_BASE);
 		positionY=QEIPositionGet(QEI1_BASE);
-		//GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
 		//
 		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
@@ -978,7 +1073,7 @@ void testBenchMotor()
 		//
 		positionX=QEIPositionGet(QEI0_BASE);
 		positionY=QEIPositionGet(QEI1_BASE);
-		//GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
 		}
 	}
@@ -1120,16 +1215,21 @@ int main(void)
 	//ready();
 	
 	//testBenchIntensity();
-	testBenchMotor();
+	//testBenchMotor();
 	//testBenchPulse();
 	//testBenchDuration(); //dont use with PWM_Setup()!!!
 	
+
+
+
+
+
 	while(1)
 	{
- 		engrave();
+ 		//engrave();
  		if(readyToGo)
 		{
- 		engrave();		
+			engrave();		
 		}
   		//positionX=QEIPositionGet(QEI0_BASE);
   		//positionY=QEIPositionGet(QEI1_BASE);

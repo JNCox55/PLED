@@ -465,6 +465,18 @@
         </Group>
         <Group>
           <GroupName>::Device</GroupName>
+          <Files>
+            <File>
+              <FileName>startup_TM4C123.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>RTE\Device\TM4C123GH6PM\startup_TM4C123.s</FilePath>
+            </File>
+            <File>
+              <FileName>system_TM4C123.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>RTE\Device\TM4C123GH6PM\system_TM4C123.c</FilePath>
+            </File>
+          </Files>
         </Group>
       </Groups>
     </Target>

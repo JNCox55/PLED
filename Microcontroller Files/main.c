@@ -891,48 +891,52 @@ void testBenchMotor()
 	//
 	GPIOPinTypeGPIOOutput(GPIO_PORTD_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3);
 	//
+	// Set the pins as open drain
+	//
+	//GPIOPadConfigSet(GPIO_PORTD_BASE,GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3,GPIO_STRENGTH_8MA_SC,GPIO_PIN_TYPE_OD);
+	//
 	// Start a loop to rotate the motor both directions one full revolution
 	//
-//	for (j=0;j<2;j++)
-//	{
-//		positionX=QEIPositionGet(QEI0_BASE);
-//		positionY=QEIPositionGet(QEI1_BASE);
-//		if (j%2==0)
-//		{
-//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
-//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
-//		}
-//		else
-//		{
-//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_PIN_0);
-//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
-//		}
-//		for (i=0;i<1600;i++)
-//		{
-//		//
-//		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
-//		//
-//		SysCtlDelay(SysCtlClockGet() / (400 * 3));
-//		//
-//		// Bring the clocks high.
-//		//
-//			positionX=QEIPositionGet(QEI0_BASE);
-//			positionY=QEIPositionGet(QEI1_BASE);
-//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-//		//
-//		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
-//		//
-//		SysCtlDelay(SysCtlClockGet() / (400 * 3));
-//		//
-//		// Bring the clocks low.
-//		//
-//			positionX=QEIPositionGet(QEI0_BASE);
-//			positionY=QEIPositionGet(QEI1_BASE);
-//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-//		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-//		}
-//	}
+	for (j=0;j<2;j++)
+	{
+		positionX=QEIPositionGet(QEI0_BASE);
+		positionY=QEIPositionGet(QEI1_BASE);
+		if (j%2==0)
+		{
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_PIN_0);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
+		}
+		else
+		{
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
+		}
+		for (i=0;i<400;i++)
+		{
+		//
+		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
+		//
+		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		//
+		// Bring the clocks high.
+		//
+		positionX=QEIPositionGet(QEI0_BASE);
+		positionY=QEIPositionGet(QEI1_BASE);
+		//GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+		//
+		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
+		//
+		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		//
+		// Bring the clocks low.
+		//
+		positionX=QEIPositionGet(QEI0_BASE);
+		positionY=QEIPositionGet(QEI1_BASE);
+		//GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+		}
+	}
 
 /*while (1)
 {
@@ -1006,14 +1010,14 @@ int main(void)
 	//ready();
 	
 	//testBenchIntensity();
-	//testBenchMotor();
+	testBenchMotor();
 	//testBenchPulse();
 	//testBenchDuration(); //dont use with PWM_Setup()!!!
 	
 	while(1)
 	{
-		engrave();
-		//positionX=QEIPositionGet(QEI0_BASE);
-		//positionY=QEIPositionGet(QEI1_BASE);
+		//engrave();
+		positionX=QEIPositionGet(QEI0_BASE);
+		positionY=QEIPositionGet(QEI1_BASE);
 	}
 }

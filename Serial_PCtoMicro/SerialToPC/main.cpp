@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <Windows.h>
 #include "Serial.h"
+#include <string>
 #include <iostream>
 #include <fstream>
 
@@ -86,7 +87,7 @@ int main(){
 	//-----------------------------------
 	
 	//define G-Code location path string and file stream
-	string gcodeloc;
+	std::string gcodeloc;
 	std::ifstream gcloc("C:\PLED\PLEDpath.txt");
 	
 	//get G-Code Location
@@ -98,9 +99,10 @@ int main(){
 	//-----------------------------------
 	//		PARSER CODE
 	//-----------------------------------
-		
 	
-	fp = fopen(gcodeloc, "r");
+	//convert string to const char
+	const char * gpath = gcodeloc.c_str();
+	fp = fopen(gpath, "r");
 
 	if(!fp){
 		printf("Error opening file! \n");

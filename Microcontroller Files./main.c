@@ -473,8 +473,12 @@ void UART1_Setup()
 	//
 	UARTFIFOEnable(UART1_BASE);
 	IntEnable(INT_UART1);
-	UARTIntEnable(UART1_BASE, UART_INT_RX | UART_INT_RT);
+	UARTIntEnable(UART1_BASE, UART_INT_RX);
 	UARTEnable(UART1_BASE);
+	for (i=0;i<16;i++)
+		{
+			command[0]=UARTCharGetNonBlocking(UART1_BASE);
+		}
 }
 
 void QEI_Setup()
@@ -717,42 +721,82 @@ void laserKeyToggle(char fourOrFive)	//USED WITH M04 and M05
 	}
 }
 void engrave()
-{
-	//while(1)
-	{
-		for (j=0;j<16012;j++)
+{   char g0[3] = "G0";
+		char g1[3] = "G1";
+		char g4[3] = "G4";
+		char m4[3] = "M4";
+		char m5[3] = "M5";
+
+	
+		for (j=0; j < gCodeEnd; j += 2)
 		{
-			if (gCode[j]=='R' && gCode[j+1]=='D')
-			{
-					for (i=0;i<1612;i++)
-					{
-						xCommands[i]='\0';
-						yCommands[i]='\0';
-						pauseValues[i]='\0';
-					}
-					for (i=0;i<16012;i++)
-					{
-						gCode[i]='\0';
-					}
-					for (i=0;i<16;i++)
-					{
-						command[0]=UARTCharGetNonBlocking(UART1_BASE);
-					}
-					UARTRxErrorClear(UART1_BASE);
-					xCommandsEnd=0;
-					yCommandsEnd=0;
-					gCodeEnd=0;
-					pauseValuesEnd=0;
-					for (i=0;i<2;i++)
-					{
-						UARTCharPut(UART1_BASE,go[i]);
-					}
-					return;
-			}
+				if (gCode[j]=='G' && gCode[j+1]=='0')
+				{
+						for (i=0;i<2;i++)
+						{
+							UARTCharPut(UART1_BASE,g0[i]);
+						}
+				}
+				else if (gCode[j]=='G' && gCode[j+1]=='1')
+				{
+						for (i=0;i<2;i++)
+						{
+							UARTCharPut(UART1_BASE,g1[i]);
+						}
+				}
+				else if (gCode[j]=='G' && gCode[j+1]=='4')
+				{
+						for (i=0;i<2;i++)
+						{
+							UARTCharPut(UART1_BASE,g4[i]);
+						}
+				}
+				else if (gCode[j]=='M' && gCode[j+1]=='4')
+				{
+						for (i=0;i<2;i++)
+						{
+							UARTCharPut(UART1_BASE,m4[i]);
+						}
+				}
+				else if (gCode[j]=='M' && gCode[j+1]=='5')
+				{
+						for (i=0;i<2;i++)
+						{
+							UARTCharPut(UART1_BASE,m5[i]);
+						}
+				}
+				
+		} //end of for
+		
+		for (i=0;i<1612;i++)
+		{
+			xCommands[i]='\0';
+			yCommands[i]='\0';
+			pauseValues[i]='\0';
 		}
-	}
-	//return;
-}
+		for (i=0;i<16012;i++)
+		{
+			gCode[i]='\0';
+		}
+		for (i=0;i<16;i++)
+		{
+			command[0]=UARTCharGetNonBlocking(UART1_BASE);
+		}
+		UARTRxErrorClear(UART1_BASE);
+		xCommandsEnd=0;
+		yCommandsEnd=0;
+		gCodeEnd=0;
+		pauseValuesEnd=0;
+		for (i=0;i<2;i++)
+		{
+			UARTCharPut(UART1_BASE,go[i]);
+		}
+		
+		readyToGo = 0;
+		
+		return;
+		
+}//end of engrave()
 
 /*void ready()
 {
@@ -911,7 +955,7 @@ void testBenchMotor()
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
 		}
-		for (i=0;i<400;i++)
+		for (i=0;i<1600;i++)
 		{
 		//
 		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
@@ -995,6 +1039,71 @@ void testBenchMotor()
 			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
 		}
 }*/
+	/*for (j=0;j<2;j++)
+	{
+		positionX=QEIPositionGet(QEI0_BASE);
+		positionY=QEIPositionGet(QEI1_BASE);
+		if (j%2==0)
+		{
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_PIN_0);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
+		while(positionX<0x5000 || positionY<0x4800)
+		{
+		//
+		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
+		//
+		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		//
+		// Bring the clocks high.
+		//
+		positionX=QEIPositionGet(QEI0_BASE);
+		positionY=QEIPositionGet(QEI1_BASE);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+		//
+		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
+		//
+		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		//
+		// Bring the clocks low.
+		//
+		positionX=QEIPositionGet(QEI0_BASE);
+		positionY=QEIPositionGet(QEI1_BASE);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+		}
+		}
+		else
+		{
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
+		while(positionX>0 || positionY>0)
+		{
+		//
+		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
+		//
+		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		//
+		// Bring the clocks high.
+		//
+		positionX=QEIPositionGet(QEI0_BASE);
+		positionY=QEIPositionGet(QEI1_BASE);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+		//
+		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
+		//
+		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		//
+		// Bring the clocks low.
+		//
+		positionX=QEIPositionGet(QEI0_BASE);
+		positionY=QEIPositionGet(QEI1_BASE);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+		}
+		}
+	}*/
 }
 
 int main(void)

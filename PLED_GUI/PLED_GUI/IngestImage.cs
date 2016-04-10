@@ -80,7 +80,7 @@ namespace IngestImage
                             }
 
                             //select pixel
-                            Color oc = d.GetPixel(x, i);
+                            Color oc = d.GetPixel(column, row);
 
                             //define to grayscale
                             int grayScale = (int)((oc.R * 0.3) + (oc.G * 0.59) + (oc.B * 0.11));
@@ -95,7 +95,7 @@ namespace IngestImage
                             Color nc = Color.FromArgb(oc.A, grayScale, grayScale, grayScale);
 
                             //write pixel to specified position
-                            d.SetPixel(x, i, nc);
+                            d.SetPixel(column, row, nc);
 
                             //G-Code to move to next pixel
                             sw.WriteLine("G01 X" + (column + xLocation) + " Y" + (row + yLocation));

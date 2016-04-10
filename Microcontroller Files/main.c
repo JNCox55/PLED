@@ -57,6 +57,7 @@ char readyToGo=0;
 char temp;		//used to filter out the null terminating character '\0' in UART communication
 char wellShit=0;
 uint32_t ui32Status;
+int s;
 
 
 int32_t mytest;
@@ -672,7 +673,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 	curPosY=positiveYPixels;
 	
 	*/	
-	while (((signed short) (desPosX-curPosX))>0)	//if we need to move in the +X direction...
+	while (((signed short) (desPosX-curPosX))>0)	//if we need to move in the +X direction...*
 	{
 		//set the stepper motor direction to forward
 		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
@@ -760,14 +761,15 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 
 void burn(char burnIntensity, short burnDuration)	//USED WITH the X from SX and the duration from the following G04
 {
-	if (laserKey==1)	//if we have the go-ahead from an M04 command to turn on the laser
+	//if (laserKey==1)	//if we have the go-ahead from an M04 command to turn on the laser
 	{
-		//s=((int) (479.0*i/7.0));	
-		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,((int) ((479.0*burnIntensity)/7.0)));	//calculate the pwm duty cycle from burnIntensity and set the laser intensity
+		s=((int) (479.0*burnIntensity/7.0));	
+		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,((int) (s/7.0)));	//calculate the pwm duty cycle from burnIntensity and set the laser intensity
 		//engrave for the number of milliseconds indicated by G04
 		SysCtlDelay((int) ((SysCtlClockGet()/burnDuration) / 3));
 		// turn the laser off
 		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
+		i=0;
 	}
 }
 void laserKeyToggle(char fourOrFive)	//USED WITH M04 and M05
@@ -786,7 +788,7 @@ void engrave()
 		//char g1[3] = "G1";
 		//char g4[3] = "G4";
 		//char m4[3] = "M4";
-		//char m5[3] = "M5";
+		char m5[3] = "M5";
 
 		for (j=0; j < gCodeEnd; j += 2)
 		{
@@ -796,7 +798,8 @@ void engrave()
 						{
 							UARTCharPut(UART1_BASE,g0[i]);
 						} */
-					
+						//positiveXPixels=xCommands[xCommandsIndex];
+						//positiveYPixels=yCommands[yCommandsIndex];
 						step(0, 0, xCommands[xCommandsIndex], yCommands[yCommandsIndex]);
 						xCommandsIndex++;
 						yCommandsIndex++;
@@ -808,7 +811,9 @@ void engrave()
 							UARTCharPut(UART1_BASE,g1[i]);
 						} */
 						
-						step(xCommands[yCommandsIndex-1], yCommands[yCommandsIndex-1], xCommands[xCommandsIndex], yCommands[yCommandsIndex]);
+						step(positiveXPixels, positiveYPixels, xCommands[xCommandsIndex], yCommands[yCommandsIndex]);
+						xCommandsIndex++;
+						yCommandsIndex++;
 				}
 				else if (gCode[j]=='G' && gCode[j+1]=='4')
 				{
@@ -877,9 +882,13 @@ void engrave()
 		}
 		UARTRxErrorClear(UART1_BASE);
 		xCommandsEnd=0;
+		xCommandsIndex=0;
 		yCommandsEnd=0;
+		yCommandsIndex=0;
 		gCodeEnd=0;
+		gCodeIndex=0;
 		pauseValuesEnd=0;
+		pauseValuesIndex=0;
 		for (i=0;i<2;i++)
 		{
 			UARTCharPut(UART1_BASE,go[i]);

@@ -687,7 +687,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				//Set the clock output low
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
 				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
 		}
 		
 		positiveXPixels++;
@@ -708,7 +708,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				//Set the clock output low
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
 				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
 		}
 		
 		positiveXPixels--;
@@ -729,7 +729,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				//Set the clock output low
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
 				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
 		}
 		
 		positiveYPixels++;
@@ -750,7 +750,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				//Set the clock output low
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
 				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
 		}
 		
 		positiveYPixels--;
@@ -763,8 +763,15 @@ void burn(char burnIntensity, short burnDuration)	//USED WITH the X from SX and 
 {
 	//if (laserKey==1)	//if we have the go-ahead from an M04 command to turn on the laser
 	{
+		if (burnIntensity==0)
+		{
+			s=1;
+		}
+		else
+		{
 		s=((int) (479.0*burnIntensity/7.0));	
-		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,((int) (s/7.0)));	//calculate the pwm duty cycle from burnIntensity and set the laser intensity
+		}
+		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,((int) (s)));	//calculate the pwm duty cycle from burnIntensity and set the laser intensity
 		//engrave for the number of milliseconds indicated by G04
 		SysCtlDelay((int) ((SysCtlClockGet()/burnDuration) / 3));
 		// turn the laser off
@@ -830,28 +837,28 @@ void engrave()
 						switch(gCode[j-3])
 						{
 							case '0':
-								burn(0,burnDurVal);
+								burn(7,burnDurVal);
 								break;
 							case '1':
-								burn(1,burnDurVal);
-								break;
-							case '2':
-								burn(2,burnDurVal);
-								break;
-							case '3':
-								burn(3,burnDurVal);
-								break;
-							case '4':
-								burn(4,burnDurVal);
-								break;
-							case '5':
-								burn(5,burnDurVal);
-								break;
-							case '6':
 								burn(6,burnDurVal);
 								break;
+							case '2':
+								burn(5,burnDurVal);
+								break;
+							case '3':
+								burn(4,burnDurVal);
+								break;
+							case '4':
+								burn(3,burnDurVal);
+								break;
+							case '5':
+								burn(2,burnDurVal);
+								break;
+							case '6':
+								burn(1,burnDurVal);
+								break;
 							case '7':
-								burn(7,burnDurVal);
+								burn(0,burnDurVal);
 								break;
 							default:
 								//DO NOTHING

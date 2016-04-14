@@ -6,6 +6,7 @@
 //
 //------------------------------------------------------------------------------------
 
+#pragma warning(disable:4996)
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -50,11 +51,17 @@ int main(){
 	//*************************
 	//	Serial Vars
 	//*************************
-	int port = 3;//3; 
+	int port = 5;//3; 
 	int baudRate = 115200;//9600; //115200
 	int dispType = 0;
 	int nBytesSent = 0;
 	
+	std::cout << "Please insert your UART COM port number: ";
+	std::cin >> port;
+	
+	std::cout << "Please insert your UART baud rate (default is 115200): ";
+	std::cin >> baudRate;
+
 	uint8_t buffer[2];
 
 	uint8_t shortMSB; 
@@ -88,7 +95,7 @@ int main(){
 	
 	//define G-Code location path string and file stream
 	std::string gcodeloc;
-	std::ifstream gcloc("C:\PLED\PLEDpath.txt");
+	std::ifstream gcloc("C:\\PLED\\PLEDpath.txt");
 	
 	//get G-Code Location
 	std::getline(gcloc, gcodeloc);

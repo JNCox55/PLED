@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <math.h>
 //#include <string.h>
 #include "driverlib\pwm.h"
 #include "inc\hw_memmap.h"
@@ -18,6 +19,8 @@
 #include "inc\hw_gpio.h"
 #include "inc\hw_types.h"
 #include "driverlib\fpu.h"
+
+//#define FEEDBACK				//<---- Uncomment this for Feedback
 
 volatile unsigned int *UART1=(unsigned int *) 0x4000D000; //This points to the base address for UART1
 int timeEngrave=67;  //This is the denominator for the fraction of a second we are engraving during testing
@@ -566,6 +569,9 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 	//Assign positiveXPulsesSent to curPosX when calling step()
 	//positiveXPulsesSent is also where we THOUGHT we were, but gets updated to match where we REALLY are in this function
 	//encoderPositionX is where we REALLY are
+	
+	#ifdef FEEDBACK
+	
 	encoderPositionX=QEIPositionGet(QEI0_BASE);
 	while (((signed int) (curPosX*9-encoderPositionX))>22)		//if we are more than 2 pixels left of where we need to be, fix it before moving on
 	{
@@ -675,6 +681,8 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 	
 	curPosX=positiveXPixels;
 	curPosY=positiveYPixels;
+	
+	#endif
 	
 	while (((signed short) (desPosX-curPosX))>0)	//if we need to move in the +X direction...*
 	{
@@ -791,25 +799,30 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 	i=0;
 }
 
-void burn(char burnIntensity, short burnDuration)	//USED WITH the X from SX and the duration from the following G04
+void burn(int burnIntensity, short burnDuration)	//USED WITH the X from SX and the duration from the following G04
 {
 	//if (laserKey==1)	//if we have the go-ahead from an M04 command to turn on the laser
-	{
-		if (burnIntensity==0)
+
+	s = burnIntensity;
+	
+/*
+		if (burnIntensity==7)
 		{
 			s=1;
 		}
 		else
 		{
-		s=((int) (479.0*burnIntensity/7.0));	
+//		s=((int) (479.0*burnIntensity/7.0));
+//		s=((int) (230.35*log((7-burnIntensity)+1)));
 		}
+*/
 		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,((int) (s)));	//calculate the pwm duty cycle from burnIntensity and set the laser intensity
 		//engrave for the number of milliseconds indicated by G04
 		SysCtlDelay((int) ((SysCtlClockGet()/burnDuration) / 3));
 		// turn the laser off
 		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
 		i=0;
-	}
+	
 }
 void laserKeyToggle(char fourOrFive)	//USED WITH M04 and M05
 {
@@ -869,28 +882,28 @@ void engrave()
 						switch(gCode[j-3])
 						{
 							case '0':
-								burn(7,burnDurVal);
+								burn(479,burnDurVal);
 								break;
 							case '1':
-								burn(6,burnDurVal);
+								burn(340,burnDurVal);
 								break;
 							case '2':
-								burn(5,burnDurVal);
+								burn(290,burnDurVal);
 								break;
 							case '3':
-								burn(4,burnDurVal);
+								burn(215,burnDurVal);
 								break;
 							case '4':
-								burn(3,burnDurVal);
+								burn(170,burnDurVal);
 								break;
 							case '5':
-								burn(2,burnDurVal);
+								burn(130,burnDurVal);
 								break;
 							case '6':
-								burn(1,burnDurVal);
+								burn(110,burnDurVal);
 								break;
 							case '7':
-								burn(0,burnDurVal);
+								burn(1,burnDurVal);
 								break;
 							default:
 								//DO NOTHING

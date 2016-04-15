@@ -26,15 +26,15 @@ volatile unsigned int *UART1=(unsigned int *) 0x4000D000; //This points to the b
 int timeEngrave=67;  //This is the denominator for the fraction of a second we are engraving during testing
 #define timeRest 0.5 //This is the denominator for the fraction of a second we rest between burns
 #define QEIMaxPosition 0xFFFFFFFF //This is the maximum count for the encoder(s) to accumulate pulses to.
-#define motorStepDuration 4000	//This is the denominator for the fraction of a second we wait between sending stepper motor pulses
+#define motorStepDuration 8333	//This is the denominator for the fraction of a second we wait between sending stepper motor pulses
 #define pulsesPerStep 12
 #define stepsPerPixel 1
 
 char laserKey=0;	//This flag gets flipped on each M4 or M5 G-Code instruction
 signed short positiveXPixels=0;	//This keeps track of where we think we are in the +X direction
 signed short positiveYPixels=0;	//This keeps track of where we think we are in the +Y direction
-signed int encoderPositionX=0;		//EACH MOTOR STEP IS ABOUT 6 ENCODER PULSES - this is feedback of absolute +X direction position
-signed int encoderPositionY=0;		//EACH MOTOR STEP IS ABOUT 6 ENCODER PULSES - this is feedback of absolute +Y direction position
+int encoderPositionX=0;		//EACH MOTOR STEP IS ABOUT 6 ENCODER PULSES - this is feedback of absolute +X direction position
+int encoderPositionY=0;		//EACH MOTOR STEP IS ABOUT 6 ENCODER PULSES - this is feedback of absolute +Y direction position
 char engraveReady=0;		//This flag lets us know when we have a full row's worth of data to engrave
 
 char identifier[2];		//This is a temporary value used to compare incoming G-Codes for sorting
@@ -534,6 +534,8 @@ void QEI_Setup()
 	//
 	QEIEnable(QEI0_BASE);
 	QEIEnable(QEI1_BASE);
+	//QEIPositionSet(QEI0_BASE,0x77777777);
+	//QEIPositionSet(QEI1_BASE,0x77777777);
 }
 
 void GPIO_Setup()
@@ -571,14 +573,13 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 	//encoderPositionX is where we REALLY are
 	
 	#ifdef FEEDBACK
-	
 	encoderPositionX=QEIPositionGet(QEI0_BASE);
-	while (((signed int) (curPosX*9-encoderPositionX))>22)		//if we are more than 2 pixels left of where we need to be, fix it before moving on
+	while ((float)(((float)curPosX*9.1098)-(float)encoderPositionX)>18.2196)		//if we are more than 2 pixels left of where we need to be, fix it before moving on
 	{
 		//set the X axis stepper motor direction to forward
 		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
 		
-		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		//for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
 		{
 				//set the clock output high - the motor steps on rising clock edges
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
@@ -587,11 +588,11 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				//Set the clock output low
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
 				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
 		}
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
-		encoderPositionX=0xFFFFFFFF-QEIPositionGet(QEI0_BASE);	//
+		encoderPositionX=QEIPositionGet(QEI0_BASE);
 		
 		if (encoderPositionX%9<4)
 			positiveXPixels=encoderPositionX/9;
@@ -599,12 +600,13 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 			positiveXPixels=encoderPositionX/9+1;
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
 	}
-	while (((signed int) (encoderPositionX-curPosX*9))>22)		//if we are more than 2 pixels right of where we need to be, fix it before moving on
+
+	while ((float)((float)encoderPositionX-((float)curPosX*9.1098))>18.2196)		//if we are more than 2 pixels right of where we need to be, fix it before moving on
 	{
 		//set the X axis stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
 		
-		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		//for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
 		{
 				//set the clock output high - the motor steps on rising clock edges
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
@@ -613,7 +615,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				//Set the clock output low
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
 				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
 		}
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
@@ -626,12 +628,13 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
 	}
 	encoderPositionY=QEIPositionGet(QEI1_BASE);
-	while (((signed int) (curPosY*9-encoderPositionY))>22)		//if we are more than 2 pixels above where we need to be, fix it before moving on
+
+	while ((float)(((float)curPosY*9.135)-(float)encoderPositionY)>18.27)		//if we are more than 2 pixels above where we need to be, fix it before moving on
 	{
 		//set the Y axis stepper motor direction to forward
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
 		
-		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		//for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
 		{
 				//set the clock output high - the motor steps on rising clock edges
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
@@ -640,33 +643,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				//Set the clock output low
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
 				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		}
-		
-		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
-		encoderPositionY=0xFFFFFFFF-QEIPositionGet(QEI1_BASE);	//
-		
-		if (encoderPositionY%9<4)
-			positiveYPixels=encoderPositionY/9;
-		else
-			positiveYPixels=encoderPositionY/9+1;
-		encoderPositionY=QEIPositionGet(QEI1_BASE);
-	}
-	while (((signed int) (encoderPositionY-curPosY*9))>22)		//if we are more than 2 pixels below where we need to be, fix it before moving on
-	{
-		//set the Y axis stepper motor direction to reverse
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
-		
-		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
-		{
-				//set the clock output high - the motor steps on rising clock edges
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-				//Set the clock output low
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
 		}
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
@@ -678,7 +655,34 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 			positiveYPixels=encoderPositionY/9+1;
 		encoderPositionY=QEIPositionGet(QEI1_BASE);
 	}
-	
+
+	while ((float)((float)encoderPositionY-((float)curPosY*9.135))>18.27)		//if we are more than 2 pixels below where we need to be, fix it before moving on
+	{
+		//set the Y axis stepper motor direction to reverse
+		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
+		
+		//for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+				//wait 120 microseconds
+				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		}
+		
+		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
+		encoderPositionY=QEIPositionGet(QEI1_BASE);	//
+		
+		if (encoderPositionY%9<4)
+			positiveYPixels=encoderPositionY/9;
+		else
+			positiveYPixels=encoderPositionY/9+1;
+		encoderPositionY=QEIPositionGet(QEI1_BASE);
+	}
+
 	curPosX=positiveXPixels;
 	curPosY=positiveYPixels;
 	
@@ -1267,12 +1271,24 @@ int main(void)
 {
 	Sys_Clock_Set();
 	FPUEnable();
+	FPUStackingEnable();
 	UART1_Setup();
 	PWM_Setup();
 	QEI_Setup();
 	GPIO_Setup();
-	
 
+	/*GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
+	for(i = 0; i < (1347); i++)
+		{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		}*/
 	//ready();
 	
 	//testBenchIntensity();
@@ -1280,14 +1296,8 @@ int main(void)
 	//testBenchPulse();
 	//testBenchDuration(); //dont use with PWM_Setup()!!!
 	
-
-
-
-
-
 	while(1)
 	{
- 		//engrave();
  		if(readyToGo)
 		{
 			engrave();		

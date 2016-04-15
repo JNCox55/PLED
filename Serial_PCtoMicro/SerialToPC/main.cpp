@@ -30,7 +30,7 @@
 #define S5 0x5335
 #define S6 0x5336
 #define S7 0x5337
-
+ 
 COMSTAT comStat;
 DWORD   dwErrors;
 

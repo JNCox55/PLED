@@ -27,14 +27,13 @@ int timeEngrave=67;  //This is the denominator for the fraction of a second we a
 #define timeRest 0.5 //This is the denominator for the fraction of a second we rest between burns
 #define QEIMaxPosition 0xFFFFFFFF //This is the maximum count for the encoder(s) to accumulate pulses to.
 #define motorStepDuration 8333	//This is the denominator for the fraction of a second we wait between sending stepper motor pulses
-#define pulsesPerStep 12
-#define stepsPerPixel 1
+#define pulsesPerPixel 12
 
 char laserKey=0;	//This flag gets flipped on each M4 or M5 G-Code instruction
 signed short positiveXPixels=0;	//This keeps track of where we think we are in the +X direction
 signed short positiveYPixels=0;	//This keeps track of where we think we are in the +Y direction
-int encoderPositionX=0;		//EACH MOTOR STEP IS ABOUT 6 ENCODER PULSES - this is feedback of absolute +X direction position
-int encoderPositionY=0;		//EACH MOTOR STEP IS ABOUT 6 ENCODER PULSES - this is feedback of absolute +Y direction position
+int encoderPositionX=0;		//EACH PIXEL IS ABOUT 9.1098 ENCODER PULSES - this is feedback of absolute +X direction position
+int encoderPositionY=0;		//EACH PIXEL IS ABOUT 9.135 ENCODER PULSES - this is feedback of absolute +Y direction position
 char engraveReady=0;		//This flag lets us know when we have a full row's worth of data to engrave
 
 char identifier[2];		//This is a temporary value used to compare incoming G-Codes for sorting
@@ -567,9 +566,9 @@ void dwell(short dwellDuration) //USED WITH the initial G04
 }
 void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G00 and G01
 {
-	//CurPosX is where we THINK we are, based on the number of positive pulses sent out
-	//Assign positiveXPulsesSent to curPosX when calling step()
-	//positiveXPulsesSent is also where we THOUGHT we were, but gets updated to match where we REALLY are in this function
+	//CurPosX is where we THINK we are, based on the number of positive pixels sent out
+	//Assign positiveXPixels to curPosX when calling step()
+	//positiveXPixels is also where we THOUGHT we were, but gets updated to match where we REALLY are in this function
 	//encoderPositionX is where we REALLY are
 	
 	#ifdef FEEDBACK
@@ -688,12 +687,12 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 	
 	#endif
 	
-	while (((signed short) (desPosX-curPosX))>0)	//if we need to move in the +X direction...*
+	while (desPosX-curPosX>0)	//if we need to move in the +X direction...
 	{
 		//set the stepper motor direction to forward
 		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
 		
-		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		for(i = 0; i < (pulsesPerPixel); i++)
 		{
 				//set the clock output high - the motor steps on rising clock edges
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
@@ -704,7 +703,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				//wait 120 microseconds
 				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
 		}
-		/*if (curPosX%37==1)
+		if (curPosX%37==1)
 		{
 			for(i = 0; i < 5; i++)
 			{
@@ -717,17 +716,17 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				//wait 120 microseconds
 				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
 			}
-		}*/
+		}
 		positiveXPixels++;
 		curPosX++;
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
 	}
-	while (((signed short) (curPosX-desPosX))>0)	//if we got the command to move in the -X direction...
+	while (curPosX-desPosX>0)	//if we got the command to move in the -X direction...
 	{
 		//set the stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
 		
-		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		for(i = 0; i < (pulsesPerPixel); i++)
 		{
 				//set the clock output high - the motor steps on rising clock edges
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
@@ -737,18 +736,32 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
 				//wait 120 microseconds
 				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		}
+		if (curPosX%37==1)
+		{
+			for(i = 0; i < 5; i++)
+			{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+				//wait 120 microseconds
+				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+			}
 		}
 		
 		positiveXPixels--;
 		curPosX--;
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
 	}
-	while (((signed short) (desPosY-curPosY))>0)	//if we got the command to move in the +Y direction...
+	while (desPosY-curPosY>0)	//if we got the command to move in the +Y direction...
 	{
 		//set the stepper motor direction to forward
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
 		
-		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		for(i = 0; i < (pulsesPerPixel); i++)
 		{
 				//set the clock output high - the motor steps on rising clock edges
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
@@ -759,7 +772,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				//wait 120 microseconds
 				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
 		}
-		/*if (curPosY%37==1)
+		if (curPosY%37==1)
 		{
 			for(i = 0; i < 5; i++)
 			{
@@ -772,17 +785,17 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				//wait 120 microseconds
 				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
 			}
-		}*/
+		}
 		positiveYPixels++;
 		curPosY++;
 		encoderPositionY=QEIPositionGet(QEI1_BASE);
 	}
-	while (((signed short) (curPosY-desPosY))>0)	//if we got the command to move in the -Y direction...
+	while (curPosY-desPosY>0)	//if we got the command to move in the -Y direction...
 	{
 		//set the stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
 		
-		for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
+		for(i = 0; i < (pulsesPerPixel); i++)
 		{
 				//set the clock output high - the motor steps on rising clock edges
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
@@ -792,6 +805,20 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY)	//USED WITH G
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
 				//wait 120 microseconds
 				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+		}
+		if (curPosY%37==1)
+		{
+			for(i = 0; i < 5; i++)
+			{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+				//wait 120 microseconds
+				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+			}
 		}
 		
 		positiveYPixels--;
@@ -839,122 +866,122 @@ void laserKeyToggle(char fourOrFive)	//USED WITH M04 and M05
 		laserKey=0;	//Do NOT allow the laser to be turned on by burn()
 	}
 }
-void engrave()
-{   //char g0[3] = "G0";
-		//char g1[3] = "G1";
-		//char g4[3] = "G4";
-		//char m4[3] = "M4";
-		//char m5[3] = "M5";
-
-		for (j=0; j < gCodeEnd; j += 2)
-		{
-				if (gCode[j]=='G' && gCode[j+1]=='0')
-				{
-					/*	for (i=0;i<2;i++)
-						{
-							UARTCharPut(UART1_BASE,g0[i]);
-						} */
-						//positiveXPixels=xCommands[xCommandsIndex];
-						//positiveYPixels=yCommands[yCommandsIndex];
-						step(0, 0, xCommands[xCommandsIndex], yCommands[yCommandsIndex]);
-						xCommandsIndex++;
-						yCommandsIndex++;
-				}
-				else if (gCode[j]=='G' && gCode[j+1]=='1')
-				{
-					/*	for (i=0;i<2;i++)
-						{
-							UARTCharPut(UART1_BASE,g1[i]);
-						} */
-						
-						step(positiveXPixels, positiveYPixels, xCommands[xCommandsIndex], yCommands[yCommandsIndex]);
-						xCommandsIndex++;
-						yCommandsIndex++;
-				}
-				else if (gCode[j]=='G' && gCode[j+1]=='4')
-				{
-					/*	for (i=0;i<2;i++)
-						{
-							UARTCharPut(UART1_BASE,g4[i]);
-						} */
-					if(pauseValuesIndex == 0){
-							dwell(pauseValues[pauseValuesIndex]);
-					}
-					else {
-						burnDurVal = pauseValues[pauseValuesIndex];
-						
-						switch(gCode[j-3])
-						{
-							case '0':
-								burn(479,burnDurVal);
-								break;
-							case '1':
-								burn(340,burnDurVal);
-								break;
-							case '2':
-								burn(290,burnDurVal);
-								break;
-							case '3':
-								burn(215,burnDurVal);
-								break;
-							case '4':
-								burn(170,burnDurVal);
-								break;
-							case '5':
-								burn(130,burnDurVal);
-								break;
-							case '6':
-								burn(110,burnDurVal);
-								break;
-							case '7':
-								burn(1,burnDurVal);
-								break;
-							default:
-								//DO NOTHING
-								break;
-						}//end of switch
-					}
-					pauseValuesIndex++;
-										
-				}
-				
-				gCodeIndex++;
-				
-		} //end of for
-		
-		for (i=0;i<1612;i++)
-		{
-			xCommands[i]='\0';
-			yCommands[i]='\0';
-			pauseValues[i]='\0';
-		}
-		for (i=0;i<16012;i++)
-		{
-			gCode[i]='\0';
-		}
-		for (i=0;i<16;i++)
-		{
-			command[0]=UARTCharGetNonBlocking(UART1_BASE);
-		}
-		UARTRxErrorClear(UART1_BASE);
-		xCommandsEnd=0;
-		xCommandsIndex=0;
-		yCommandsEnd=0;
-		yCommandsIndex=0;
-		gCodeEnd=0;
-		gCodeIndex=0;
-		pauseValuesEnd=0;
-		pauseValuesIndex=0;
-		for (i=0;i<2;i++)
-		{
-			UARTCharPut(UART1_BASE,go[i]);
-		}
-		
-		readyToGo = 0;
-		
-		return;
-		
-}//end of engrave()
+ void engrave()
+ {   //char g0[3] = "G0";
+ 		//char g1[3] = "G1";
+ 		//char g4[3] = "G4";
+ 		//char m4[3] = "M4";
+ 		//char m5[3] = "M5";
+ 
+ 		for (j=0; j < gCodeEnd; j += 2)
+ 		{
+ 				if (gCode[j]=='G' && gCode[j+1]=='0')
+ 				{
+ 					/*	for (i=0;i<2;i++)
+ 						{
+ 							UARTCharPut(UART1_BASE,g0[i]);
+ 						} */
+ 						//positiveXPixels=xCommands[xCommandsIndex];
+ 						//positiveYPixels=yCommands[yCommandsIndex];
+ 						step(0, 0, xCommands[xCommandsIndex], yCommands[yCommandsIndex]);
+ 						xCommandsIndex++;
+ 						yCommandsIndex++;
+ 				}
+ 				else if (gCode[j]=='G' && gCode[j+1]=='1')
+ 				{
+ 					/*	for (i=0;i<2;i++)
+ 						{
+ 							UARTCharPut(UART1_BASE,g1[i]);
+ 						} */
+ 						
+ 						step(positiveXPixels, positiveYPixels, xCommands[xCommandsIndex], yCommands[yCommandsIndex]);
+ 						xCommandsIndex++;
+ 						yCommandsIndex++;
+ 				}
+ 				else if (gCode[j]=='G' && gCode[j+1]=='4')
+ 				{
+ 					/*	for (i=0;i<2;i++)
+ 						{
+ 							UARTCharPut(UART1_BASE,g4[i]);
+ 						} */
+ 					if(pauseValuesIndex == 0){
+ 							dwell(pauseValues[pauseValuesIndex]);
+ 					}
+ 					else {
+ 						burnDurVal = pauseValues[pauseValuesIndex];
+ 						
+ 						switch(gCode[j-3])
+ 						{
+ 							case '0':
+ 								burn(479,burnDurVal);
+ 								break;
+ 							case '1':
+ 								burn(340,burnDurVal);
+ 								break;
+ 							case '2':
+ 								burn(290,burnDurVal);
+ 								break;
+ 							case '3':
+ 								burn(215,burnDurVal);
+ 								break;
+ 							case '4':
+ 								burn(170,burnDurVal);
+ 								break;
+ 							case '5':
+ 								burn(130,burnDurVal);
+ 								break;
+ 							case '6':
+ 								burn(110,burnDurVal);
+ 								break;
+ 							case '7':
+ 								burn(1,burnDurVal);
+ 								break;
+ 							default:
+ 								//DO NOTHING
+ 								break;
+ 						}//end of switch
+ 					}
+ 					pauseValuesIndex++;
+ 										
+ 				}
+ 				
+ 				gCodeIndex++;
+ 				
+ 		} //end of for
+ 		
+ 		for (i=0;i<1612;i++)
+ 		{
+ 			xCommands[i]='\0';
+ 			yCommands[i]='\0';
+ 			pauseValues[i]='\0';
+ 		}
+ 		for (i=0;i<16012;i++)
+ 		{
+ 			gCode[i]='\0';
+ 		}
+ 		for (i=0;i<16;i++)
+ 		{
+ 			command[0]=UARTCharGetNonBlocking(UART1_BASE);
+ 		}
+ 		UARTRxErrorClear(UART1_BASE);
+ 		xCommandsEnd=0;
+ 		xCommandsIndex=0;
+ 		yCommandsEnd=0;
+ 		yCommandsIndex=0;
+ 		gCodeEnd=0;
+ 		gCodeIndex=0;
+ 		pauseValuesEnd=0;
+ 		pauseValuesIndex=0;
+ 		for (i=0;i<2;i++)
+ 		{
+ 			UARTCharPut(UART1_BASE,go[i]);
+ 		}
+ 		
+ 		readyToGo = 0;
+ 		
+ 		return;
+ 		
+ }//end of engrave()
 
 /*void ready()
 {

@@ -5,15 +5,15 @@ void engrave()
  		{
  				if (gCode[j]=='G' && gCode[j+1]=='0')	//If we got the command to jog to a given position
  				{
- 						step(0, 0, xCommands[xCommandsIndex], yCommands[yCommandsIndex]);	//move to the initial position
-						correctPlacement();	//Use the encoders to make sure we jogged to the correct location
+ 						step(0, 0, xCommands[xCommandsIndex], yCommands[yCommandsIndex], 0);	//move to the initial position
+						correctPlacement(positiveXPixels, positiveYPixels);	//Use the encoders to make sure we jogged to the correct location
  						xCommandsIndex++;	//move the pointer to the next x location
  						yCommandsIndex++;	//move the pointer to the next y location
 						j=j+4;
  				}
  				else if (gCode[j]=='G' && gCode[j+1]=='1') //If we get a move command...
  				{
-					if(gCode[j+2])=='s')	//first get the intensity and burn duration
+					if(gCode[j+2]=='S')	//first get the intensity and burn duration
 					{
 						switch(gCode[j+3])	//get the intensity level and turn on the laser at the specified intensity
 						{
@@ -47,15 +47,15 @@ void engrave()
 						}//end of switch
 					}//end of if
 				}
-				else if (gCode[j+6]=='G' && gCode[j+7]='4')	//when we know the burn duration...
+				else if (gCode[j+6]=='G' && gCode[j+7]=='4')	//when we know the burn duration...
 				{
 					burnDurVal=pauseValues[pauseValuesIndex];	//grab the burn duration from pauseValues
 					pauseValuesIndex++; //move the pointer for the next pause value
-					step(positiveXPixels, positiveYPixels, xCommands[xCommandsIndex], yCommands[yCommandsIndex]); //move over the pixel while burning it at the specified intensity
+					step(positiveXPixels, positiveYPixels, xCommands[xCommandsIndex], yCommands[yCommandsIndex], burnDurVal); //move over the pixel while burning it at the specified intensity
 					xCommandsIndex++;	//move the pointer to the next x location
  					yCommandsIndex++;	//move the pointer to the next y location
 					PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,((int) (1)));	//turn the laser off
-					correctPlacement();		//use feedback to move to the correct position
+					correctPlacement(positiveXPixels, positiveYPixels);		//use feedback to move to the correct position
 				}
  		} //end of while
  		
@@ -208,12 +208,12 @@ void correctPlacement(short curPosX,short curPosY)
 		{
 				//set the clock output high - the motor steps on rising clock edges
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//wait a certain amount of time before changing the stepper motor clock state
+				SysCtlDelay((int)((SysCtlClockGet()*motorStepDuration)/6000));	//if we are just jogging then go ahead and move fast
 				//Set the clock output low
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-				//wait 120 microseconds
-				//SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				//wait a certain amount of time before changing the stepper motor clock state
+				SysCtlDelay((int)((SysCtlClockGet()*motorStepDuration)/6000));	//if we are just jogging then go ahead and move fast
 		}
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder

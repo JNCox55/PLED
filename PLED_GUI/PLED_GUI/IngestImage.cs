@@ -107,7 +107,7 @@ namespace IngestImage
                             sw.WriteLine("M04");
 
                             //G-Code for dwell
-                            sw.WriteLine("G04 P0.010");
+                            sw.WriteLine("G04 P0.015");
 
                             //G-Code to turn off laser
                             sw.WriteLine("M05");

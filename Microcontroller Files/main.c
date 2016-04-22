@@ -52,6 +52,8 @@ int i=0;
 int j=0;
 char stop[5]="stop";
 char go[3]="GO";
+char rs[3]="RS";	//resend row
+char mb[3]="MB";	//muy bueno
 char done=0;
 char start=0;
 char readyToGo=0;
@@ -59,6 +61,7 @@ char temp;		//used to filter out the null terminating character '\0' in UART com
 char wellShit=0;
 uint32_t ui32Status;
 int s;
+char rowGood=1;
 
 
 int32_t mytest;
@@ -77,8 +80,11 @@ short pauseValues[1612];	//holds the pause durations for the G04 Commands
 int pauseValuesEnd=0;	//points to the end of the pauseValues data
 int pauseValuesIndex=0; //points to the current pause time duration to dwell
 int pixelsCount=0;
+int pixelCorrectY=0;
+int pixelCorrectX=0;
 
 short burnDurVal = 0;
+short zephyr=0;
 
 //*****************************************************************************
 //
@@ -135,7 +141,7 @@ UART1_Handler(void)
 			return;
 		}
 		
-		if (identifier[0]=='G' && identifier[1]=='0')	//If we recieve the command to jog to a given coordinate...
+		else if (identifier[0]=='G' && identifier[1]=='0')	//If we recieve the command to jog to a given coordinate...
 		{
 			tempPosition=0x00000000;
 			moveY=0x0000;
@@ -151,6 +157,10 @@ UART1_Handler(void)
 				}
 				tempPosition=tempPosition<<8;	//make room for the next byte
 				i++;	//increment the number of bytes
+			}
+			if ((moveX>2600||moveX<0) || (moveY>2600||moveY<0))
+			{
+				rowGood=0;
 			}
 			xCommands[xCommandsEnd]=moveX;		//Store the x command in the buffer
 			yCommands[yCommandsEnd]=moveY;		//Store the y command in the buffer
@@ -163,7 +173,7 @@ UART1_Handler(void)
 			return;
 		}
 				
-		if (identifier[0]=='G' && identifier[1]=='1')	//If we recieve the command to interpolate to the next position...
+		else if (identifier[0]=='G' && identifier[1]=='1')	//If we recieve the command to interpolate to the next position...
 		{
 			tempPosition=0x00000000;
 			moveX=0x0000;
@@ -180,6 +190,10 @@ UART1_Handler(void)
 				tempPosition=tempPosition<<8;	//make room for the next byte
 				i++;	//increment the number of bytes
 			}
+			if ((moveX>2600||moveX<0) || (moveY>2600||moveY<0))
+			{
+				rowGood=0;
+			}
 			xCommands[xCommandsEnd]=moveX;		//Store the x command in the buffer
 			yCommands[yCommandsEnd]=moveY;		//Store the y command in the buffer
 			xCommandsEnd++;	//move the index of the end of the xCommandBuffer to point to one past the last entry
@@ -191,12 +205,16 @@ UART1_Handler(void)
 			return;
 		}		
 		
-		if (identifier[0]=='G' && identifier[1]=='4')	//If we recieve the command to dwell at the current position...
+		else if (identifier[0]=='G' && identifier[1]=='4')	//If we recieve the command to dwell at the current position...
 		{
 			dwellTime=0x0000;
 			dwellTime|=UARTCharGet(UART1_BASE);	//Grab a byte from the fifo buffer
 			dwellTime=dwellTime<<8;	//make room for the next byte
 			dwellTime|=UARTCharGet(UART1_BASE);	//Grab the next byte from the fifo buffer
+			if ((dwellTime<0 || dwellTime>100000))
+			{
+				rowGood=0;
+			}
 			pauseValues[pauseValuesEnd]=dwellTime;
 			pauseValuesEnd++;
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
@@ -204,7 +222,7 @@ UART1_Handler(void)
 			gCodeEnd=gCodeEnd+2;		//move the index of the gCode buffer to point to one past the last entry
 			return;
 		}		
-		if (identifier[0]=='M' && identifier[1]=='4')	//If we recieve the command to turn the laser on...
+		else if (identifier[0]=='M' && identifier[1]=='4')	//If we recieve the command to turn the laser on...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
@@ -212,7 +230,7 @@ UART1_Handler(void)
 			return;
 		}	
 		
-		if (identifier[0]=='M' && identifier[1]=='5')	//If we recieve the command to turn the laser off...
+		else if (identifier[0]=='M' && identifier[1]=='5')	//If we recieve the command to turn the laser off...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
@@ -220,7 +238,7 @@ UART1_Handler(void)
 			return;
 		}	
 		
-		if (identifier[0]=='S' && identifier[1]=='0')	//If we recieve the command to set the laser at full intensity...
+		else if (identifier[0]=='S' && identifier[1]=='0')	//If we recieve the command to set the laser at full intensity...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
@@ -228,7 +246,7 @@ UART1_Handler(void)
 			return;
 		}	
 		
-		if (identifier[0]=='S' && identifier[1]=='1')	//If we recieve the command to set the laser 6/7 intensity...
+		else if (identifier[0]=='S' && identifier[1]=='1')	//If we recieve the command to set the laser 6/7 intensity...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
@@ -236,7 +254,7 @@ UART1_Handler(void)
 			return;
 		}
 
-		if (identifier[0]=='S' && identifier[1]=='2')	//If we recieve the command to set the laser at 5/7 intensity...
+		else if (identifier[0]=='S' && identifier[1]=='2')	//If we recieve the command to set the laser at 5/7 intensity...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
@@ -244,7 +262,7 @@ UART1_Handler(void)
 			return;
 		}	
 
-		if (identifier[0]=='S' && identifier[1]=='3')	//If we recieve the command to set the laser at 4/7 intensity...
+		else if (identifier[0]=='S' && identifier[1]=='3')	//If we recieve the command to set the laser at 4/7 intensity...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
@@ -252,7 +270,7 @@ UART1_Handler(void)
 			return;
 		}	
 
-		if (identifier[0]=='S' && identifier[1]=='4')	//If we recieve the command to set the laser at 3/7 intensity...
+		else if (identifier[0]=='S' && identifier[1]=='4')	//If we recieve the command to set the laser at 3/7 intensity...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
@@ -260,7 +278,7 @@ UART1_Handler(void)
 			return;
 		}			
 		
-		if (identifier[0]=='S' && identifier[1]=='5')	//If we recieve the command to set the laser at 2/7 intensity...
+		else if (identifier[0]=='S' && identifier[1]=='5')	//If we recieve the command to set the laser at 2/7 intensity...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
@@ -268,7 +286,7 @@ UART1_Handler(void)
 			return;
 		}	
 		
-		if (identifier[0]=='S' && identifier[1]=='6')	//If we recieve the command to set the laser at 1/7 intensity...
+		else if (identifier[0]=='S' && identifier[1]=='6')	//If we recieve the command to set the laser at 1/7 intensity...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
@@ -276,7 +294,7 @@ UART1_Handler(void)
 			return;
 		}	
 		
-		if (identifier[0]=='S' && identifier[1]=='7')	//If we recieve the command to set the laser at no power...
+		else if (identifier[0]=='S' && identifier[1]=='7')	//If we recieve the command to set the laser at no power...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
@@ -284,23 +302,36 @@ UART1_Handler(void)
 			return;
 		}	
 		
-		if (identifier[0]=='M' && identifier[1]=='2')		//If we recieve the command that the picture is complete...
+		else if (identifier[0]=='M' && identifier[1]=='2')		//If we recieve the command that the picture is complete...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
 			gCodeEnd=gCodeEnd+2;		//move the index of the gCode buffer to point to one past the last entry
 			return;
 		}
-		if (identifier[0]=='R' && identifier[1]=='D')		//If we recieve the command that the picture is complete...
+		else if (identifier[0]=='R' && identifier[1]=='D')		//If we recieve the command that the picture is complete...
 		{
 			gCode[gCodeEnd]=identifier[0];		//Store the first character of the G code
 			gCode[gCodeEnd+1]=identifier[1];	//Store the second character of the G code
 			numberOfRows++;
 			gCodeEnd=gCodeEnd+2;		//move the index of the gCode buffer to point to one past the last entry
 			readyToGo = 1;
+			SysCtlDelay(SysCtlClockGet()*20/3000);//wait 20 milliseconds
+			if (rowGood==1)
+			{
+				for (i=0;i<2;i++)
+				{
+					UARTCharPut(UART1_BASE,mb[i]);
+					SysCtlDelay(SysCtlClockGet()*20/3000);//wait 20 milliseconds
+				}
+			}
 			return;
 		}
-		wellShit=1;
+		else
+		{
+			rowGood=0;
+		}
+		
 				
 			    /*while(UARTCharsAvail(UART1_BASE))
     {
@@ -573,7 +604,7 @@ void correctPlacement(short curPosX,short curPosY)
 	//There are 9.1098 average x counts per pixel from the encoder and 9.135 average y counts per pixel from the encoder.
 	#ifdef FEEDBACK
 	encoderPositionX=QEIPositionGet(QEI0_BASE);
-	while ((float)(((float)curPosX*9.1098)-(float)encoderPositionX)>18.2196)	//if we are more than 2 pixels left of where we need to be, fix it before moving on
+	while (curPosX*8.95568-encoderPositionX>30)	//if we are more than 2 pixels left of where we need to be, fix it before moving on
 	{
 		//set the X axis stepper motor direction to forward
 		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
@@ -581,11 +612,11 @@ void correctPlacement(short curPosX,short curPosY)
 		//set the clock output high - the motor steps on rising clock edges
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
 		//wait a certain amount of time before changing the stepper motor clock state
-		SysCtlDelay((int)(SysCtlClockGet()/(400)));	//if we are just jogging then go ahead and move fast
+		SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		//Set the clock output low
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
 		//wait a certain amount of time before changing the stepper motor clock state
-		SysCtlDelay((int)(SysCtlClockGet()/(400)));	//if we are just jogging then go ahead and move fast
+		SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
@@ -597,7 +628,7 @@ void correctPlacement(short curPosX,short curPosY)
 		encoderPositionX=QEIPositionGet(QEI0_BASE);	//grab the current encoder position
 	}
 
-	while ((float)((float)encoderPositionX-((float)curPosX*9.1098))>18.2196)		//if we are more than 2 pixels right of where we need to be, fix it before moving on
+	while (encoderPositionX-curPosX*8.95568>30)		//if we are more than 2 pixels right of where we need to be, fix it before moving on
 	{
 		//set the X axis stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
@@ -605,11 +636,11 @@ void correctPlacement(short curPosX,short curPosY)
 		//set the clock output high - the motor steps on rising clock edges
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
 		//wait a certain amount of time before changing the stepper motor clock state
-		SysCtlDelay((int)(SysCtlClockGet()/(400)));	//if we are just jogging then go ahead and move fast
+		SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		//Set the clock output low
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
 		//wait a certain amount of time before changing the stepper motor clock state
-		SysCtlDelay((int)(SysCtlClockGet()/(400)));	//if we are just jogging then go ahead and move fast
+		SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionX=QEIPositionGet(QEI0_BASE);	//
@@ -622,19 +653,19 @@ void correctPlacement(short curPosX,short curPosY)
 	}
 	encoderPositionY=QEIPositionGet(QEI1_BASE);	//Now see if the Y alignment is correct
 
-	while ((float)(((float)curPosY*9.135)-(float)encoderPositionY)>18.27)		//if we are more than 2 pixels above where we need to be, fix it before moving on
-	{
+	while (curPosY*8.83568-encoderPositionY>30)		//if we are more than 2 pixels above where we need to be, fix it before moving on
+	{//8.83568
 		//set the Y axis stepper motor direction to forward
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
 		
 		//set the clock output high - the motor steps on rising clock edges
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
 		//wait a certain amount of time before changing the stepper motor clock state
-		SysCtlDelay((int)(SysCtlClockGet()/(400)));	//if we are just jogging then go ahead and move fast
+		SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		//Set the clock output low
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
 		//wait a certain amount of time before changing the stepper motor clock state
-		SysCtlDelay((int)(SysCtlClockGet()/(400)));	//if we are just jogging then go ahead and move fast
+		SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//
@@ -646,8 +677,8 @@ void correctPlacement(short curPosX,short curPosY)
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//Now see if the Y alignment is correct
 	}
 
-	while ((float)((float)encoderPositionY-((float)curPosY*9.135))>18.27)		//if we are more than 2 pixels below where we need to be, fix it before moving on
-	{
+	while (encoderPositionY-curPosY*8.83568>30)		//if we are more than 2 pixels below where we need to be, fix it before moving on
+	{//8.83568
 		//set the Y axis stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
 		
@@ -656,11 +687,11 @@ void correctPlacement(short curPosX,short curPosY)
 				//set the clock output high - the motor steps on rising clock edges
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
 				//wait a certain amount of time before changing the stepper motor clock state
-				SysCtlDelay((int)(SysCtlClockGet()/(400)));	//if we are just jogging then go ahead and move fast
+				SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 				//Set the clock output low
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
 				//wait a certain amount of time before changing the stepper motor clock state
-				SysCtlDelay((int)(SysCtlClockGet()/(400)));	//if we are just jogging then go ahead and move fast
+				SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		}
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
@@ -725,6 +756,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 				else 
 					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
 			}
+		pixelCorrectX++;
 		}*/
 		positiveXPixels++; //increment the number of x pixels moves in the +x direction
 		curPosX++;	//increment the temporary count of the number of x pixels moves in the +x direction
@@ -773,6 +805,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 				else 
 					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
 			}
+		pixelCorrectX++;
 		}*/
 		
 		positiveXPixels--;	//decrement the number of of x pixels moves in the +x direction
@@ -821,6 +854,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 				else 
 					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
 			}
+		pixelCorrectY++;
 		}*/
 		positiveYPixels++;	//increment the number of y pixels moves in the +y direction
 		curPosY++;	//increment the temporary count of the number of y pixels moves in the +y direction
@@ -868,6 +902,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 				else 
 					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
 			}
+		pixelCorrectY++;
 		}*/
 		
 		positiveYPixels--;	//decrement the number of y pixels moves in the +y direction
@@ -906,27 +941,35 @@ void engrave()
 						{
  						case '0':
 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);
+							zephyr=60;
  							break;
  						case '1':
- 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,435);
+ 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,410);//440
+							zephyr=48;//57
  							break;
  						case '2':
- 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,407);
+ 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,353);//400
+						zephyr=40;//53
  							break;
  						case '3':
- 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,388);
+ 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,300);//360
+						zephyr=42;//50
  							break;
 						case '4':
- 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,360);
+ 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,220);//320
+						zephyr=40;//47
  							break;
  						case '5':
- 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,326);
+ 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,163);//280
+						zephyr=42;//43
  							break;
  						case '6':
- 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,283);
+ 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,135);//240
+						zephyr=42;
  							break;
  						case '7':
  							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,1);
+						zephyr=10;
  							break;
  						default:
  							//DO NOTHING
@@ -939,7 +982,7 @@ void engrave()
 				{
 					burnDurVal=pauseValues[pauseValuesIndex];	//grab the burn duration from pauseValues
 					pauseValuesIndex++; //move the pointer for the next pause value
-					step(positiveXPixels, positiveYPixels, xCommands[xCommandsIndex], yCommands[yCommandsIndex], burnDurVal); //move over the pixel while burning it at the specified intensity
+					step(positiveXPixels, positiveYPixels, xCommands[xCommandsIndex], yCommands[yCommandsIndex], zephyr); //move over the pixel while burning it at the specified intensity
 					xCommandsIndex++;	//move the pointer to the next x location
  					yCommandsIndex++;	//move the pointer to the next y location
 					PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,1);	//turn the laser off
@@ -952,6 +995,8 @@ void engrave()
 				}
  		} //end of while
 		pixelsCount=0;
+		pixelCorrectX=0;
+		pixelCorrectY=0;
  		for (i=0;i<1612;i++)
  		{
  			xCommands[i]='\0';
@@ -1272,17 +1317,31 @@ int main(void)
 	QEI_Setup();
 	GPIO_Setup();
 
-	/*GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
-	for(i = 0; i < (1347); i++)
+	/*GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
+	for(i = 0; i < (555*12); i++)
 		{
 				//set the clock output high - the motor steps on rising clock edges
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
 				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));
 				//Set the clock output low
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
 				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
+				SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));
+			positionX=QEIPositionGet(QEI0_BASE);
+		}
+		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
+		for(i = 0; i < (555*12); i++)
+		{
+				//set the clock output high - the motor steps on rising clock edges
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));
+				//Set the clock output low
+				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+				//wait 120 microseconds
+				SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));
+			positionX=QEIPositionGet(QEI0_BASE);
 		}*/
 	//ready();
 	
@@ -1293,10 +1352,64 @@ int main(void)
 	
 	while(1)
 	{
- 		if(readyToGo)
+ 		if(readyToGo==1 && rowGood==1)
 		{
-			engrave();		
+			firstRun=0;
+			engrave();				
 		}
+		else if (rowGood==0)
+		{
+			pixelsCount=0;
+			pixelCorrectX=0;
+			pixelCorrectY=0;
+			for (i=0;i<1612;i++)
+			{
+				xCommands[i]='\0';
+				yCommands[i]='\0';
+				pauseValues[i]='\0';
+			}
+			for (i=0;i<16012;i++)
+			{
+				gCode[i]='\0';
+			}
+			for (i=0;i<16;i++)
+			{
+				command[0]=UARTCharGetNonBlocking(UART1_BASE);
+			}
+			UARTRxErrorClear(UART1_BASE);
+			xCommandsEnd=0;
+			xCommandsIndex=0;
+			yCommandsEnd=0;
+			yCommandsIndex=0;
+			gCodeEnd=0;
+			gCodeIndex=0;
+			pauseValuesEnd=0;
+			pauseValuesIndex=0;
+			SysCtlDelay(SysCtlClockGet()*20/3000);//wait 20 milliseconds
+			for (i=0;i<2;i++)
+			{
+				UARTCharPut(UART1_BASE,rs[i]);
+				SysCtlDelay(SysCtlClockGet()*20/3000);//wait 20 milliseconds
+			}
+			readyToGo = 0;
+			rowGood=1;
+		}
+		/*else 
+		{
+			SysCtlDelay(SysCtlClockGet()*1/3);
+			if (UARTCharsAvail(UART1_BASE)==true)
+				continue;
+			else
+			{
+				if (firstRun==1)
+					continue;
+				for (i=0;i<2;i++)
+				{
+					UARTCharPut(UART1_BASE,go[i]);
+					SysCtlDelay(SysCtlClockGet()*20/3000);//wait 20 milliseconds
+				}
+			}
+		}*/
   		//positionX=QEIPositionGet(QEI0_BASE);
   		//positionY=QEIPositionGet(QEI1_BASE);
   }

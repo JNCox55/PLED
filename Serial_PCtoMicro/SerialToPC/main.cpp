@@ -37,7 +37,9 @@ DWORD   dwErrors;
 void readUart(void);
 void splitShort(uint16_t short2Split, uint8_t &msb, uint8_t &lsb, uint8_t buffer[]);
 bool getRowData(FILE *inFile, uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t pauseP[], uint16_t size);
-void sendRowData(uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t pauseP[], uint16_t size);
+void sendRowData(uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t pauseP[], uint16_t size, int jay, uint16_t rows);
+void clearErrs();
+bool checkResend();
 
 //------------------------------------------------------------------------------------
 //	FUNCTION MAIN
@@ -181,13 +183,15 @@ int main(){
 			//----------------------------
 			//Send row 
 			//----------------------------
-			sendRowData(xCoors, yCoors, gCodes, pauseP, sizeCol);
+			sendRowData(xCoors, yCoors, gCodes, pauseP, sizeCol,j,sizeRow);
+			//check to see if the row was recieved correctly, if not resend, if so, wait for the GO-ahead to send the next row
+			while (checkResend())
+			{
+				//resend row
+				sendRowData(xCoors, yCoors, gCodes, pauseP, sizeCol, j, sizeRow);
+			}
 
 			//Read GO to send next row
-			/*for (int j = 0; j < 240000000; j++)
-			{
-				int m = 0;
-			}*/
 			readUart();
 			for (int j = 0; j < 240000000; j++)
 			{
@@ -196,7 +200,13 @@ int main(){
 
 		}
 		else{
-			//TODO: END PROGRAM
+			buffer[0] = 'M';
+			buffer[1] = '2';
+			serial.SendData(buffer, 2);
+			clearErrs();
+			buffer[0] = 'R';
+			buffer[1] = 'D';
+			serial.SendData(buffer, 2);
 		}
 
 	}//End of for()
@@ -322,7 +332,7 @@ void clearErrs()
 	return;
 }
 
-void sendRowData(uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t pauseP[], uint16_t size){
+void sendRowData(uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t pauseP[], uint16_t size, int jay, uint16_t rows){
 	uint8_t shortMSB;
 	uint8_t shortLSB;
 	uint8_t buffer[2];
@@ -372,9 +382,12 @@ void sendRowData(uint16_t xCoor[], uint16_t yCoor[], uint16_t gCode[], uint16_t 
 	
 	//	RD when row has been sent
 	clearErrs();
-	buffer[0] = 'R';
-	buffer[1] = 'D';
-	serial.SendData(buffer, 2);
+	if (jay != rows)//only send on all but the last row
+	{
+		buffer[0] = 'R';
+		buffer[1] = 'D';
+		serial.SendData(buffer, 2);
+	}
 
 	//nBytesSent = serial.SendData(buffer, SIZE);
 
@@ -430,5 +443,67 @@ void readUart(void){
 		serial.ReadData(readBuffer, sizeof(readBuffer));
 	}
 	readBuffer[0] = '\0';
+
+}
+
+bool checkResend(){
+	//RS=resend MB=muy bueno
+	int nBytesRead = 0;
+	int curT = 0;
+	int oldT = 0;
+	uint8_t Rflag = 0;
+	uint8_t Sflag = 0;
+	uint8_t Mflag = 0;
+	uint8_t Bflag = 0;
+	bool RS = 0;
+	bool MB = 0;
+
+	char readBuffer[1];
+
+	while (RS==false && MB==false)
+	{
+		curT = GetTickCount();
+
+		if (curT - oldT > 5)
+		{
+			nBytesRead = serial.ReadData(readBuffer, sizeof(readBuffer));
+
+			if (nBytesRead > 0)
+			{
+
+				for (int i = 0; i < nBytesRead; i++){
+					if (readBuffer[i] == 'R'){
+						Rflag = 1;
+					}
+					else if (readBuffer[i] == 'S'){
+						Sflag = 1;
+					}
+					else if (readBuffer[i] == 'M'){
+						Mflag = 1;
+					}
+					else if (readBuffer[i] == 'B'){
+						Bflag = 1;
+					}
+					printf("%c", readBuffer[i]);
+				}
+
+			}
+
+			oldT = curT;
+		}
+		if (Rflag == 1 && Sflag == 1)
+			RS = true;
+		if (Mflag == 1 && Bflag == 1)
+			MB = true;
+	}
+	for (int j = 0; j < 50; j++)
+	{
+		serial.ReadData(readBuffer, sizeof(readBuffer));
+	}
+	readBuffer[0] = '\0';
+	if (Mflag == 1 && Bflag == 1)
+		return false;
+	else 
+		return true;
 
 }

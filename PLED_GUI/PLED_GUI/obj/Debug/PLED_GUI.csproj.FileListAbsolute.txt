@@ -11,3 +11,6 @@ C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.wood
 C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.complete.resources
 C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.engraving.resources
 C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.jobDone.resources
+C:\Users\Bre\Documents\PLED\PLED\PLED_GUI\PLED_GUI\bin\Debug\PLED_GUI.exe.config
+C:\Users\Bre\Documents\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.exe
+C:\Users\Bre\Documents\PLED\PLED\PLED_GUI\PLED_GUI\obj\Debug\PLED_GUI.pdb

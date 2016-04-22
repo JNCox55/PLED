@@ -3,11 +3,11 @@
 <title>Static Call Graph - [.\Objects\SP.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\SP.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050041: Last Updated: Mon Apr 18 20:06:46 2016
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050041: Last Updated: Thu Apr 21 16:01:52 2016
 <BR><P>
 <H3>Maximum Stack Usage =         80 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-__rt_entry_main &rArr; main &rArr; engrave &rArr; dwell &rArr; __aeabi_d2iz
+__rt_entry_main &rArr; main &rArr; engrave &rArr; dwell &rArr; __aeabi_ddiv
 <P>
 <H3>
 Functions with no stack information
@@ -18,7 +18,8 @@ Functions with no stack information
 <P>
 <H3>
 Mutually Recursive functions
-</H3> <LI><a href="#[3]">NMI_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[3]">NMI_Handler</a><BR>
+</H3> <LI><a href="#[8e]">SysCtlDelay</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[8e]">SysCtlDelay</a><BR>
+ <LI><a href="#[3]">NMI_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[3]">NMI_Handler</a><BR>
  <LI><a href="#[4]">HardFault_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[4]">HardFault_Handler</a><BR>
  <LI><a href="#[5]">MemManage_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[5]">MemManage_Handler</a><BR>
  <LI><a href="#[6]">BusFault_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[6]">BusFault_Handler</a><BR>
@@ -135,7 +136,6 @@ Mutually Recursive functions
  <LI><a href="#[76]">PWM1_3_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[76]">PWM1_3_Handler</a><BR>
  <LI><a href="#[77]">PWM1_FAULT_Handler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[77]">PWM1_FAULT_Handler</a><BR>
  <LI><a href="#[7a]">_IntDefaultHandler</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[7a]">_IntDefaultHandler</a><BR>
- <LI><a href="#[8e]">SysCtlDelay</a>&nbsp;&nbsp;&nbsp;&rArr;&nbsp;&nbsp;&nbsp;<a href="#[8e]">SysCtlDelay</a><BR>
 </UL>
 <P>
 <H3>
@@ -376,7 +376,7 @@ Global Symbols
 
 <P><STRONG><a name="[87]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80 + Unknown Stack Size
-<LI>Call Chain = __rt_entry_main &rArr; main &rArr; engrave &rArr; dwell &rArr; __aeabi_d2iz
+<LI>Call Chain = __rt_entry_main &rArr; main &rArr; engrave &rArr; dwell &rArr; __aeabi_ddiv
 </UL>
 <BR>[Calls]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
@@ -402,13 +402,15 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
-<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockSet
+<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockSet
+<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchMotor
 <LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchIntensity
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchDuration
 <LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchPulse
-<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
-<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
+<LI><a href="#[12]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Handler
 </UL>
 
 <P><STRONG><a name="[128]"></a>CPUcpsid</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, cpu.o(.emb_text), UNUSED)
@@ -416,7 +418,7 @@ Global Symbols
 <P><STRONG><a name="[129]"></a>CPUprimask</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, cpu.o(.emb_text), UNUSED)
 
 <P><STRONG><a name="[ff]"></a>CPUcpsie</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, cpu.o(.emb_text))
-<BR><BR>[Called By]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntMasterEnable
+<BR><BR>[Called By]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntMasterEnable
 </UL>
 
 <P><STRONG><a name="[d2]"></a>CPUwfi</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, cpu.o(.emb_text), UNUSED)
@@ -428,207 +430,215 @@ Global Symbols
 
 <P><STRONG><a name="[12b]"></a>CPUbasepriGet</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, cpu.o(.emb_text), UNUSED)
 
-<P><STRONG><a name="[12]"></a>UART1_Handler</STRONG> (Thumb, 1516 bytes, Stack size 8 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = UART1_Handler
+<P><STRONG><a name="[12]"></a>UART1_Handler</STRONG> (Thumb, 1750 bytes, Stack size 8 bytes, main.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 28<LI>Call Chain = UART1_Handler &rArr; SysCtlClockGet
 </UL>
 <BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTRxErrorClear
 <LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTIntStatus
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTIntClear
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTCharPut
 <LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTCharGet
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_tm4c123.o(RESET)
 </UL>
-<P><STRONG><a name="[93]"></a>Sys_Clock_Set</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, main.o(.text))
+<P><STRONG><a name="[95]"></a>Sys_Clock_Set</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = Sys_Clock_Set &rArr; SysCtlClockSet
 </UL>
-<BR>[Calls]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockSet
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
+<BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockSet
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
 </UL>
 <BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[96]"></a>PWM_Setup</STRONG> (Thumb, 86 bytes, Stack size 8 bytes, main.o(.text))
+<P><STRONG><a name="[97]"></a>PWM_Setup</STRONG> (Thumb, 86 bytes, Stack size 8 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = PWM_Setup &rArr; GPIOPinTypePWM &rArr; GPIOPadConfigSet
 </UL>
-<BR>[Calls]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
-<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPWMClockSet
-<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMPulseWidthSet
-<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMOutputState
-<LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenPeriodSet
-<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenEnable
-<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenConfigure
-<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypePWM
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinConfigure
+<BR>[Calls]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
+<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPWMClockSet
+<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMPulseWidthSet
+<LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMOutputState
+<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenPeriodSet
+<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenEnable
+<LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenConfigure
+<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypePWM
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinConfigure
 </UL>
 <BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[a0]"></a>UART1_Setup</STRONG> (Thumb, 174 bytes, Stack size 8 bytes, main.o(.text))
+<P><STRONG><a name="[a1]"></a>UART1_Setup</STRONG> (Thumb, 174 bytes, Stack size 8 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = UART1_Setup &rArr; GPIOPinTypeUART &rArr; GPIOPadConfigSet
 </UL>
-<BR>[Calls]<UL><LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTIntEnable
-<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTFlowControlSet
-<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTFIFOLevelSet
-<LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTFIFOEnable
-<LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTEnable
-<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTConfigSetExpClk
-<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTClockSourceSet
-<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
-<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntMasterEnable
-<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
-<LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeUART
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOOutput
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinConfigure
+<BR>[Calls]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTIntEnable
+<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTFlowControlSet
+<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTFIFOLevelSet
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTFIFOEnable
+<LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTEnable
+<LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTConfigSetExpClk
+<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTClockSourceSet
+<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
+<LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntMasterEnable
+<LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
+<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeUART
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOOutput
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinConfigure
 </UL>
 <BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[ac]"></a>QEI_Setup</STRONG> (Thumb, 146 bytes, Stack size 8 bytes, main.o(.text))
+<P><STRONG><a name="[ad]"></a>QEI_Setup</STRONG> (Thumb, 258 bytes, Stack size 8 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = QEI_Setup &rArr; GPIOPinTypeQEI &rArr; GPIOPadConfigSet
 </UL>
-<BR>[Calls]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
-<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIEnable
-<LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIDisable
-<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIConfigure
-<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeQEI
-<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinConfigure
+<BR>[Calls]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIEnable
+<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIDisable
+<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIConfigure
+<LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeQEI
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinConfigure
 </UL>
 <BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[b1]"></a>GPIO_Setup</STRONG> (Thumb, 60 bytes, Stack size 8 bytes, main.o(.text))
+<P><STRONG><a name="[b2]"></a>GPIO_Setup</STRONG> (Thumb, 58 bytes, Stack size 8 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = GPIO_Setup &rArr; GPIOPinTypeGPIOOutput &rArr; GPIOPadConfigSet
 </UL>
-<BR>[Calls]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOOutput
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<BR>[Calls]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOOutput
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 <BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[b3]"></a>dwell</STRONG> (Thumb, 58 bytes, Stack size 32 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = dwell &rArr; __aeabi_d2iz
+<P><STRONG><a name="[b4]"></a>dwell</STRONG> (Thumb, 58 bytes, Stack size 32 bytes, main.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = dwell &rArr; __aeabi_ddiv
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
-<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
-<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
-</UL>
-
-<P><STRONG><a name="[bb]"></a>correctPlacement</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, main.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
+<BR>[Called By]<UL><LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
 </UL>
 
-<P><STRONG><a name="[b7]"></a>step</STRONG> (Thumb, 870 bytes, Stack size 32 bytes, main.o(.text))
+<P><STRONG><a name="[bc]"></a>correctPlacement</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, main.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
+</UL>
+
+<P><STRONG><a name="[b8]"></a>step</STRONG> (Thumb, 728 bytes, Stack size 32 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = step &rArr; SysCtlClockGet
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
-<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIPositionGet
-<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinWrite
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIPositionGet
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinWrite
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
+<BR>[Called By]<UL><LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
 </UL>
 
-<P><STRONG><a name="[ba]"></a>engrave</STRONG> (Thumb, 830 bytes, Stack size 16 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = engrave &rArr; dwell &rArr; __aeabi_d2iz
+<P><STRONG><a name="[bb]"></a>engrave</STRONG> (Thumb, 888 bytes, Stack size 16 bytes, main.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = engrave &rArr; dwell &rArr; __aeabi_ddiv
 </UL>
 <BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTRxErrorClear
-<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTCharPut
-<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTCharGetNonBlocking
-<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMPulseWidthSet
-<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
-<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;correctPlacement
-<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTCharPut
+<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTCharGetNonBlocking
+<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMPulseWidthSet
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
+<LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;correctPlacement
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
 </UL>
 <BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[be]"></a>testBenchPulse</STRONG> (Thumb, 170 bytes, Stack size 32 bytes, main.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
-<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<BR><BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
-<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMPulseWidthSet
-<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
+<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMPulseWidthSet
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
 </UL>
 
-<P><STRONG><a name="[bf]"></a>testBenchDuration</STRONG> (Thumb, 192 bytes, Stack size 32 bytes, main.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
-<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
-<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
+<P><STRONG><a name="[bf]"></a>testBenchDuration</STRONG> (Thumb, 324 bytes, Stack size 32 bytes, main.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
-<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinWrite
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOOutput
-<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinWrite
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOOutput
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
 </UL>
 
-<P><STRONG><a name="[c0]"></a>testBenchIntensity</STRONG> (Thumb, 572 bytes, Stack size 40 bytes, main.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
-<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<P><STRONG><a name="[c0]"></a>testBenchIntensity</STRONG> (Thumb, 426 bytes, Stack size 40 bytes, main.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
-<LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMPulseWidthSet
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
+<LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMPulseWidthSet
 <LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
-<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
 <LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
+<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
 </UL>
 
 <P><STRONG><a name="[c3]"></a>testBenchMotor</STRONG> (Thumb, 302 bytes, Stack size 8 bytes, main.o(.text), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
+<BR><BR>[Calls]<UL><LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlPeripheralEnable
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
-<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIPositionGet
-<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinWrite
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOOutput
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
+<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIPositionGet
+<LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinWrite
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOOutput
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
-<P><STRONG><a name="[88]"></a>main</STRONG> (Thumb, 42 bytes, Stack size 0 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = main &rArr; engrave &rArr; dwell &rArr; __aeabi_d2iz
+<P><STRONG><a name="[88]"></a>main</STRONG> (Thumb, 520 bytes, Stack size 0 bytes, main.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = main &rArr; engrave &rArr; dwell &rArr; __aeabi_ddiv
 </UL>
-<BR>[Calls]<UL><LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FPUStackingEnable
+<BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTRxErrorClear
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTCharPut
+<LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTCharGetNonBlocking
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
+<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FPUStackingEnable
 <LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;FPUEnable
-<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
-<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Setup
-<LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
-<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Sys_Clock_Set
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
+<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Setup
+<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Sys_Clock_Set
 </UL>
 <BR>[Called By]<UL><LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[9b]"></a>PWMGenConfigure</STRONG> (Thumb, 42 bytes, Stack size 8 bytes, pwm.o(.text))
+<P><STRONG><a name="[9c]"></a>PWMGenConfigure</STRONG> (Thumb, 42 bytes, Stack size 8 bytes, pwm.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = PWMGenConfigure
 </UL>
-<BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
+<BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
 </UL>
 
-<P><STRONG><a name="[9c]"></a>PWMGenPeriodSet</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, pwm.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
+<P><STRONG><a name="[9d]"></a>PWMGenPeriodSet</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, pwm.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
 </UL>
 
 <P><STRONG><a name="[12c]"></a>PWMGenPeriodGet</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, pwm.o(.text), UNUSED)
 
-<P><STRONG><a name="[9f]"></a>PWMGenEnable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, pwm.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
+<P><STRONG><a name="[a0]"></a>PWMGenEnable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, pwm.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
 </UL>
 
 <P><STRONG><a name="[12d]"></a>PWMGenDisable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, pwm.o(.text), UNUSED)
 
-<P><STRONG><a name="[9d]"></a>PWMPulseWidthSet</STRONG> (Thumb, 38 bytes, Stack size 12 bytes, pwm.o(.text))
+<P><STRONG><a name="[9e]"></a>PWMPulseWidthSet</STRONG> (Thumb, 38 bytes, Stack size 12 bytes, pwm.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = PWMPulseWidthSet
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchIntensity
 <LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchPulse
-<LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
 </UL>
 
 <P><STRONG><a name="[12e]"></a>PWMPulseWidthGet</STRONG> (Thumb, 40 bytes, Stack size 12 bytes, pwm.o(.text), UNUSED)
@@ -641,8 +651,8 @@ Global Symbols
 
 <P><STRONG><a name="[132]"></a>PWMSyncTimeBase</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, pwm.o(.text), UNUSED)
 
-<P><STRONG><a name="[9e]"></a>PWMOutputState</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, pwm.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
+<P><STRONG><a name="[9f]"></a>PWMOutputState</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, pwm.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
 </UL>
 
 <P><STRONG><a name="[133]"></a>PWMOutputInvert</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, pwm.o(.text), UNUSED)
@@ -654,7 +664,7 @@ Global Symbols
 <P><STRONG><a name="[c6]"></a>PWMGenIntRegister</STRONG> (Thumb, 38 bytes, Stack size 24 bytes, pwm.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntRegister
 <LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_PWMGenIntNumberGet
-<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
+<LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
 </UL>
 
 <P><STRONG><a name="[c9]"></a>PWMGenIntUnregister</STRONG> (Thumb, 30 bytes, Stack size 16 bytes, pwm.o(.text), UNUSED)
@@ -666,7 +676,7 @@ Global Symbols
 <P><STRONG><a name="[cc]"></a>PWMFaultIntRegister</STRONG> (Thumb, 30 bytes, Stack size 16 bytes, pwm.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntRegister
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_PWMFaultIntNumberGet
-<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
+<LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
 </UL>
 
 <P><STRONG><a name="[ce]"></a>PWMFaultIntUnregister</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, pwm.o(.text), UNUSED)
@@ -725,15 +735,15 @@ Global Symbols
 
 <P><STRONG><a name="[14e]"></a>SysCtlPeripheralReset</STRONG> (Thumb, 106 bytes, Stack size 12 bytes, sysctl.o(.text), UNUSED)
 
-<P><STRONG><a name="[98]"></a>SysCtlPeripheralEnable</STRONG> (Thumb, 46 bytes, Stack size 8 bytes, sysctl.o(.text))
+<P><STRONG><a name="[99]"></a>SysCtlPeripheralEnable</STRONG> (Thumb, 46 bytes, Stack size 8 bytes, sysctl.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = SysCtlPeripheralEnable
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchMotor
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchDuration
-<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Setup
-<LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
+<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Setup
+<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
 </UL>
 
 <P><STRONG><a name="[14f]"></a>SysCtlPeripheralDisable</STRONG> (Thumb, 46 bytes, Stack size 8 bytes, sysctl.o(.text), UNUSED)
@@ -750,7 +760,7 @@ Global Symbols
 
 <P><STRONG><a name="[cf]"></a>SysCtlIntRegister</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, sysctl.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntRegister
-<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
+<LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
 </UL>
 
 <P><STRONG><a name="[d0]"></a>SysCtlIntUnregister</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, sysctl.o(.text), UNUSED)
@@ -805,33 +815,35 @@ Global Symbols
 <LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_SysCtlMemTimingGet
 </UL>
 
-<P><STRONG><a name="[94]"></a>SysCtlClockSet</STRONG> (Thumb, 340 bytes, Stack size 24 bytes, sysctl.o(.text))
+<P><STRONG><a name="[96]"></a>SysCtlClockSet</STRONG> (Thumb, 340 bytes, Stack size 24 bytes, sysctl.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = SysCtlClockSet
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
 </UL>
-<BR>[Called By]<UL><LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Sys_Clock_Set
+<BR>[Called By]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Sys_Clock_Set
 </UL>
 
-<P><STRONG><a name="[95]"></a>SysCtlClockGet</STRONG> (Thumb, 326 bytes, Stack size 20 bytes, sysctl.o(.text))
+<P><STRONG><a name="[93]"></a>SysCtlClockGet</STRONG> (Thumb, 326 bytes, Stack size 20 bytes, sysctl.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = SysCtlClockGet
 </UL>
-<BR>[Called By]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchMotor
+<BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchMotor
 <LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchIntensity
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchDuration
 <LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchPulse
-<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
-<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
-<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Sys_Clock_Set
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Sys_Clock_Set
+<LI><a href="#[12]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Handler
 </UL>
 
 <P><STRONG><a name="[166]"></a>SysCtlDeepSleepClockSet</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, sysctl.o(.text), UNUSED)
 
 <P><STRONG><a name="[167]"></a>SysCtlDeepSleepClockConfigSet</STRONG> (Thumb, 110 bytes, Stack size 8 bytes, sysctl.o(.text), UNUSED)
 
-<P><STRONG><a name="[97]"></a>SysCtlPWMClockSet</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, sysctl.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
+<P><STRONG><a name="[98]"></a>SysCtlPWMClockSet</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, sysctl.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
 </UL>
 
 <P><STRONG><a name="[168]"></a>SysCtlPWMClockGet</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, sysctl.o(.text), UNUSED)
@@ -862,34 +874,34 @@ Global Symbols
 
 <P><STRONG><a name="[175]"></a>UARTParityModeGet</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, uart.o(.text), UNUSED)
 
-<P><STRONG><a name="[a7]"></a>UARTFIFOLevelSet</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, uart.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<P><STRONG><a name="[a8]"></a>UARTFIFOLevelSet</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, uart.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
 </UL>
 
 <P><STRONG><a name="[176]"></a>UARTFIFOLevelGet</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, uart.o(.text), UNUSED)
 
-<P><STRONG><a name="[ab]"></a>UARTEnable</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, uart.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTConfigSetExpClk
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<P><STRONG><a name="[ac]"></a>UARTEnable</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, uart.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTConfigSetExpClk
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
 </UL>
 
 <P><STRONG><a name="[d7]"></a>UARTDisable</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, uart.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTConfigSetExpClk
+<BR><BR>[Called By]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTConfigSetExpClk
 </UL>
 
-<P><STRONG><a name="[a5]"></a>UARTConfigSetExpClk</STRONG> (Thumb, 76 bytes, Stack size 20 bytes, uart.o(.text))
+<P><STRONG><a name="[a6]"></a>UARTConfigSetExpClk</STRONG> (Thumb, 76 bytes, Stack size 20 bytes, uart.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = UARTConfigSetExpClk
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTDisable
-<LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTEnable
+<LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTEnable
 </UL>
-<BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
 </UL>
 
 <P><STRONG><a name="[177]"></a>UARTConfigGetExpClk</STRONG> (Thumb, 44 bytes, Stack size 20 bytes, uart.o(.text), UNUSED)
 
-<P><STRONG><a name="[a6]"></a>UARTFIFOEnable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, uart.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<P><STRONG><a name="[a7]"></a>UARTFIFOEnable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, uart.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
 </UL>
 
 <P><STRONG><a name="[178]"></a>UARTFIFODisable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, uart.o(.text), UNUSED)
@@ -910,8 +922,8 @@ Global Symbols
 
 <P><STRONG><a name="[180]"></a>UARTModemStatusGet</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, uart.o(.text), UNUSED)
 
-<P><STRONG><a name="[a8]"></a>UARTFlowControlSet</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, uart.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<P><STRONG><a name="[a9]"></a>UARTFlowControlSet</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, uart.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
 </UL>
 
 <P><STRONG><a name="[181]"></a>UARTFlowControlGet</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, uart.o(.text), UNUSED)
@@ -924,8 +936,9 @@ Global Symbols
 
 <P><STRONG><a name="[185]"></a>UARTSpaceAvail</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, uart.o(.text), UNUSED)
 
-<P><STRONG><a name="[bc]"></a>UARTCharGetNonBlocking</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, uart.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
+<P><STRONG><a name="[bd]"></a>UARTCharGetNonBlocking</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, uart.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
 </UL>
 
 <P><STRONG><a name="[92]"></a>UARTCharGet</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, uart.o(.text))
@@ -934,8 +947,10 @@ Global Symbols
 
 <P><STRONG><a name="[186]"></a>UARTCharPutNonBlocking</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, uart.o(.text), UNUSED)
 
-<P><STRONG><a name="[bd]"></a>UARTCharPut</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, uart.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
+<P><STRONG><a name="[94]"></a>UARTCharPut</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, uart.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
+<LI><a href="#[12]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Handler
 </UL>
 
 <P><STRONG><a name="[187]"></a>UARTBreakCtl</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, uart.o(.text), UNUSED)
@@ -945,7 +960,7 @@ Global Symbols
 <P><STRONG><a name="[d8]"></a>UARTIntRegister</STRONG> (Thumb, 30 bytes, Stack size 16 bytes, uart.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_UARTIntNumberGet
 <LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntRegister
-<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
+<LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
 </UL>
 
 <P><STRONG><a name="[da]"></a>UARTIntUnregister</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, uart.o(.text), UNUSED)
@@ -954,8 +969,8 @@ Global Symbols
 <LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntDisable
 </UL>
 
-<P><STRONG><a name="[aa]"></a>UARTIntEnable</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, uart.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<P><STRONG><a name="[ab]"></a>UARTIntEnable</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, uart.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
 </UL>
 
 <P><STRONG><a name="[189]"></a>UARTIntDisable</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, uart.o(.text), UNUSED)
@@ -975,12 +990,13 @@ Global Symbols
 <P><STRONG><a name="[18c]"></a>UARTRxErrorGet</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, uart.o(.text), UNUSED)
 
 <P><STRONG><a name="[91]"></a>UARTRxErrorClear</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, uart.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
+<BR><BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
 <LI><a href="#[12]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Handler
 </UL>
 
-<P><STRONG><a name="[a4]"></a>UARTClockSourceSet</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, uart.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<P><STRONG><a name="[a5]"></a>UARTClockSourceSet</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, uart.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
 </UL>
 
 <P><STRONG><a name="[18d]"></a>UARTClockSourceGet</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, uart.o(.text), UNUSED)
@@ -1019,10 +1035,10 @@ Global Symbols
 <LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeComparator
 <LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeCAN
 <LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeADC
-<LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeUART
-<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeQEI
-<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypePWM
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOOutput
+<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeUART
+<LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeQEI
+<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypePWM
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOOutput
 </UL>
 
 <P><STRONG><a name="[192]"></a>GPIODirModeGet</STRONG> (Thumb, 46 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
@@ -1031,7 +1047,7 @@ Global Symbols
 
 <P><STRONG><a name="[194]"></a>GPIOIntTypeGet</STRONG> (Thumb, 84 bytes, Stack size 20 bytes, gpio.o(.text), UNUSED)
 
-<P><STRONG><a name="[b2]"></a>GPIOPadConfigSet</STRONG> (Thumb, 342 bytes, Stack size 20 bytes, gpio.o(.text))
+<P><STRONG><a name="[b3]"></a>GPIOPadConfigSet</STRONG> (Thumb, 342 bytes, Stack size 20 bytes, gpio.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 20<LI>Call Chain = GPIOPadConfigSet
 </UL>
 <BR>[Called By]<UL><LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeCIR
@@ -1059,12 +1075,12 @@ Global Symbols
 <LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeComparator
 <LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeCAN
 <LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeADC
-<LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeUART
-<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeQEI
-<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypePWM
-<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOOutput
+<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeUART
+<LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeQEI
+<LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypePWM
+<LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPinTypeGPIOOutput
 <LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchMotor
-<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Setup
+<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Setup
 </UL>
 
 <P><STRONG><a name="[195]"></a>GPIOPadConfigGet</STRONG> (Thumb, 206 bytes, Stack size 20 bytes, gpio.o(.text), UNUSED)
@@ -1080,7 +1096,7 @@ Global Symbols
 <P><STRONG><a name="[db]"></a>GPIOIntRegister</STRONG> (Thumb, 30 bytes, Stack size 16 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_GPIOIntNumberGet
 <LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntRegister
-<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
+<LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
 </UL>
 
 <P><STRONG><a name="[dd]"></a>GPIOIntUnregister</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, gpio.o(.text), UNUSED)
@@ -1091,184 +1107,184 @@ Global Symbols
 
 <P><STRONG><a name="[19a]"></a>GPIOPinRead</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, gpio.o(.text), UNUSED)
 
-<P><STRONG><a name="[b8]"></a>GPIOPinWrite</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, gpio.o(.text))
+<P><STRONG><a name="[b9]"></a>GPIOPinWrite</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, gpio.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchMotor
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchDuration
-<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
 </UL>
 
 <P><STRONG><a name="[de]"></a>GPIOPinTypeADC</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[e0]"></a>GPIOPinTypeCAN</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[e1]"></a>GPIOPinTypeComparator</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[e2]"></a>GPIOPinTypeComparatorOutput</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[e3]"></a>GPIOPinTypeEPI</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[e4]"></a>GPIOPinTypeEthernetLED</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[e5]"></a>GPIOPinTypeEthernetMII</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[e6]"></a>GPIOPinTypeGPIOInput</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
-<P><STRONG><a name="[a1]"></a>GPIOPinTypeGPIOOutput</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text))
+<P><STRONG><a name="[a2]"></a>GPIOPinTypeGPIOOutput</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = GPIOPinTypeGPIOOutput &rArr; GPIOPadConfigSet
 </UL>
 <BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchMotor
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchDuration
-<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Setup
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Setup
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
 </UL>
 
 <P><STRONG><a name="[e7]"></a>GPIOPinTypeGPIOOutputOD</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[e8]"></a>GPIOPinTypeI2C</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[e9]"></a>GPIOPinTypeI2CSCL</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[ea]"></a>GPIOPinTypeLCD</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[eb]"></a>GPIOPinTypeLPC</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[ec]"></a>GPIOPinTypePECIRx</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[ed]"></a>GPIOPinTypePECITx</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
-<P><STRONG><a name="[9a]"></a>GPIOPinTypePWM</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text))
+<P><STRONG><a name="[9b]"></a>GPIOPinTypePWM</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = GPIOPinTypePWM &rArr; GPIOPadConfigSet
 </UL>
 <BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
-<BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
+<BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
 </UL>
 
-<P><STRONG><a name="[ad]"></a>GPIOPinTypeQEI</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text))
+<P><STRONG><a name="[ae]"></a>GPIOPinTypeQEI</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = GPIOPinTypeQEI &rArr; GPIOPadConfigSet
 </UL>
 <BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
+<BR>[Called By]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
 </UL>
 
 <P><STRONG><a name="[ee]"></a>GPIOPinTypeSSI</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[ef]"></a>GPIOPinTypeTimer</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
-<P><STRONG><a name="[a3]"></a>GPIOPinTypeUART</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text))
+<P><STRONG><a name="[a4]"></a>GPIOPinTypeUART</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = GPIOPinTypeUART &rArr; GPIOPadConfigSet
 </UL>
 <BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
-<BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
 </UL>
 
 <P><STRONG><a name="[f0]"></a>GPIOPinTypeUSBAnalog</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[f1]"></a>GPIOPinTypeUSBDigital</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[f2]"></a>GPIOPinTypeWakeHigh</STRONG> (Thumb, 32 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[f3]"></a>GPIOPinTypeWakeLow</STRONG> (Thumb, 32 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[f4]"></a>GPIOPinTypeKBRow</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[f5]"></a>GPIOPinTypeKBColumn</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[f6]"></a>GPIOPinTypeLEDSeq</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[f7]"></a>GPIOPinTypeCIR</STRONG> (Thumb, 30 bytes, Stack size 12 bytes, gpio.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIODirModeSet
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
 <P><STRONG><a name="[19b]"></a>GPIOPinWakeStatus</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, gpio.o(.text), UNUSED)
 
-<P><STRONG><a name="[99]"></a>GPIOPinConfigure</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, gpio.o(.text))
+<P><STRONG><a name="[9a]"></a>GPIOPinConfigure</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, gpio.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = GPIOPinConfigure
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
+<BR>[Called By]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM_Setup
 </UL>
 
 <P><STRONG><a name="[19c]"></a>GPIODMATriggerEnable</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, gpio.o(.text), UNUSED)
@@ -1279,21 +1295,21 @@ Global Symbols
 
 <P><STRONG><a name="[19f]"></a>GPIOADCTriggerDisable</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, gpio.o(.text), UNUSED)
 
-<P><STRONG><a name="[b0]"></a>QEIEnable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, qei.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
+<P><STRONG><a name="[b1]"></a>QEIEnable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, qei.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
 </UL>
 
-<P><STRONG><a name="[ae]"></a>QEIDisable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, qei.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
+<P><STRONG><a name="[af]"></a>QEIDisable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, qei.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
 </UL>
 
-<P><STRONG><a name="[af]"></a>QEIConfigure</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, qei.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
+<P><STRONG><a name="[b0]"></a>QEIConfigure</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, qei.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEI_Setup
 </UL>
 
-<P><STRONG><a name="[b9]"></a>QEIPositionGet</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, qei.o(.text))
+<P><STRONG><a name="[ba]"></a>QEIPositionGet</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, qei.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchMotor
-<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
 </UL>
 
 <P><STRONG><a name="[1a0]"></a>QEIPositionSet</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, qei.o(.text), UNUSED)
@@ -1313,7 +1329,7 @@ Global Symbols
 <P><STRONG><a name="[f8]"></a>QEIIntRegister</STRONG> (Thumb, 30 bytes, Stack size 16 bytes, qei.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_QEIIntNumberGet
 <LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntRegister
-<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
+<LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IntEnable
 </UL>
 
 <P><STRONG><a name="[fa]"></a>QEIIntUnregister</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, qei.o(.text), UNUSED)
@@ -2226,22 +2242,22 @@ Global Symbols
 <LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenIntUnregister
 </UL>
 
-<P><STRONG><a name="[a9]"></a>IntEnable</STRONG> (Thumb, 92 bytes, Stack size 0 bytes, interrupt.o(i.IntEnable))
+<P><STRONG><a name="[aa]"></a>IntEnable</STRONG> (Thumb, 92 bytes, Stack size 0 bytes, interrupt.o(i.IntEnable))
 <BR><BR>[Called By]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;QEIIntRegister
 <LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOIntRegister
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTIntRegister
 <LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlIntRegister
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMFaultIntRegister
 <LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenIntRegister
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
 </UL>
 
-<P><STRONG><a name="[a2]"></a>IntMasterEnable</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, interrupt.o(i.IntMasterEnable))
+<P><STRONG><a name="[a3]"></a>IntMasterEnable</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, interrupt.o(i.IntMasterEnable))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = IntMasterEnable
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CPUcpsie
 </UL>
-<BR>[Called By]<UL><LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
+<BR>[Called By]<UL><LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Setup
 </UL>
 
 <P><STRONG><a name="[c8]"></a>IntRegister</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, interrupt.o(i.IntRegister), UNUSED)
@@ -2262,13 +2278,13 @@ Global Symbols
 <LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMGenIntUnregister
 </UL>
 
-<P><STRONG><a name="[b5]"></a>__aeabi_ddiv</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, ddiv.o(x$fpl$ddiv))
+<P><STRONG><a name="[b6]"></a>__aeabi_ddiv</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, ddiv.o(x$fpl$ddiv))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = __aeabi_ddiv
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchIntensity
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchDuration
 <LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchPulse
-<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
 </UL>
 
 <P><STRONG><a name="[100]"></a>_ddiv</STRONG> (Thumb, 552 bytes, Stack size 32 bytes, ddiv.o(x$fpl$ddiv), UNUSED)
@@ -2276,13 +2292,13 @@ Global Symbols
 <LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_dnaninf
 </UL>
 
-<P><STRONG><a name="[b6]"></a>__aeabi_d2iz</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, dfix.o(x$fpl$dfix))
+<P><STRONG><a name="[b7]"></a>__aeabi_d2iz</STRONG> (Thumb, 0 bytes, Stack size 32 bytes, dfix.o(x$fpl$dfix))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = __aeabi_d2iz
 </UL>
 <BR>[Called By]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchIntensity
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchDuration
 <LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchPulse
-<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
 </UL>
 
 <P><STRONG><a name="[103]"></a>_dfix</STRONG> (Thumb, 94 bytes, Stack size 32 bytes, dfix.o(x$fpl$dfix), UNUSED)
@@ -2295,11 +2311,11 @@ Global Symbols
 
 <P><STRONG><a name="[1ba]"></a>_dflt</STRONG> (Thumb, 46 bytes, Stack size 0 bytes, dflt_clz.o(x$fpl$dflt), UNUSED)
 
-<P><STRONG><a name="[b4]"></a>__aeabi_ui2d</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, dflt_clz.o(x$fpl$dfltu))
+<P><STRONG><a name="[b5]"></a>__aeabi_ui2d</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, dflt_clz.o(x$fpl$dfltu))
 <BR><BR>[Called By]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchIntensity
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchDuration
 <LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchPulse
-<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
 </UL>
 
 <P><STRONG><a name="[1bb]"></a>_dfltu</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, dflt_clz.o(x$fpl$dfltu), UNUSED)

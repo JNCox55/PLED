@@ -941,31 +941,31 @@ void engrave()
 						{
  						case '0':
 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);
-							zephyr=60;
+							zephyr=60;//60
  							break;
  						case '1':
- 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,410);//440
-							zephyr=48;//57
+ 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);//410
+							zephyr=41;//48
  							break;
  						case '2':
- 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,353);//400
-						zephyr=40;//53
+ 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);//353
+						zephyr=32;//40
  							break;
  						case '3':
- 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,300);//360
-						zephyr=42;//50
+ 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);//300
+						zephyr=24;//42
  							break;
 						case '4':
- 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,220);//320
-						zephyr=40;//47
+ 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);//220
+						zephyr=18;//40
  							break;
  						case '5':
- 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,163);//280
-						zephyr=42;//43
+ 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);//163
+						zephyr=14;//42
  							break;
  						case '6':
- 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,135);//240
-						zephyr=42;
+ 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);//135
+						zephyr=12;//42
  							break;
  						case '7':
  							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,1);

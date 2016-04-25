@@ -1,7 +1,6 @@
 C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\bin\Release\PLED_GUI.exe.config
 C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\bin\Release\PLED_GUI.exe
 C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\bin\Release\PLED_GUI.pdb
-C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Release\PLED_GUI.csprojResolveAssemblyReference.cache
 C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Release\PLED_GUI.complete.resources
 C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Release\PLED_GUI.engraving.resources
 C:\Users\Casey\Documents\USU\PLED\PLED\PLED_GUI\PLED_GUI\obj\Release\PLED_GUI.Form1.resources

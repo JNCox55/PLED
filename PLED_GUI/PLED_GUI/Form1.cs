@@ -200,10 +200,16 @@ namespace PLED_GUI
 
                 while (xImgSize > xDimPix || yImgSize > yDimPix)
                 {
-                    if(xImgSize > yImgSize)
+                    if (xImgSize == yImgSize)
+                    {
+                        //adjust image size (pixel count) to fit plaque
+                        xImgSize = xDimPix;
+                        yImgSize = yDimPix;
+                    }
+
+                    else if (xImgSize > yImgSize)
                     {
                         //adjust image size (pixel count) according to plaque size if image is larger
-
                         if (xImgSize > xDimPix)
                         {
                             //sets y image dimension to y wood dimension

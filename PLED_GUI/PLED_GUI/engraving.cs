@@ -15,10 +15,8 @@ namespace PLED_GUI
         public engraving()
         {
             InitializeComponent();
+            this.Show();
             System.Diagnostics.Process.Start("C:/PLED/src/SerialToPC.exe");
-            var done = new jobDone();
-            done.ShowDialog();
-            this.Close();
         }
     }
 }

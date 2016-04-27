@@ -20,7 +20,7 @@
 #include "inc\hw_types.h"
 #include "driverlib\fpu.h"
 
-//#define FEEDBACK				//<---- Uncomment this for Feedback
+#define FEEDBACK				//<---- Uncomment this for Feedback
 
 volatile unsigned int *UART1=(unsigned int *) 0x4000D000; //This points to the base address for UART1
 int timeEngrave=67;  //This is the denominator for the fraction of a second we are engraving during testing
@@ -604,7 +604,7 @@ void correctPlacement(short curPosX,short curPosY)
 	//There are 9.1098 average x counts per pixel from the encoder and 9.135 average y counts per pixel from the encoder.
 	#ifdef FEEDBACK
 	encoderPositionX=QEIPositionGet(QEI0_BASE);
-	while (curPosX*8.95568-encoderPositionX>30)	//if we are more than 2 pixels left of where we need to be, fix it before moving on
+	while (curPosX*8.8938-encoderPositionX>20)	//if we are more than 2 pixels left of where we need to be, fix it before moving on
 	{
 		//set the X axis stepper motor direction to forward
 		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
@@ -612,11 +612,11 @@ void correctPlacement(short curPosX,short curPosY)
 		//set the clock output high - the motor steps on rising clock edges
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
 		//wait a certain amount of time before changing the stepper motor clock state
-		SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
+		SysCtlDelay(SysCtlClockGet()*8 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		//Set the clock output low
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
 		//wait a certain amount of time before changing the stepper motor clock state
-		SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
+		SysCtlDelay(SysCtlClockGet()*8 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
@@ -628,7 +628,7 @@ void correctPlacement(short curPosX,short curPosY)
 		encoderPositionX=QEIPositionGet(QEI0_BASE);	//grab the current encoder position
 	}
 
-	while (encoderPositionX-curPosX*8.95568>30)		//if we are more than 2 pixels right of where we need to be, fix it before moving on
+	while (encoderPositionX-curPosX*8.8938>20)		//if we are more than 2 pixels right of where we need to be, fix it before moving on
 	{
 		//set the X axis stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
@@ -636,11 +636,11 @@ void correctPlacement(short curPosX,short curPosY)
 		//set the clock output high - the motor steps on rising clock edges
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
 		//wait a certain amount of time before changing the stepper motor clock state
-		SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
+		SysCtlDelay(SysCtlClockGet()*8 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		//Set the clock output low
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
 		//wait a certain amount of time before changing the stepper motor clock state
-		SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
+		SysCtlDelay(SysCtlClockGet()*8 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionX=QEIPositionGet(QEI0_BASE);	//
@@ -653,7 +653,7 @@ void correctPlacement(short curPosX,short curPosY)
 	}
 	encoderPositionY=QEIPositionGet(QEI1_BASE);	//Now see if the Y alignment is correct
 
-	while (curPosY*8.83568-encoderPositionY>30)		//if we are more than 2 pixels above where we need to be, fix it before moving on
+	while (curPosY*8.83568-encoderPositionY>20)		//if we are more than 2 pixels above where we need to be, fix it before moving on
 	{//8.83568
 		//set the Y axis stepper motor direction to forward
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
@@ -661,11 +661,11 @@ void correctPlacement(short curPosX,short curPosY)
 		//set the clock output high - the motor steps on rising clock edges
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
 		//wait a certain amount of time before changing the stepper motor clock state
-		SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
+		SysCtlDelay(SysCtlClockGet()*8 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		//Set the clock output low
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
 		//wait a certain amount of time before changing the stepper motor clock state
-		SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
+		SysCtlDelay(SysCtlClockGet()*8 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//
@@ -677,7 +677,7 @@ void correctPlacement(short curPosX,short curPosY)
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//Now see if the Y alignment is correct
 	}
 
-	while (encoderPositionY-curPosY*8.83568>30)		//if we are more than 2 pixels below where we need to be, fix it before moving on
+	while (encoderPositionY-curPosY*8.83568>20)		//if we are more than 2 pixels below where we need to be, fix it before moving on
 	{//8.83568
 		//set the Y axis stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
@@ -687,11 +687,11 @@ void correctPlacement(short curPosX,short curPosY)
 				//set the clock output high - the motor steps on rising clock edges
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
 				//wait a certain amount of time before changing the stepper motor clock state
-				SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
+				SysCtlDelay(SysCtlClockGet()*8 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 				//Set the clock output low
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
 				//wait a certain amount of time before changing the stepper motor clock state
-				SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
+				SysCtlDelay(SysCtlClockGet()*8 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		}
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
@@ -930,7 +930,7 @@ void engrave()
 				else if (gCode[j]=='M' && gCode[j+1]=='2')	//If we got the command to jog to the origin (end of picture)
 				{
 					step(positiveXPixels, positiveYPixels, 0, 0, 0);	//move back to the origin
-					correctPlacement(positiveXPixels, positiveYPixels);	
+					//correctPlacement(positiveXPixels, positiveYPixels);	
 					//goto reset;	//Dont try to read outside of the bounds of the gCode array in the next instructions
 				}
  				else if (gCode[j]=='G' && gCode[j+1]=='1') //If we get a move command...
@@ -986,7 +986,7 @@ void engrave()
 					xCommandsIndex++;	//move the pointer to the next x location
  					yCommandsIndex++;	//move the pointer to the next y location
 					PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,1);	//turn the laser off
-					correctPlacement(positiveXPixels, positiveYPixels);		//use feedback to move to the correct position
+					//correctPlacement(positiveXPixels, positiveYPixels);		//use feedback to move to the correct position
 					j+=4;	//point to the start of the next gCode pixel
 				}
 				else if (gCode[j]=='R' && gCode[j+1]=='D')
@@ -1020,6 +1020,7 @@ void engrave()
  		gCodeIndex=0;
  		pauseValuesEnd=0;
  		pauseValuesIndex=0;
+		correctPlacement(positiveXPixels, positiveYPixels);
  		for (i=0;i<2;i++)
  		{
  			UARTCharPut(UART1_BASE,go[i]);

@@ -112,7 +112,6 @@ namespace PLED_GUI
                             if (xImgSize > yImgSize)
                             {
                                 //adjust image size (pixel count) according to plaque size if image is larger
-
                                 if (xImgSize > xDimPix)
                                 {
                                     //sets y image dimension to y wood dimension
@@ -120,6 +119,15 @@ namespace PLED_GUI
                                     //sets x dimension according to conversion above
                                     ydoubletmp = xImgSize * (1 / xyratio);
                                     yImgSize = Convert.ToUInt16(ydoubletmp);
+                                }
+                                //adjust image size (pixel count) according to plaque size if image is larger
+                                else
+                                {
+                                    //sets x image dimension to x wood dimension
+                                    yImgSize = yDimPix;
+                                    //sets y dimension according to conversion above
+                                    xdoubletmp = yImgSize * xyratio;
+                                    xImgSize = Convert.ToUInt16(xdoubletmp);
                                 }
                             }
 
@@ -133,6 +141,15 @@ namespace PLED_GUI
                                     //sets y dimension according to conversion above
                                     xdoubletmp = yImgSize * xyratio;
                                     xImgSize = Convert.ToUInt16(xdoubletmp);
+                                }
+                                //adjust image size (pixel count) according to plaque size if image is larger
+                                else
+                                {
+                                    //sets y image dimension to y wood dimension
+                                    xImgSize = xDimPix;
+                                    //sets x dimension according to conversion above
+                                    ydoubletmp = xImgSize * (1 / xyratio);
+                                    yImgSize = Convert.ToUInt16(ydoubletmp);
                                 }
                             }
 

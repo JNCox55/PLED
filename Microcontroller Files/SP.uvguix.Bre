@@ -2586,9 +2586,15 @@
       <ActiveTab>0</ActiveTab>
       <Doc>
         <Name>.\main.c</Name>
+<<<<<<< Updated upstream
+        <ColumnNumber>10</ColumnNumber>
+        <TopLine>362</TopLine>
+        <CurrentLine>1406</CurrentLine>
+=======
         <ColumnNumber>0</ColumnNumber>
         <TopLine>205</TopLine>
         <CurrentLine>713</CurrentLine>
+>>>>>>> Stashed changes
         <Folding>1</Folding>
         <ContractedFolders>95,385,403,461,523,571,592,598,914,1037,1059,1083,1127</ContractedFolders>
         <PaneID>0</PaneID>
@@ -2596,7 +2602,11 @@
       <Doc>
         <Name>RTE\Device\TM4C123GH6PM\startup_TM4C123.s</Name>
         <ColumnNumber>0</ColumnNumber>
+<<<<<<< Updated upstream
+        <TopLine>233</TopLine>
+=======
         <TopLine>232</TopLine>
+>>>>>>> Stashed changes
         <CurrentLine>235</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>

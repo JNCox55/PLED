@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\SP.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\SP.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050041: Last Updated: Tue Apr 26 15:31:40 2016
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050041: Last Updated: Thu Apr 28 11:27:27 2016
 <BR><P>
 <H3>Maximum Stack Usage =         96 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -408,6 +408,7 @@ Global Symbols
 <LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchIntensity
 <LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchDuration
 <LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchPulse
+<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
 <LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;correctPlacement
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell
@@ -525,7 +526,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
 </UL>
 
-<P><STRONG><a name="[b8]"></a>correctPlacement</STRONG> (Thumb, 964 bytes, Stack size 48 bytes, main.o(.text))
+<P><STRONG><a name="[b8]"></a>correctPlacement</STRONG> (Thumb, 672 bytes, Stack size 48 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = correctPlacement &rArr; __aeabi_dmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
@@ -540,7 +541,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
 </UL>
 
-<P><STRONG><a name="[bf]"></a>step</STRONG> (Thumb, 728 bytes, Stack size 32 bytes, main.o(.text))
+<P><STRONG><a name="[bf]"></a>step</STRONG> (Thumb, 824 bytes, Stack size 32 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 52<LI>Call Chain = step &rArr; SysCtlClockGet
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
@@ -551,12 +552,14 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
 </UL>
 
-<P><STRONG><a name="[c0]"></a>engrave</STRONG> (Thumb, 874 bytes, Stack size 16 bytes, main.o(.text))
+<P><STRONG><a name="[c0]"></a>engrave</STRONG> (Thumb, 948 bytes, Stack size 16 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = engrave &rArr; correctPlacement &rArr; __aeabi_dmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTRxErrorClear
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTCharPut
 <LI><a href="#[c1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTCharGetNonBlocking
+<LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMPulseWidthSet
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
 <LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;correctPlacement
@@ -585,7 +588,7 @@ Global Symbols
 <LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 </UL>
 
-<P><STRONG><a name="[c4]"></a>testBenchIntensity</STRONG> (Thumb, 574 bytes, Stack size 40 bytes, main.o(.text), UNUSED)
+<P><STRONG><a name="[c4]"></a>testBenchIntensity</STRONG> (Thumb, 578 bytes, Stack size 40 bytes, main.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlDelay
 <LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysCtlClockGet
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWMPulseWidthSet
@@ -606,7 +609,7 @@ Global Symbols
 <LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIOPadConfigSet
 </UL>
 
-<P><STRONG><a name="[88]"></a>main</STRONG> (Thumb, 506 bytes, Stack size 0 bytes, main.o(.text))
+<P><STRONG><a name="[88]"></a>main</STRONG> (Thumb, 360 bytes, Stack size 0 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = main &rArr; engrave &rArr; correctPlacement &rArr; __aeabi_dmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UARTRxErrorClear
@@ -843,6 +846,7 @@ Global Symbols
 <LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchIntensity
 <LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchDuration
 <LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;testBenchPulse
+<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;engrave
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;step
 <LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;correctPlacement
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;dwell

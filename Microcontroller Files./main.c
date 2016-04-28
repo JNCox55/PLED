@@ -50,8 +50,8 @@ short sizeColumns=0;
 short sizeRows=0;
 int i=0;
 int j=0;
-char stop[5]="stop";
-char go[3]="GO";
+char stop[5]="stop";	//currently not used
+char go[3]="GO";	//go ahead and send another row
 char rs[3]="RS";	//resend row
 char mb[3]="MB";	//muy bueno
 char done=0;
@@ -621,10 +621,10 @@ void correctPlacement(short curPosX,short curPosY)
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
 		
-		if (encoderPositionX%9<4)	//Make sure its okay to round down
-			positiveXPixels=encoderPositionX/9;	//adjust the positiveXPixels count to match the actual position of the gantry
-		else
-			positiveXPixels=encoderPositionX/9+1; //adjust the positiveXPixels count to match the actual position of the gantry (round up)
+		//if (encoderPositionX%9<4)	//Make sure its okay to round down
+			//positiveXPixels=(int)(encoderPositionX/8.8938+0.5);	//adjust the positiveXPixels count to match the actual position of the gantry
+		//else
+			//positiveXPixels=encoderPositionX/9+1; //adjust the positiveXPixels count to match the actual position of the gantry (round up)
 		encoderPositionX=QEIPositionGet(QEI0_BASE);	//grab the current encoder position
 	}
 
@@ -645,10 +645,10 @@ void correctPlacement(short curPosX,short curPosY)
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionX=QEIPositionGet(QEI0_BASE);	//
 		
-		if (encoderPositionX%9<4)	//Make sure its okay to round down
-			positiveXPixels=encoderPositionX/9;	//adjust the positiveXPixels count to match the actual position of the gantry
-		else
-			positiveXPixels=encoderPositionX/9+1; //adjust the positiveXPixels count to match the actual position of the gantry (round up)
+		//if (encoderPositionX%9<4)	//Make sure its okay to round down
+			//positiveXPixels=(int)(encoderPositionX/8.8938+0.5);	//adjust the positiveXPixels count to match the actual position of the gantry
+		//else
+			//positiveXPixels=encoderPositionX/9+1; //adjust the positiveXPixels count to match the actual position of the gantry (round up)
 		encoderPositionX=QEIPositionGet(QEI0_BASE);	//grab the current encoder position
 	}
 	encoderPositionY=QEIPositionGet(QEI1_BASE);	//Now see if the Y alignment is correct
@@ -670,10 +670,10 @@ void correctPlacement(short curPosX,short curPosY)
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//
 		
-		if (encoderPositionY%9<4)	//Make sure its okay to round down
-			positiveYPixels=encoderPositionY/9;	//adjust the positiveYPixels count to match the actual position of the gantry
-		else
-			positiveYPixels=encoderPositionY/9+1;	//adjust the positiveYPixels count to match the actual position of the gantry (round up)
+		//if (encoderPositionY%9<4)	//Make sure its okay to round down
+			//positiveYPixels=(int)(encoderPositionY/8.83568+0.5);	//adjust the positiveYPixels count to match the actual position of the gantry
+		//else
+			//positiveYPixels=encoderPositionY/9+1;	//adjust the positiveYPixels count to match the actual position of the gantry (round up)
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//Now see if the Y alignment is correct
 	}
 
@@ -697,10 +697,10 @@ void correctPlacement(short curPosX,short curPosY)
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//
 		
-		if (encoderPositionY%9<4)	//Make sure its okay to round down
-			positiveYPixels=encoderPositionY/9;	//adjust the positiveYPixels count to match the actual position of the gantry
-		else
-			positiveYPixels=encoderPositionY/9+1;	//adjust the positiveYPixels count to match the actual position of the gantry (round up)
+		//if (encoderPositionY%9<4)	//Make sure its okay to round down
+			//positiveYPixels=(int)(encoderPositionY/8.83568+0.5);	//adjust the positiveYPixels count to match the actual position of the gantry
+		//else
+		//	positiveYPixels=encoderPositionY/9+1;	//adjust the positiveYPixels count to match the actual position of the gantry (round up)
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//Now see if the Y alignment is correct
 	}
 
@@ -930,7 +930,8 @@ void engrave()
 				else if (gCode[j]=='M' && gCode[j+1]=='2')	//If we got the command to jog to the origin (end of picture)
 				{
 					step(positiveXPixels, positiveYPixels, 0, 0, 0);	//move back to the origin
-					//correctPlacement(positiveXPixels, positiveYPixels);	
+					SysCtlDelay(SysCtlClockGet()*20/3000);
+					correctPlacement(positiveXPixels, positiveYPixels);	
 					//goto reset;	//Dont try to read outside of the bounds of the gCode array in the next instructions
 				}
  				else if (gCode[j]=='G' && gCode[j+1]=='1') //If we get a move command...
@@ -1020,10 +1021,12 @@ void engrave()
  		gCodeIndex=0;
  		pauseValuesEnd=0;
  		pauseValuesIndex=0;
-		correctPlacement(positiveXPixels, positiveYPixels);
+		//correctPlacement(positiveXPixels, positiveYPixels);
+		SysCtlDelay(SysCtlClockGet()*20/3000);//wait 20 milliseconds
  		for (i=0;i<2;i++)
  		{
  			UARTCharPut(UART1_BASE,go[i]);
+			SysCtlDelay(SysCtlClockGet()*20/3000);//wait 20 milliseconds
  		}
  		
  		readyToGo = 0;

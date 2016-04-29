@@ -20,7 +20,7 @@
 #include "inc\hw_types.h"
 #include "driverlib\fpu.h"
 
-#define FEEDBACK				//<---- Uncomment this for Feedback
+//#define FEEDBACK				//<---- Uncomment this for Feedback
 
 volatile unsigned int *UART1=(unsigned int *) 0x4000D000; //This points to the base address for UART1
 int timeEngrave=67;  //This is the denominator for the fraction of a second we are engraving during testing
@@ -62,6 +62,8 @@ char wellShit=0;
 uint32_t ui32Status;
 int s;
 char rowGood=1;
+int openLoopCorrectionCount=0;
+char openLoopCountTrigger=0;
 
 
 int32_t mytest;
@@ -713,6 +715,8 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 {	
 //The step duration is the count of 16000000*(0.001*burnDuration)/((3 assembly instructions per SysCtlDelay)*pulsesPerPixel)
 //this way we have the laser ON while we microstep across the width of a pixel so we dont have to pause to engrave
+	if (burnDuration!=0)
+		openLoopCountTrigger=1;
 	while (desPosX-curPosX>0)	//if we need to move in the +X direction...
 	{
 		pixelsCount++;
@@ -834,6 +838,19 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 					SysCtlDelay((int)((SysCtlClockGet()*burnDuration)/(6000*pulsesPerPixel)));	//pulse high for half the duration of 1/12th of the pixel width
 				else 
 					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
+				if (openLoopCountTrigger==1)
+					openLoopCorrectionCount++;
+				if (openLoopCorrectionCount%26==0)
+				{
+					//set the X stepper motor direction to reverse
+					GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
+					//set the clock output high - the motor steps on rising clock edges
+					GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
+					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
+					//Set the clock output low
+					GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
+					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
+				}
 		}
 		/*if (curPosY%37==1)	//We are short 5 pulses (a fraction of a full pixel) every 37 pixels moved. This keeps us on track for moving full inches.
 		{
@@ -931,7 +948,7 @@ void engrave()
 				{
 					step(positiveXPixels, positiveYPixels, 0, 0, 0);	//move back to the origin
 					SysCtlDelay(SysCtlClockGet()*20/3000);
-					correctPlacement(positiveXPixels, positiveYPixels);	
+					//correctPlacement(positiveXPixels, positiveYPixels);	
 					//goto reset;	//Dont try to read outside of the bounds of the gCode array in the next instructions
 				}
  				else if (gCode[j]=='G' && gCode[j+1]=='1') //If we get a move command...
@@ -1356,6 +1373,7 @@ int main(void)
 	
 	while(1)
 	{
+		correctPlacement(positiveXPixels, positiveYPixels);
  		if(readyToGo==1 && rowGood==1)
 		{
 			firstRun=0;

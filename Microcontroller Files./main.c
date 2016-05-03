@@ -20,7 +20,7 @@
 #include "inc\hw_types.h"
 #include "driverlib\fpu.h"
 
-//#define FEEDBACK				//<---- Uncomment this for Feedback
+#define FEEDBACK				//<---- Uncomment this for Feedback
 
 volatile unsigned int *UART1=(unsigned int *) 0x4000D000; //This points to the base address for UART1
 int timeEngrave=67;  //This is the denominator for the fraction of a second we are engraving during testing
@@ -120,7 +120,6 @@ UART1_Handler(void)
 				identifier[1]=temp;
 			else
 				goto secondIdentifier;
-				//identifier[1]=UARTCharGetNonBlocking(UART1_BASE);
 		//Put data in the appropriate arrays
 		if (identifier[0]=='Z' && identifier[1]=='Z')	//If we recieve the command to collect the size of the image...
 		{
@@ -333,55 +332,6 @@ UART1_Handler(void)
 		{
 			rowGood=0;
 		}
-		
-				
-			    /*while(UARTCharsAvail(UART1_BASE))
-    {
-        //
-        // Read the next character from the UART and write it back to the UART.
-        //
-				//mytest=UARTCharGetNonBlocking(UART1_BASE);
-        //UARTCharPutNonBlocking(UART1_BASE,
-        //                           mytest);
-				drawingBuffer[head]=(char) UARTCharGetNonBlocking(UART1_BASE);
-				//point to the next available spot IF we dont overrun the buffer
-				if (head<9998 && (head+1)!=tail)
-				{
-					head++;
-				}
-				//wrap to the beginning of the buffer IF we dont overrun the buffer
-				else if (!(head==9999 && tail==0))
-				{
-					head=0;
-				}
-				//If we are about to overrun the buffer, tell the PC to stop sending
-				if ((head==9999 && tail==0) || (head+1)==tail)
-				{
-					while (UARTBusy(UART1_BASE) != 0)
-					{
-						//wait
-					}
-					for (i=0;i<3;i++)
-					{
-						UARTCharPutNonBlocking(UART1_BASE,
-																			 go[i]);
-					}
-				}
-        //
-        // Blink the LED to show a character transfer is occuring.
-        //
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, GPIO_PIN_2);
-
-        //
-        // Delay for 1 millisecond.  Each SysCtlDelay is about 3 clocks.
-        //
-        SysCtlDelay(SysCtlClockGet() / (1000 * 3));
-
-        //
-        // Turn off the LED
-        //
-        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);
-    }*/
 }
 
 void Sys_Clock_Set()
@@ -447,12 +397,9 @@ void PWM_Setup()
 	// PWMGenPeriodGet() function.  For this example the PWM will be high for
 	// 25% of the time or 16000 clock ticks (64000 / 4).
 	//
-	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);  //1907
-	//PWMPulseWidthSet(PWM0_BASE, PWM_OUT_1, (PWMGenPeriodGet(PWM0_BASE, PWM_OUT_1)*3) / 4);
-	//
+	PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);  //1907	//
 	// Enable the PWM0 Bit0 (PB6) and PWM1 Bit0 (PB7) output.
 	PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT, true);
-	// | PWM_OUT_1_BIT
 	//
 	// Enable the PWM generator block.
 	//
@@ -508,7 +455,6 @@ void UART1_Setup()
 	// Configure the UART to use RTS and CTS handshaking.
 	//
 	UARTFlowControlSet(UART1_BASE, UART_FLOWCONTROL_RX | UART_FLOWCONTROL_TX);
-	//UART1[0x30]|=0x0000C000;
 	//
 	// Enable the UART interrupt.
 	//
@@ -516,10 +462,6 @@ void UART1_Setup()
 	IntEnable(INT_UART1);
 	UARTIntEnable(UART1_BASE, UART_INT_RX | UART_INT_RT);
 	UARTEnable(UART1_BASE);
-	/*for (i=0;i<16;i++)
-		{
-			command[0]=UARTCharGetNonBlocking(UART1_BASE);
-		}*/
 }
 
 void QEI_Setup()
@@ -566,8 +508,6 @@ void QEI_Setup()
 	//
 	QEIEnable(QEI0_BASE);
 	QEIEnable(QEI1_BASE);
-	//QEIPositionSet(QEI0_BASE,0x77777777);
-	//QEIPositionSet(QEI1_BASE,0x77777777);
 }
 
 void GPIO_Setup()
@@ -622,11 +562,6 @@ void correctPlacement(short curPosX,short curPosY)
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionX=QEIPositionGet(QEI0_BASE);
-		
-		//if (encoderPositionX%9<4)	//Make sure its okay to round down
-			//positiveXPixels=(int)(encoderPositionX/8.8938+0.5);	//adjust the positiveXPixels count to match the actual position of the gantry
-		//else
-			//positiveXPixels=encoderPositionX/9+1; //adjust the positiveXPixels count to match the actual position of the gantry (round up)
 		encoderPositionX=QEIPositionGet(QEI0_BASE);	//grab the current encoder position
 	}
 
@@ -645,12 +580,6 @@ void correctPlacement(short curPosX,short curPosY)
 		SysCtlDelay(SysCtlClockGet()*8 / (motorStepDuration * 6000));	//if we are just jogging then go ahead and move fast
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
-		encoderPositionX=QEIPositionGet(QEI0_BASE);	//
-		
-		//if (encoderPositionX%9<4)	//Make sure its okay to round down
-			//positiveXPixels=(int)(encoderPositionX/8.8938+0.5);	//adjust the positiveXPixels count to match the actual position of the gantry
-		//else
-			//positiveXPixels=encoderPositionX/9+1; //adjust the positiveXPixels count to match the actual position of the gantry (round up)
 		encoderPositionX=QEIPositionGet(QEI0_BASE);	//grab the current encoder position
 	}
 	encoderPositionY=QEIPositionGet(QEI1_BASE);	//Now see if the Y alignment is correct
@@ -671,11 +600,6 @@ void correctPlacement(short curPosX,short curPosY)
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//
-		
-		//if (encoderPositionY%9<4)	//Make sure its okay to round down
-			//positiveYPixels=(int)(encoderPositionY/8.83568+0.5);	//adjust the positiveYPixels count to match the actual position of the gantry
-		//else
-			//positiveYPixels=encoderPositionY/9+1;	//adjust the positiveYPixels count to match the actual position of the gantry (round up)
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//Now see if the Y alignment is correct
 	}
 
@@ -683,8 +607,6 @@ void correctPlacement(short curPosX,short curPosY)
 	{//8.83568
 		//set the Y axis stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
-		
-		//for(i = 0; i < (pulsesPerStep * stepsPerPixel); i++)
 		{
 				//set the clock output high - the motor steps on rising clock edges
 				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
@@ -697,12 +619,6 @@ void correctPlacement(short curPosX,short curPosY)
 		}
 		
 		//Recalibrate the number of steps actually sent to match the actual number of steps recorded by the encoder
-		encoderPositionY=QEIPositionGet(QEI1_BASE);	//
-		
-		//if (encoderPositionY%9<4)	//Make sure its okay to round down
-			//positiveYPixels=(int)(encoderPositionY/8.83568+0.5);	//adjust the positiveYPixels count to match the actual position of the gantry
-		//else
-		//	positiveYPixels=encoderPositionY/9+1;	//adjust the positiveYPixels count to match the actual position of the gantry (round up)
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//Now see if the Y alignment is correct
 	}
 
@@ -722,7 +638,6 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 		pixelsCount++;
 		//set the stepper motor direction to forward
 		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
-		//SysCtlDelay((int)(SysCtlClockGet()/(8000)));
 		
 		for(i = 0; i < (pulsesPerPixel); i++)	//Move one full pixel width
 		{
@@ -741,27 +656,6 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 				else 
 					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
 		}
-		/*if (curPosX%37==0) //We are short 5 pulses (a fraction of a full pixel) every 37 pixels moved. This keeps us on track for moving full inches.
-		{
-			for(i = 0; i < 5; i++)
-			{
-				//set the clock output high - the motor steps on rising clock edges
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-				//wait 120 microseconds
-				if (burnDuration!=0)	//if we are burning and not just moving
-					SysCtlDelay((int)((SysCtlClockGet()*burnDuration)/(6000*5)));	//pulse high for half the duration of 1/12th of the pixel width
-				else 
-					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
-				//Set the clock output low
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-				//wait 120 microseconds
-				if (burnDuration!=0)	//if we are burning and not just moving
-					SysCtlDelay((int)((SysCtlClockGet()*burnDuration)/(6000*5)));	//pulse high for half the duration of 1/12th of the pixel width
-				else 
-					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
-			}
-		pixelCorrectX++;
-		}*/
 		positiveXPixels++; //increment the number of x pixels moves in the +x direction
 		curPosX++;	//increment the temporary count of the number of x pixels moves in the +x direction
 		encoderPositionX=QEIPositionGet(QEI0_BASE);		//grab the current encoder position
@@ -771,7 +665,6 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 		pixelsCount++;
 		//set the stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
-		//SysCtlDelay((int)(SysCtlClockGet()/(8000)));
 		
 		for(i = 0; i < (pulsesPerPixel); i++)	//Move one full pixel width
 		{
@@ -790,27 +683,6 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 				else 
 					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
 		}
-		/*if (curPosX%37==0)//We are short 5 pulses (a fraction of a full pixel) every 37 pixels moved. This keeps us on track for moving full inches.
-		{
-			for(i = 0; i < 5; i++)
-			{
-				//set the clock output high - the motor steps on rising clock edges
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-				//wait a certain amount of time before changing the stepper motor clock state
-				if (burnDuration!=0)	//if we are burning and not just moving
-					SysCtlDelay((int)((SysCtlClockGet()*burnDuration)/(6000*5)));	//pulse high for half the duration of 1/12th of the pixel width
-				else 
-					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
-				//Set the clock output low
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-				//wait a certain amount of time before changing the stepper motor clock state
-				if (burnDuration!=0)	//if we are burning and not just moving
-					SysCtlDelay((int)((SysCtlClockGet()*burnDuration)/(6000*5)));	//pulse high for half the duration of 1/12th of the pixel width
-				else 
-					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
-			}
-		pixelCorrectX++;
-		}*/
 		
 		positiveXPixels--;	//decrement the number of of x pixels moves in the +x direction
 		curPosX--;	//the temporary count of the number of x pixels moves in the +x direction
@@ -852,27 +724,6 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
 				}
 		}
-		/*if (curPosY%37==1)	//We are short 5 pulses (a fraction of a full pixel) every 37 pixels moved. This keeps us on track for moving full inches.
-		{
-			for(i = 0; i < 5; i++)
-			{
-				//set the clock output high - the motor steps on rising clock edges
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-				//wait a certain amount of time before changing the stepper motor clock state
-				if (burnDuration!=0)	//if we are burning and not just moving
-					SysCtlDelay((int)((SysCtlClockGet()*burnDuration)/(6000*5)));	//pulse high for half the duration of 1/12th of the pixel width
-				else 
-					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
-				//Set the clock output low
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-				//wait a certain amount of time before changing the stepper motor clock state
-				if (burnDuration!=0)	//if we are burning and not just moving
-					SysCtlDelay((int)((SysCtlClockGet()*burnDuration)/(6000*5)));	//pulse high for half the duration of 1/12th of the pixel width
-				else 
-					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
-			}
-		pixelCorrectY++;
-		}*/
 		positiveYPixels++;	//increment the number of y pixels moves in the +y direction
 		curPosY++;	//increment the temporary count of the number of y pixels moves in the +y direction
 		encoderPositionY=QEIPositionGet(QEI1_BASE);	//Grab the current encoder position
@@ -881,7 +732,6 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 	{
 		//set the stepper motor direction to reverse
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
-		//SysCtlDelay((int)(SysCtlClockGet()/(8000)));
 		
 		for(i = 0; i < (pulsesPerPixel); i++)	//Move one full pixel width
 		{
@@ -900,27 +750,6 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 				else 
 					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
 		}
-		/*if (curPosY%37==1)	//We are short 5 pulses (a fraction of a full pixel) every 37 pixels moved. This keeps us on track for moving full inches.
-		{
-			for(i = 0; i < 5; i++)
-			{
-				//set the clock output high - the motor steps on rising clock edges
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-				//wait a certain amount of time before changing the stepper motor clock state
-				if (burnDuration!=0)	//if we are burning and not just moving
-					SysCtlDelay((int)((SysCtlClockGet()*burnDuration)/(6000*5)));	//pulse high for half the duration of 1/12th of the pixel width
-				else 
-					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
-				//Set the clock output low
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-				//wait a certain amount of time before changing the stepper motor clock state
-				if (burnDuration!=0)	//if we are burning and not just moving
-					SysCtlDelay((int)((SysCtlClockGet()*burnDuration)/(6000*5)));	//pulse high for half the duration of 1/12th of the pixel width
-				else 
-					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
-			}
-		pixelCorrectY++;
-		}*/
 		
 		positiveYPixels--;	//decrement the number of y pixels moves in the +y direction
 		curPosY--;	//decrement the temporary count of the number of y pixels moves in the +y direction
@@ -948,8 +777,6 @@ void engrave()
 				{
 					step(positiveXPixels, positiveYPixels, 0, 0, 0);	//move back to the origin
 					SysCtlDelay(SysCtlClockGet()*20/3000);
-					//correctPlacement(positiveXPixels, positiveYPixels);	
-					//goto reset;	//Dont try to read outside of the bounds of the gCode array in the next instructions
 				}
  				else if (gCode[j]=='G' && gCode[j+1]=='1') //If we get a move command...
  				{
@@ -1004,7 +831,6 @@ void engrave()
 					xCommandsIndex++;	//move the pointer to the next x location
  					yCommandsIndex++;	//move the pointer to the next y location
 					PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,1);	//turn the laser off
-					//correctPlacement(positiveXPixels, positiveYPixels);		//use feedback to move to the correct position
 					j+=4;	//point to the start of the next gCode pixel
 				}
 				else if (gCode[j]=='R' && gCode[j+1]=='D')
@@ -1038,7 +864,6 @@ void engrave()
  		gCodeIndex=0;
  		pauseValuesEnd=0;
  		pauseValuesIndex=0;
-		//correctPlacement(positiveXPixels, positiveYPixels);
 		SysCtlDelay(SysCtlClockGet()*20/3000);//wait 20 milliseconds
  		for (i=0;i<2;i++)
  		{
@@ -1062,7 +887,6 @@ void testBenchPulse()
 			//Turn the laser on at full power
 			PWMPulseWidthSet(PWM0_BASE,PWM_OUT_0,479);
 			//delay for x milliseconds
-			//SysCtlDelay((int) ((SysCtlClockGet()/timeEngrave)/3));
 			//turn the laser off to rest
 			PWMPulseWidthSet(PWM0_BASE,PWM_OUT_0,1);
 			//wait while we rest
@@ -1082,15 +906,12 @@ void testBenchDuration()
 	for (i=9;i<16;i++)
 	{
 		//Turn the laser on at full power
-		//PWMPulseWidthSet(PWM0_BASE,PWM_OUT_0,799);
 		GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_6, GPIO_PIN_6);
 		//delay for j*x milliseconds
-		//for (j=0;j<=i;j++)
 		{
 		SysCtlDelay((int) (i*(SysCtlClockGet()/1000)/3.0));
 		}
 		//turn the laser off to rest
-		//PWMPulseWidthSet(PWM0_BASE,PWM_OUT_0,1);
 		GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_6, 0);
 		//wait while we rest
 		SysCtlDelay((int) (SysCtlClockGet()/timeRest)/3);
@@ -1113,10 +934,6 @@ void testBenchIntensity()
 		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, 1);
 		// wait for 2 seconds while we slide wood over
 		SysCtlDelay(SysCtlClockGet()*2 / (3));
-		/*if (i==3)
-			timeEngrave=50;
-		if (i==2)
-			timeEngrave=20;*/
 	}
 		PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);
 		//engrave for 1/timeEngrave seconds
@@ -1203,129 +1020,6 @@ void testBenchMotor()
 		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
 		}
 	}
-
-/*while (1)
-{
-		positionX=QEIPositionGet(QEI0_BASE);
-		positionY=QEIPositionGet(QEI1_BASE);
-		if (positionY<0x88888888 && positionY>0x10)
-		{
-			//set the direction
-			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_PIN_0);
-			//set the clock output high
-			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-			//wait 25 milliseconds
-			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
-			//Set the clock output low
-			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-			//wait 25 milliseconds
-			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
-		}
-		else if (positionY>0x88888888 && positionY<0xFFFFFFEF)
-		{
-			//set the direction
-			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
-			//set the clock output high
-			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-			//wait 25 milliseconds
-			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
-			//Set the clock output low
-			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-			//wait 25 milliseconds
-			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
-		}
-			if (positionX<0x88888888 && positionX>0x10)
-		{
-			//set the direction
-			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
-			//set the clock output high
-			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-			//wait 25 milliseconds
-			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
-			//Set the clock output low
-			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-			//wait 25 milliseconds
-			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
-		}
-		else if (positionX>0x88888888 && positionX<0xFFFFFFEF)
-		{
-			//set the direction
-			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
-			//set the clock output high
-			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-			//wait 25 milliseconds
-			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
-			//Set the clock output low
-			GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-			//wait 25 milliseconds
-			SysCtlDelay(SysCtlClockGet() / (4000 * 3));
-		}
-}*/
-	/*for (j=0;j<2;j++)
-	{
-		positionX=QEIPositionGet(QEI0_BASE);
-		positionY=QEIPositionGet(QEI1_BASE);
-		if (j%2==0)
-		{
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, GPIO_PIN_0);
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, GPIO_PIN_1);
-		while(positionX<0x5000 || positionY<0x4800)
-		{
-		//
-		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
-		//
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		//
-		// Bring the clocks high.
-		//
-		positionX=QEIPositionGet(QEI0_BASE);
-		positionY=QEIPositionGet(QEI1_BASE);
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-		//
-		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
-		//
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		//
-		// Bring the clocks low.
-		//
-		positionX=QEIPositionGet(QEI0_BASE);
-		positionY=QEIPositionGet(QEI1_BASE);
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-		}
-		}
-		else
-		{
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_0, 0);
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
-		while(positionX>0 || positionY>0)
-		{
-		//
-		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
-		//
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		//
-		// Bring the clocks high.
-		//
-		positionX=QEIPositionGet(QEI0_BASE);
-		positionY=QEIPositionGet(QEI1_BASE);
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, GPIO_PIN_3);
-		//
-		// Delay for 2.5 millisecond.  Each SysCtlDelay is about 3 clocks.
-		//
-		SysCtlDelay(SysCtlClockGet() / (motorStepDuration * 3));
-		//
-		// Bring the clocks low.
-		//
-		positionX=QEIPositionGet(QEI0_BASE);
-		positionY=QEIPositionGet(QEI1_BASE);
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-		GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_3, 0);
-		}
-		}
-	}*/
 }
 
 int main(void)
@@ -1337,39 +1031,6 @@ int main(void)
 	PWM_Setup();
 	QEI_Setup();
 	GPIO_Setup();
-
-	/*GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0);
-	for(i = 0; i < (555*12); i++)
-		{
-				//set the clock output high - the motor steps on rising clock edges
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));
-				//Set the clock output low
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));
-			positionX=QEIPositionGet(QEI0_BASE);
-		}
-		GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
-		for(i = 0; i < (555*12); i++)
-		{
-				//set the clock output high - the motor steps on rising clock edges
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, GPIO_PIN_2);
-				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));
-				//Set the clock output low
-				GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
-				//wait 120 microseconds
-				SysCtlDelay(SysCtlClockGet()*4 / (motorStepDuration * 6000));
-			positionX=QEIPositionGet(QEI0_BASE);
-		}*/
-	//ready();
-	
-	//testBenchIntensity();
-	//testBenchMotor();
-	//testBenchPulse();
-	//testBenchDuration(); //dont use with PWM_Setup()!!!
 	
 	while(1)
 	{
@@ -1416,23 +1077,5 @@ int main(void)
 			readyToGo = 0;
 			rowGood=1;
 		}
-		/*else 
-		{
-			SysCtlDelay(SysCtlClockGet()*1/3);
-			if (UARTCharsAvail(UART1_BASE)==true)
-				continue;
-			else
-			{
-				if (firstRun==1)
-					continue;
-				for (i=0;i<2;i++)
-				{
-					UARTCharPut(UART1_BASE,go[i]);
-					SysCtlDelay(SysCtlClockGet()*20/3000);//wait 20 milliseconds
-				}
-			}
-		}*/
-  		//positionX=QEIPositionGet(QEI0_BASE);
-  		//positionY=QEIPositionGet(QEI1_BASE);
   }
 }

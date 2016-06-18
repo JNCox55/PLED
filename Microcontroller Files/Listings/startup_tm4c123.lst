@@ -1245,13 +1245,13 @@ ARM Macro Assembler    Page 20
               00000000 
               00000200 
               00000000 
-Command Line: --debug --xref --cpu=Cortex-M4.fp --apcs=interwork --depend=.\obj
-ects\startup_tm4c123.d -o.\objects\startup_tm4c123.o -I"C:\Users\Bre\Documents\
-PLED\PLED\Microcontroller Files\RTE" -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSI
-S\Include -IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.0.0\Device\Include\TM4C123 --pr
-edefine="__EVAL SETA 1" --predefine="_RTE_ SETA 1" --predefine="TM4C123GH6PM SE
-TA 1" --list=.\listings\startup_tm4c123.lst RTE\Device\TM4C123GH6PM\startup_TM4
-C123.s
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\objects\startup_tm4c123.d -o.\objects\startup_tm4c123.o -I"C:
+\Users\Casey\Documents\USU\PLED\PLED\Microcontroller Files\RTE" -IC:\Keil_v5\AR
+M\PACK\ARM\CMSIS\4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\
+Device\Include\TM4C123 --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSI
+ON SETA 518" --predefine="_RTE_ SETA 1" --predefine="TM4C123GH6PM SETA 1" --lis
+t=.\listings\startup_tm4c123.lst RTE\Device\TM4C123GH6PM\startup_TM4C123.s
 
 
 
@@ -2614,4 +2614,4 @@ Symbol: __use_two_region_memory
       None
 Comment: __use_two_region_memory unused
 3 symbols
-474 symbols in table
+475 symbols in table

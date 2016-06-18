@@ -1,6 +1,0 @@
--c --cpu Cortex-M4.fp -D__EVAL -g -O0 --apcs=interwork 
--I "C:\Users\Casey\Documents\USU\PLED\PLED\Microcontroller Files\RTE"
--I C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include
--I C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123
--D__UVISION_VERSION="518" -D_RTE_ -DTM4C123GH6PM
--o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d "main.c"

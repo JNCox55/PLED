@@ -77,8 +77,8 @@ namespace PLED_GUI
                     y_woodDimension.Text = yDimension;
 
                     //converts, saves and displays dimensions in pixel count
-                    xDimPix = Convert.ToUInt16(Convert.ToDouble(xDimension) / 0.009);
-                    yDimPix = Convert.ToUInt16(Convert.ToDouble(yDimension) / 0.009);
+                    xDimPix = Convert.ToUInt16(Convert.ToDouble(xDimension) / 0.0045);
+                    yDimPix = Convert.ToUInt16(Convert.ToDouble(yDimension) / 0.0045);
                     xWoodDimPixels.Text = Convert.ToString(xDimPix);
                     yWoodDimPixels.Text = Convert.ToString(yDimPix);
 

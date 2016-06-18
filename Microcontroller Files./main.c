@@ -20,7 +20,7 @@
 #include "inc\hw_types.h"
 #include "driverlib\fpu.h"
 
-#define FEEDBACK				//<---- Uncomment this for Feedback
+//#define FEEDBACK				//<---- Uncomment this for Feedback
 
 volatile unsigned int *UART1=(unsigned int *) 0x4000D000; //This points to the base address for UART1
 int timeEngrave=67;  //This is the denominator for the fraction of a second we are engraving during testing
@@ -710,9 +710,9 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 					SysCtlDelay((int)((SysCtlClockGet()*burnDuration)/(6000*pulsesPerPixel)));	//pulse high for half the duration of 1/12th of the pixel width
 				else 
 					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
-				if (openLoopCountTrigger==1)
+				/*if (openLoopCountTrigger==1)
 					openLoopCorrectionCount++;
-				if (openLoopCorrectionCount%26==0)
+				if (openLoopCorrectionCount%26==0 && openLoopCorrectionCount!=0)
 				{
 					//set the X stepper motor direction to reverse
 					GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, GPIO_PIN_1);
@@ -722,7 +722,7 @@ void step(short curPosX,short curPosY,short desPosX,short desPosY, short burnDur
 					//Set the clock output low
 					GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_2, 0);
 					SysCtlDelay((int)(SysCtlClockGet()/(motorStepDuration*6000)));	//if we are just jogging then go ahead and move fast
-				}
+				} */
 		}
 		positiveYPixels++;	//increment the number of y pixels moves in the +y direction
 		curPosY++;	//increment the temporary count of the number of y pixels moves in the +y direction
@@ -765,7 +765,7 @@ void engrave()
  				if (gCode[j]=='G' && gCode[j+1]=='0')	//If we got the command to jog to a given position
  				{
  					step(0, 0, xCommands[xCommandsIndex], yCommands[yCommandsIndex], 0);	//move to the initial position
-					correctPlacement(positiveXPixels, positiveYPixels);	//Use the encoders to make sure we jogged to the correct location
+					//correctPlacement(positiveXPixels, positiveYPixels);	//Use the encoders to make sure we jogged to the correct location
  					xCommandsIndex++;	//move the pointer to the next x location
  					yCommandsIndex++;	//move the pointer to the next y location
 					j+=4;	//point to the first pixel
@@ -786,35 +786,35 @@ void engrave()
 						{
  						case '0':
 							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);
-							zephyr=60;//60
+							zephyr=60;//30;//60
  							break;
  						case '1':
  							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);//410
-							zephyr=41;//48
+							zephyr=41;//18;//41
  							break;
  						case '2':
  							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);//353
-						zephyr=32;//40
+						zephyr=32;//15;//32
  							break;
  						case '3':
  							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);//300
-						zephyr=24;//42
+						zephyr=24;//13;//24
  							break;
 						case '4':
  							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);//220
-						zephyr=18;//40
+						zephyr=18;//10;//18
  							break;
  						case '5':
  							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);//163
-						zephyr=14;//42
+						zephyr=14;//8;//14
  							break;
  						case '6':
  							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,479);//135
-						zephyr=12;//42
+						zephyr=12;//5;//12
  							break;
  						case '7':
  							PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0,1);
-						zephyr=10;
+						zephyr=5;//10
  							break;
  						default:
  							//DO NOTHING
@@ -1034,7 +1034,6 @@ int main(void)
 	
 	while(1)
 	{
-		correctPlacement(positiveXPixels, positiveYPixels);
  		if(readyToGo==1 && rowGood==1)
 		{
 			firstRun=0;

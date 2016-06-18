@@ -3,28 +3,71 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Tool Versions:</h2>
-IDE-Version: µVision V5.12.0.0
-Copyright (C) 2014 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: Zachary Garrard, myself, LIC=----
+IDE-Version: µVision V5.18a
+Copyright (C) 2016 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Casey Wood, Student, LIC=----
  
 Tool Versions:
-Toolchain:       MDK-Lite  Version: <unknown>
-Toolchain Path:  C:\Keil_v5\ARM\ARMCC\bin\
-C Compiler:      Armcc.exe V5.05 (build 41)
-Assembler:       Armasm.exe V5.05 (build 41)
-Linker/Locator:  ArmLink.exe V5.05 (build 41)
-Library Manager: ArmAr.exe V5.05 (build 41)
-Hex Converter:   FromElf.exe V5.05 (build 41)
-CPU DLL:         SARMCM3.DLL
-Dialog DLL:      DCM.DLL
-    Target DLL: lmidk-agdi.dll
-Dialog DLL:      TCM.DLL
+Toolchain:       MDK-Lite  Version: 5.18a
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 1 (build 61)
+Assembler:       Armasm.exe V5.06 update 1 (build 61)
+Linker/Locator:  ArmLink.exe V5.06 update 1 (build 61)
+Library Manager: ArmAr.exe V5.06 update 1 (build 61)
+Hex Converter:   FromElf.exe V5.06 update 1 (build 61)
+CPU DLL:         SARMCM3.DLL V5.18a
+Dialog DLL:      DCM.DLL V1.13.6.0
+Target DLL:      lmidk-agdi.dll V???
+Dialog DLL:      TCM.DLL V1.14.8.0
  
 <h2>Project:</h2>
-C:\Users\Bre\Documents\PLED\PLED\Microcontroller Files\SP.uvprojx
+C:\Users\Casey\Documents\USU\PLED\PLED\Microcontroller Files\SP.uvprojx
 Project File Date:  04/28/2016
 
 <h2>Output:</h2>
+*** Using Compiler 'V5.06 update 1 (build 61)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Rebuild target 'Target 1'
+compiling pwm.c...
+compiling main.c...
+compiling sysctl.c...
+compiling uart.c...
+compiling gpio.c...
+compiling fpu.c...
+compiling qei.c...
+assembling startup_TM4C123.s...
+compiling system_TM4C123.c...
+linking...
+Program Size: Code=16088 RO-data=2028 RW-data=1644 ZI-data=26308  
+".\Objects\SP.axf" - 0 Error(s), 0 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.4.5.0.pack
+                ARM::CMSIS:CORE:4.3.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 4.3.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.TM4C_DFP.1.1.0.pack
+                Keil::Device:Startup:1.0.1
+                Texas Instruments Tiva C Series Device Support and Examples
+   * Component: Startup Version: 1.0.1
+
+<h2>Collection of Component include folders:</h2>
+  C:\Users\Casey\Documents\USU\PLED\PLED\Microcontroller Files\RTE
+  C:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include
+  C:\Keil_v5\ARM\PACK\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:4.3.0
+
+   * Component: Keil::Device:Startup:1.0.1
+      Source file:   Device\Source\ARM\startup_TM4C123.s
+      Include file:  Device\Include\TM4C123\TM4C123.h
+      Source file:   Device\Source\system_TM4C123.c
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>
